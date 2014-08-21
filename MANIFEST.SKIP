@@ -1,0 +1,28 @@
+# Module::Builder files and directories
+^Build$
+^Build.bat$
+^\.build/
+^_build/
+
+# Skip Git stuff
+\B\.git\b
+
+# ExtUtils:MakeMaker files and directories
+^Makefile$
+^Makefile.old$
+
+# XS-related intermediates
+*.o$
+*.bs$
+
+# General intermediates
+^blib/
+^inc/
+
+# Coverage-related files and directories
+^cover_db/
+^.last_cover_stats$
+
+# Other stuff
+^nytprof.out$
+^pm_to_blib/
