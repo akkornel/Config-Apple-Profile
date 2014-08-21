@@ -22,6 +22,8 @@ cover_db/
 .last_cover_stats
 
 # Manifests and METAs
+# (Yes, we ignore the MANIFEST.  That should be built at build time)
+/MANIFEST
 /MANIFEST.bak
 /META.yml
 /META.json
