@@ -6,15 +6,15 @@ use warnings FATAL => 'all';
 
 use Exporter::Easy (
     OK => [qw(
-        String Number Data Boolean
-        Dict Array ArrayOfDicts
-        NSDataBlob GUID
+        ProfileString ProfileNumber ProfileData ProfileBool
+        ProfileDict ProfileArray ProfileArrayOfDicts
+        ProfileNSDataBlob ProfileGUID ProfileIdentifier
     )],
     TAGS => [
         'all' => [qw(
-          String Number Data Boolean
-          Dict Array ArrayOfDicts
-          NSDataBlob GUID
+          ProfileString ProfileNumber ProfileData ProfileBool
+          ProfileDict ProfileArray ProfileArrayOfDicts
+          ProfileNSDataBlob ProfileGUID ProfileIdentifier
         )],
     ],
 );
@@ -23,46 +23,52 @@ use Readonly;
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Types - Data types for payload keys
+C<XML::AppleConfigProfile::Payload::Types> - Data types for payload keys
 
 =head1 DESCRIPTION
 
+Apple Configuration Profiles contain one or more I<payloads>.  Each payload
+contains a dictionary, which can be thought of like a Perl hash.  Within a
+payload's dictionary, each key's value is restricted to a specific type.
+One key might require a number; a different key might require a string, or some
+binary data.
 
-
-=cut
-
+Provided in this module are a number of Readonly scalars that will be used
+(instead of strings) to identify the data types for configuration profile keys.
+The scalars are all OK for import into your local namespace, or you can simply
+import C<:all> to get all of them at once. 
 
 =head1 TYPES
 
-Apple Configuration Profile payloads have the following data types:
+Apple Configuration Profile payloads use the following data types:
 
-=head3 C<String>
+=head2 C<ProfileString>
 
-A UTF-8 string.  The client should simply provide a Perl string (NOT a binary)
-string.
+A UTF-8 string.  The client should simply provide a Perl string (NOT a binary
+string).
 
 =cut
 
-Readonly our $String => 1;
+Readonly our $ProfileString => 1;
 
-=head3 C<Number>
+=head2 C<ProfileNumber>
 
 A real number or an integer.
 
 =cut
 
-Readonly our $Number => 2;
+Readonly our $ProfileNumber => 2;
 
-=head3 C<Data>
+=head2 C<ProfileData>
 
 Binary data.  The client should always expect (and provide) data in binary form,
-and the mobule will do the work of converting to Base64 when necessary.
+and the module will do the work of converting to Base64 when necessary.
 
 =cut
 
-Readonly our $Data => 3;
+Readonly our $ProfileData => 3;
 
-=head3 C<Boolean>
+=head2 C<ProfileBool>
 
 Either True for False.  When reading a boolean from a payload's contents, a 1
 is used to represent true, and 0 is returned for false.  When setting a boolean,
@@ -70,9 +76,9 @@ the value provided is filtered using the code C<($value) ? 1 : 0>.
 
 =cut
 
-Readonly our $Boolean => 4;
+Readonly our $ProfileBool => 4;
 
-=head3 C<Dict> (Dictionary)
+=head2 C<ProfileDict> (Dictionary)
 
 A dictionary is the plist equivalent to a Perl hash, and that is what will be
 made available.  The client should expect the hash to only accept certain types
@@ -81,9 +87,9 @@ documentation for the specific key.
 
 =cut
 
-Readonly our $Dict => 10;
+Readonly our $ProfileDict => 10;
 
-=head3 C<Array>
+=head2 C<ProfileArray>
 
 An array, similar to a Perl array.  The client should expect the array to only
 accept certain data types.  For more information, see the documentation for the
@@ -91,9 +97,9 @@ specific key.
 
 =cut
 
-Readonly our $Array => 11;
+Readonly our $ProfileArray => 11;
 
-=head3 C<ArrayOfDicts> (Array of Dictionaries)
+=head2 C<ProfileArrayOfDicts> (Array of Dictionaries)
 
 An array of dictionaries, equivalent to a Perl array of hashes (or, more
 realisticly, an array of hashrefs).  The client should expect the array to only
@@ -102,9 +108,9 @@ For more information, see the documentation for the specific key.
 
 =cut
 
-Readonly our $ArrayOfDicts => 12;
+Readonly our $ProfileArrayOfDicts => 12;
 
-=head3 NSData Blob
+=head2 NSData Blob
 
 This is a weird type.  The only place it appears in the I<Configuration Profile
 Reference> (the edition dated 2014-03-20) is in the C<Certificate> key in the
@@ -116,11 +122,11 @@ unimplemnented.
 
 =cut
 
-Readonly our $NSDataBlob => 20;
+Readonly our $ProfileNSDataBlob => 20;
 
-=head3 UUID
+=head2 C<ProfileUUID>
 
-(I<Also known as a GUID>)
+I<Also known as a GUID>
 
 Although the plist format does not have a special type for UUIDs (a simple
 String is used), these modules designate a special type for UUIDs, as a
@@ -130,24 +136,24 @@ one will be lazily auto-generated.
 
 =cut
 
-Readonly our $UUID => 21;
+Readonly our $ProfileUUID => 21;
 
-=head3 Identifier
+=head2 C<ProfileIdentifier>
 
 This is another convenience type.  All payloads require an identifier,
 which is a reverse-DNS-style (Java-style) string.  If the client does not
 specify an identifier, then one will be lazily auto-generated.  If the client
-specifies an identifier starting with a dot (such as '.VPNconfig'), the parent's
-identifier will be lazily prepended.
+specifies an identifier starting with a dot (such as 'C<.VPNconfig>'), the
+parent's identifier will be lazily prepended.
 
 =cut
 
-Readonly our $Identifier => 22;
+Readonly our $ProfileIdentifier => 22;
 
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> module's documentation.
+Refer to the L<XML::AppleConfigProfile> for acknowledgements.
 
 =head1 AUTHOR
 
@@ -155,7 +161,7 @@ A. Karl Kornel, C<< <karl at kornel.us> >>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2014 A. Karl Kornel.
+Copyright © 2014 A. Karl Kornel.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of either: the GNU General Public License as published
