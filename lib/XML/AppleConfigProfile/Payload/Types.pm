@@ -11,7 +11,7 @@ use Exporter::Easy (
         ProfileNSDataBlob ProfileGUID ProfileIdentifier
     )],
     TAGS => [
-        'all' => [qw(
+        ':all' => [qw(
           ProfileString ProfileNumber ProfileData ProfileBool
           ProfileDict ProfileArray ProfileArrayOfDicts
           ProfileNSDataBlob ProfileGUID ProfileIdentifier
