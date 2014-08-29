@@ -8,13 +8,13 @@ use Exporter::Easy (
     OK => [qw(
         $ProfileString $ProfileNumber $ProfileData $ProfileBool
         $ProfileDict $ProfileArray $ProfileArrayOfDicts
-        $ProfileNSDataBlob $ProfileGUID $ProfileIdentifier
+        $ProfileNSDataBlob $ProfileUUID $ProfileIdentifier
     )],
     TAGS => [
         'all' => [qw(
           $ProfileString $ProfileNumber $ProfileData $ProfileBool
           $ProfileDict $ProfileArray $ProfileArrayOfDicts
-          $ProfileNSDataBlob $ProfileGUID $ProfileIdentifier
+          $ProfileNSDataBlob $ProfileUUID $ProfileIdentifier
         )],
     ],
 );
