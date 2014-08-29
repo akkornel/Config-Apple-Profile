@@ -6,11 +6,11 @@ use warnings FATAL => 'all';
 
 use Exporter::Easy (
     OK => [qw(
-        TargetIOS TargetMACOSX
+        $TargetIOS $TargetMACOSX
     )],
     TAGS => [
-        ':all' => [qw(
-          TargetIOS TargetMACOSX
+        'all' => [qw(
+          $TargetIOS $TargetMACOSX
         )],
     ],
 );

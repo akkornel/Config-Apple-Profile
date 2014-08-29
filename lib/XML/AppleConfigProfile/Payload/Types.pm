@@ -6,15 +6,15 @@ use warnings FATAL => 'all';
 
 use Exporter::Easy (
     OK => [qw(
-        ProfileString ProfileNumber ProfileData ProfileBool
-        ProfileDict ProfileArray ProfileArrayOfDicts
-        ProfileNSDataBlob ProfileGUID ProfileIdentifier
+        $ProfileString $ProfileNumber $ProfileData $ProfileBool
+        $ProfileDict $ProfileArray $ProfileArrayOfDicts
+        $ProfileNSDataBlob $ProfileGUID $ProfileIdentifier
     )],
     TAGS => [
-        ':all' => [qw(
-          ProfileString ProfileNumber ProfileData ProfileBool
-          ProfileDict ProfileArray ProfileArrayOfDicts
-          ProfileNSDataBlob ProfileGUID ProfileIdentifier
+        'all' => [qw(
+          $ProfileString $ProfileNumber $ProfileData $ProfileBool
+          $ProfileDict $ProfileArray $ProfileArrayOfDicts
+          $ProfileNSDataBlob $ProfileGUID $ProfileIdentifier
         )],
     ],
 );
