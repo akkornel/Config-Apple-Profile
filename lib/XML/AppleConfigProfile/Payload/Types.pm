@@ -45,7 +45,12 @@ Apple Configuration Profile payloads use the following data types:
 =head2 C<ProfileString>
 
 A UTF-8 string.  The client should simply provide a Perl string (NOT a binary
-string).
+string).  Multi-line strings are allowed, although specific payload keys may
+not allow this.  Empty strings are B<not> allowed.
+
+B<NOTE:>  If your source data was not ASCII, and not UTF-8, then please make
+sure you have converted it before doing anything else!  "converted it" normally
+means using the L<Encode> module to convert from the original encoding. 
 
 =cut
 
@@ -53,7 +58,8 @@ Readonly our $ProfileString => 1;
 
 =head2 C<ProfileNumber>
 
-A real number or an integer.
+An Integer, positive, zero, or negative.  The plist standard doesn't specify
+a range, but one may be imposed by specific keys.
 
 =cut
 
@@ -61,8 +67,18 @@ Readonly our $ProfileNumber => 2;
 
 =head2 C<ProfileData>
 
-Binary data.  The client should always expect (and provide) data in binary form,
-and the module will do the work of converting to Base64 when necessary.
+Binary data.  Binary data may be provided by the client in multiple ways.
+
+Clients can provide an open filehandle, or an open L<IO> object.
+L<Scalar::Util::openhandle> is used to make sure the handle/object is open.
+
+B<NOTE:>  When opening the file, please remember to use C<binmode()> before you
+do anything else with the file.  Also, make sure the handle is open for reading!
+
+The client may also provide a string.  If a string is provided, then it must be
+a I<non-empty>, I<binary> string.  In other words, L<utf8::is_utf8> needs to
+return C<false>; if it's returning C<true>, then you probably need to use
+L<Encode::encode> (or maybe L<Encode::encode_utf8>) to get a binary string.
 
 =cut
 
@@ -72,7 +88,9 @@ Readonly our $ProfileData => 3;
 
 Either True for False.  When reading a boolean from a payload's contents, a 1
 is used to represent true, and 0 is returned for false.  When setting a boolean,
-the value provided is filtered using the code C<($value) ? 1 : 0>.
+the value provided is filtered using the code C<($value) ? 1 : 0>.  As long as
+you aren't providing C<undef> as the input, your input will probably be
+accepted!
 
 =cut
 
@@ -118,7 +136,8 @@ Exchange payload.  I don't really understand this, though I'm guessing it's
 really a Data type, and the I<NSData Blob> is referring to the contents.
 
 Until I get more information on what exactly this is, this type will likely go
-unimplemnented.
+unimplemnented.  Right now, the same checks are performed as for the
+C<Data> type.
 
 =cut
 
@@ -134,6 +153,13 @@ convenience to the client:  All payloads have a UUID as one of the required
 keys.  If the client does not specify a UUID when creating a payload, then
 one will be lazily auto-generated.
 
+If you would like to set an explicit UUID, you may provide a L<Data::UUID>
+object, a L<Data::GUID> object, or a string that L<Data::GUID> can parse.  When
+reading, a L<Data::GUID> object is returned, but that can be converted into a
+string very easily:
+
+    C<$uuid = "$uuid";>
+
 =cut
 
 Readonly our $ProfileUUID => 21;
@@ -145,6 +171,9 @@ which is a reverse-DNS-style (Java-style) string.  If the client does not
 specify an identifier, then one will be lazily auto-generated.  If the client
 specifies an identifier starting with a dot (such as 'C<.VPNconfig>'), the
 parent's identifier will be lazily prepended.
+
+The checks for the C<String> type are performed here, except that only single-
+line strings are allowed.
 
 =cut
 
