@@ -23,7 +23,7 @@ use Readonly;
 
 =head1 NAME
 
-C<XML::AppleConfigProfile::Payload::Types> - Data types for payload keys
+XML::AppleConfigProfile::Payload::Types - Data types for payload keys.
 
 =head1 DESCRIPTION
 
@@ -40,9 +40,9 @@ import C<:all> to get all of them at once.
 
 =head1 TYPES
 
-Apple Configuration Profile payloads use the following data types:
+Apple Configuration Profile payloads use the following types, 
 
-=head2 C<ProfileString>
+=head2 String (C<$ProfileString>)
 
 A UTF-8 string.  The client should simply provide a Perl string (NOT a binary
 string).  Multi-line strings are allowed, although specific payload keys may
@@ -56,7 +56,7 @@ means using the C<Encode> module to convert from the original encoding.
 
 Readonly our $ProfileString => 1;
 
-=head2 C<ProfileNumber>
+=head2 Number (C<$ProfileNumber>)
 
 An Integer, positive, zero, or negative.  The plist standard doesn't specify
 a range, but one may be imposed by specific keys.
@@ -65,7 +65,7 @@ a range, but one may be imposed by specific keys.
 
 Readonly our $ProfileNumber => 2;
 
-=head2 C<ProfileData>
+=head2 Data (C<$ProfileData>)
 
 Binary data.  Binary data may be provided by the client in multiple ways.
 
@@ -84,7 +84,7 @@ C<Encode::encode> (or maybe C<Encode::encode_utf8>) to get a binary string.
 
 Readonly our $ProfileData => 3;
 
-=head2 C<ProfileBool>
+=head2 Boolean (C<$ProfileBool>)
 
 Either True for False.  When reading a boolean from a payload's contents, a 1
 is used to represent true, and 0 is returned for false.  When setting a boolean,
@@ -96,7 +96,7 @@ accepted!
 
 Readonly our $ProfileBool => 4;
 
-=head2 C<ProfileDict> (Dictionary)
+=head2 Dictionary (C<$ProfileDict>)
 
 A dictionary is the plist equivalent to a Perl hash, and that is what will be
 made available.  The client should expect the hash to only accept certain types
@@ -107,7 +107,7 @@ documentation for the specific key.
 
 Readonly our $ProfileDict => 10;
 
-=head2 C<ProfileArray>
+=head2 Array (C<$ProfileArray>)
 
 An array, similar to a Perl array.  The client should expect the array to only
 accept certain data types.  For more information, see the documentation for the
@@ -117,7 +117,7 @@ specific key.
 
 Readonly our $ProfileArray => 11;
 
-=head2 C<ProfileArrayOfDicts> (Array of Dictionaries)
+=head2 Array of Dictionaries (C<$ProfileArrayOfDicts>)
 
 An array of dictionaries, equivalent to a Perl array of hashes (or, more
 realisticly, an array of hashrefs).  The client should expect the array to only
@@ -143,7 +143,12 @@ C<Data> type.
 
 Readonly our $ProfileNSDataBlob => 20;
 
-=head2 C<ProfileUUID>
+=head1 CUSTOM TYPES
+
+The following types are not actual profile key types, but they are being
+treated specially here.
+
+=head2 UUID (C<$ProfileUUID>)
 
 I<Also known as a GUID>
 
@@ -164,7 +169,7 @@ string very easily:
 
 Readonly our $ProfileUUID => 21;
 
-=head2 C<ProfileIdentifier>
+=head2 Identifier (C<$ProfileIdentifier>)
 
 This is another convenience type.  All payloads require an identifier,
 which is a reverse-DNS-style (Java-style) string.  If the client does not
@@ -182,7 +187,9 @@ Readonly our $ProfileIdentifier => 22;
 
 =head1 SEE ALSO
 
-L<Data::GUID>, L<Data::UUID>, L<Encode>, L<Scalar::Util>, L<utf8>
+L<Data::GUID>, L<Data::UUID>, L<Encode>, L<Scalar::Util>, L<utf8>,
+L<https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man5/plist.5.html>,
+L<http://www.apple.com/DTDs/PropertyList-1.0.dtd>
 
 =head1 ACKNOWLEDGEMENTS
 
