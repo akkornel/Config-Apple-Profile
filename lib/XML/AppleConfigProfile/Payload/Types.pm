@@ -50,7 +50,7 @@ not allow this.  Empty strings are B<not> allowed.
 
 B<NOTE:>  If your source data was not ASCII, and not UTF-8, then please make
 sure you have converted it before doing anything else!  "converted it" normally
-means using the L<Encode> module to convert from the original encoding. 
+means using the C<Encode> module to convert from the original encoding. 
 
 =cut
 
@@ -69,16 +69,16 @@ Readonly our $ProfileNumber => 2;
 
 Binary data.  Binary data may be provided by the client in multiple ways.
 
-Clients can provide an open filehandle, or an open L<IO> object.
-L<Scalar::Util::openhandle> is used to make sure the handle/object is open.
+Clients can provide an open filehandle, or an open C<IO> object.
+C<Scalar::Util::openhandle> is used to make sure the handle/object is open.
 
 B<NOTE:>  When opening the file, please remember to use C<binmode()> before you
 do anything else with the file.  Also, make sure the handle is open for reading!
 
 The client may also provide a string.  If a string is provided, then it must be
-a I<non-empty>, I<binary> string.  In other words, L<utf8::is_utf8> needs to
+a I<non-empty>, I<binary> string.  In other words, C<utf8::is_utf8> needs to
 return C<false>; if it's returning C<true>, then you probably need to use
-L<Encode::encode> (or maybe L<Encode::encode_utf8>) to get a binary string.
+C<Encode::encode> (or maybe C<Encode::encode_utf8>) to get a binary string.
 
 =cut
 
@@ -153,12 +153,12 @@ convenience to the client:  All payloads have a UUID as one of the required
 keys.  If the client does not specify a UUID when creating a payload, then
 one will be lazily auto-generated.
 
-If you would like to set an explicit UUID, you may provide a L<Data::UUID>
-object, a L<Data::GUID> object, or a string that L<Data::GUID> can parse.  When
-reading, a L<Data::GUID> object is returned, but that can be converted into a
+If you would like to set an explicit UUID, you may provide a C<Data::UUID>
+object, a C<Data::GUID> object, or a string that C<Data::GUID> can parse.  When
+reading, a C<Data::GUID> object is returned, but that can be converted into a
 string very easily:
 
-    C<$uuid = "$uuid";>
+    $uuid = "$uuid";
 
 =cut
 
@@ -180,9 +180,13 @@ line strings are allowed.
 Readonly our $ProfileIdentifier => 22;
 
 
+=head1 SEE ALSO
+
+L<Data::GUID>, L<Data::UUID>, L<Encode>, L<Scalar::Util>, L<utf8>
+
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<XML::AppleConfigProfile> for acknowledgements.
 
 =head1 AUTHOR
 
