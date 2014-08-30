@@ -1,0 +1,80 @@
+This document discusses how the test scripts are laid out.
+
+Test files with a + before their names will not run (or will only partially run)
+unless the RELEASE_TESTING environment variable exists, or unless certain
+supplemental modules are installed.
+
+Test files with an X before their names haven't been created yet.  They appear
+on the list simply as a reminder that they need to be implemented, and that the
+particular number has been reserved for them.
+
+* 00-series tests: Basic completeness and compilation tests.    
+
+    *+00-manifest: Check that the release matches the MANIFEST.
+    * 01-load: Check that all modules can be `use`d.
+    *+08-pod: Check that all module POD is valid.
+    *+09-pod-coverage: Check for acceptable POD coverage.
+    
+* 10-series tests: Proper handling of basic payload data types
+
+    * 10-string: Tests against the String and Identifier types.
+    * 11-number: Tests against the Number type.
+    * 12-data: Tests against the Data type.
+    * 13-bool: Tests against the Boolean type.
+    * 14-dict: Tests against the Dict type.
+    * 15-array: Tests against the Array type.
+    * 16-array-dict: Tests against the Array-of-Dictionaries type.
+    * 17-uuid: Tests against the UUID type. 
+    * 18-array-strings: Test against the Array-of-Strings type.
+
+* 20-series through 60-series tests: Tests for specific payloads
+
+    *?20-common: Tests against the common payload keys.
+    *?21-ADcert: Active Directory Certificate Profile payload keys.
+    *?22-AirPlay: AirPlay payload keys.
+    *?23-AirPrint: AirPrint payload keys.
+    *?24-APN: APN payload keys.
+    *?25-AppLock: App Lock payload keys.
+    *?26-AppLock-App: App Lock App dictionaries.
+    *?27-AppLock-Options: App Lock Options dictionaries.
+    *?28-AppLock-UserEnabledOptions: App Lock UserEnabledOptions dictionaries.
+    *?29-CalDAV: CalDAV payload keys.
+    *?30-SubCal: Calendar Subscription payload keys.
+    *?31-CardDAV: CardDAV payload keys.
+    *?32-Cellular: Cellular payload keys.
+    *?33-Cellular-AttachAPN: Cellular AttachAPN dictionaries.
+    *?34-Cellular-APNs: Cellular APNs array.
+    *?35-Certificate: Certificate common payload keys.
+    *?36-Certificate-Sub: Payload keys specific to Certificate sub-types.
+    *?37-Email: Email payload keys.
+    *?38-Exchange: Exchange payload keys common to both OSes.
+    *?39-Exchange-iOS: Exchange payload keys used on iOS.
+    *?40-Exchange-OSX: Exchange payload keys used on OS X.
+    *?41-FileVault2: FileVault 2 payload keys.
+    *?42-FileVault-RKR: FileVault Recovery Key Redirection payload keys.
+    *?43-Font: Font payload keys.
+    *?44-Global-Proxy: Global HTTP Proxy payload keys.
+    *?45-Identification: Identification payload keys.
+    *?46-LDAP: LDAP payload keys.
+    *?47-Passcode: Passcode Policy payload keys.
+    *?48-Profile-Removal-Password: Profile Removal Password payload keys.
+    *?49-Restrictions: Restrictions payload keys.
+    *?50-SCEP: SCEP payload keys.
+    *?51-SCEP-SubjectAltName: SCEP SubjectAltName payload keys.
+    *?52-SCEP-GetCACaps: SCEP GetCACaps payload keys.
+    *?53-SSO: Single Sign-On payload keys.
+    *?54-System-Policy-Control: System Policy Control payload keys.
+    *?55-System-Policy-Rule: System Policy Rule payload keys.
+    *?56-System-Policy-Managed: System Policy Managed payload keys.
+    *?57-VPN: VPN payload keys.
+    *?58-VPN-PerApp: Per-App VPN payload keys.
+    *?59-VPN-AppPerApp: App-to-Per-Appl VPN Mapping payload keys.
+    *?60-VPN-IPSEC: VPN payload IPSEC keys.
+    *?61-VPN-PPP: VPN payload PPP keys.
+    *?62-VPN-OnDemandRules: VPN payload OnDemandRules keys.
+    *?63-Web-Clip: Web Clip payload keys.
+    *?64-Web-Content-Filter: Web Content Filter payload keys.
+    *?65-WiFi: Wi-Fi payload keys.
+    *?66-WiFi-EAP: Wi-Fi payload EAPClientConfiguration keys.
+    
+* 70-series tests: Other tests that haven't been devised yet!
