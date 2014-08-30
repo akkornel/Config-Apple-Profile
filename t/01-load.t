@@ -9,7 +9,6 @@ use Test::More;
 BEGIN {
     my @modules = qw(
         XML::AppleConfigProfile
-        XML::AppleConfigProfile::Profile
         XML::AppleConfigProfile::Targets
         XML::AppleConfigProfile::Payload::Common
         XML::AppleConfigProfile::Payload::Types
