@@ -10,7 +10,7 @@ use base qw(XML::AppleConfigProfile::Payload::Certificate);
 
 use Readonly;
 use XML::AppleConfigProfile::Payload::Certificate;
-use XML::AppleConfigProfile::Payload::Types qw(:all);
+use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber $ProfileString);
 
 
 =head1 NAME
@@ -79,7 +79,7 @@ Readonly our %payloadKeys => (
     
     # ... and define our own!
     'Password' => {
-        type => $PayloadString,
+        type => $ProfileString,
         description => 'The password used to decrypt the file.',
         optional => 1,
         private => 1,
@@ -87,11 +87,11 @@ Readonly our %payloadKeys => (
     
     # Since we can't go any deeper, define the type and version!
     'PayloadType' => {
-        type => $PayloadString,
+        type => $ProfileString,
         value => 'com.apple.security.pkcs12',
     },
     'PayloadVersion' => {
-        type => $PayloadNumber,
+        type => $ProfileNumber,
         value => 1,
     },
 );  # End of %payloadKeys
