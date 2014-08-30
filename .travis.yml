@@ -8,6 +8,4 @@ before_install:
   - cpanm Pod::Coverage
   - cpanm Test::Pod::Coverage
 script:
-  perl Build.PL
-  ./Build build
-  cover -test -report coveralls
+  - perl Build.PL && ./Build build && cover -test -report coveralls
