@@ -490,12 +490,12 @@ Readonly our %payloadKeys => (
             optional => 1,
         },
     'PayloadDescription' => {
-#            type => $ProfileString,
+            type => $ProfileString,
             description => "A longer description of the payload's purpose.",
             optional => 1,
         },
     'PayloadOrganization' => {
-#            type => $ProfileString,
+            type => $ProfileString,
             description => "The name of the payload's creator.",
             optional => 1,
         },
