@@ -49,7 +49,7 @@ example, the C<XML::AppleConfigProfile::Payload::FileVault> payload can only be
 used with a Mac OS X configuration profile.
 
 For a list of all payloads that Apple currently recognizes, refer to the
-U<Configuration Profile Reference> linked below.  Not all payloads are
+I<Configuration Profile Reference> linked below.  Not all payloads are
 implemented in this release.  If you are interested in seeing more payloads
 supported, please contribute!  See the L<SOURCE> section below for more info.  
 
@@ -92,8 +92,8 @@ automatically be notified of progress on your bug as I make changes.
 
 =head1 SEE ALSO
 
-* "Configuration Profile Reference".  U<iOS Developer Library>.  L<https://developer.apple.com/library/ios/featuredarticles/iphoneconfigurationprofileref/Introduction/Introduction.html>
-* "Over-the-Air Profile Delivery and Configuration".  U<iOS Developer Library>.  L<https://developer.apple.com/library/iOs/documentation/NetworkingInternet/Conceptual/iPhoneOTAConfiguration/Introduction/Introduction.html>.
+* "Configuration Profile Reference".  I<iOS Developer Library>.  L<https://developer.apple.com/library/ios/featuredarticles/iphoneconfigurationprofileref/Introduction/Introduction.html>
+* "Over-the-Air Profile Delivery and Configuration".  I<iOS Developer Library>.  L<https://developer.apple.com/library/iOs/documentation/NetworkingInternet/Conceptual/iPhoneOTAConfiguration/Introduction/Introduction.html>.
 
 
 =head1 SUPPORT
