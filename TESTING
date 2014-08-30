@@ -17,15 +17,15 @@ particular number has been reserved for them.
     
 * 10-series tests: Proper handling of basic payload data types
 
-    * 10-string: Tests against the String and Identifier types.
-    * 11-number: Tests against the Number type.
-    * 12-data: Tests against the Data type.
-    * 13-bool: Tests against the Boolean type.
-    * 14-dict: Tests against the Dict type.
-    * 15-array: Tests against the Array type.
-    * 16-array-dict: Tests against the Array-of-Dictionaries type.
-    * 17-uuid: Tests against the UUID type. 
-    * 18-array-strings: Test against the Array-of-Strings type.
+    *?10-string: Tests against the String and Identifier types.
+    *?11-number: Tests against the Number type.
+    *?12-data: Tests against the Data type.
+    *?13-bool: Tests against the Boolean type.
+    *?14-dict: Tests against the Dict type.
+    *?15-array: Tests against the Array type.
+    *?16-array-dict: Tests against the Array-of-Dictionaries type.
+    *?17-uuid: Tests against the UUID type. 
+    *?18-array-strings: Test against the Array-of-Strings type.
 
 * 20-series through 60-series tests: Tests for specific payloads
 
