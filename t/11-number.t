@@ -55,9 +55,10 @@ Readonly my @numbers => (
     -145688405,
     -12,
     
-    # Also include each end of the range
-    (defined $Config{d_quad}) ? 2**64 : 2**32,
-    (defined $Config{d_quad}) ? (2**64)*-1 : (2**32)*-1,
+    # Also include each end of the native integer range
+    # 32-bit number range is -2**31 to (2**32)-1, and similar for 64-bit
+    (defined $Config{d_quad}) ? 18446744073709551615 : 4294967295,
+    (defined $Config{d_quad}) ? -9223372036854775808 : -2147483648,
     
     # The + symbol is OK, so let's put in some strings
     '+1',
