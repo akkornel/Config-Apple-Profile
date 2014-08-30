@@ -57,16 +57,22 @@ sub new {
     my $keys = \%{"${class}::payloadKeys"};
     use strict 'refs';
     
-    # We're going to leverage Perl's hash-handling code to deal with payload
-    # data storage and validation.
+    # We're going to leverage Perl's hash-handling code to make payload keys
+    # easy for the Perl programmer to access.
     my %payload;
-    tie %payload, $class;
     
-    # Put the payload into an anonymous hash, bless it, and return!
-    return bless {
+    # Prepare out object
+    my $object = bless {
         'keys' => $keys,
         'payload' => \%payload,
     }, $class;
+    
+    # Now that have the object, we can tie up the hash.  YES, this will create
+    # a circular reference, which TIEHASH will deal with.
+    tie %payload, 'XML::AppleConfigProfile::Payload::Common::PayloadStorage', $object;
+    
+    # Return the prepared object!
+    return $object;    
 }
 
 
@@ -502,11 +508,26 @@ Readonly our %payloadKeys => (
 );  # End of %payloadKeys
 
 
+package XML::AppleConfigProfile::Payload::Common::PayloadStorage;
+
 # All internal stuff goes here
 
 sub TIEHASH {
-    my ($class) = @_;
-    return bless {}, $class;
+    my ($class, $object_ref) = @_;
+    
+    # $object_ref points to our containing object.  In other words, $object_ref,
+    # if de-referenced, would give us our instance of this class.
+    # Using $object_ref around like this does, I believe, create a circular
+    # reference, which we need to break.
+    Scalar::Util::weaken($object_ref);
+    
+    # Construct our object.  We need a hash for the payload, and we'll also
+    # bring along the reference to our containing instance.
+    # Our class name is made-up, to keep clients from doing weird stuff.
+    return bless {
+        payload => {},
+        object => $object_ref,
+    }, "$class";
 }
 
 
@@ -530,14 +551,15 @@ sub STORE {
     my ($self, $key, $value) = @_;
     
     # If we are setting to undef, then just drop the key.
-    if (!defined $value) {
-        $self->DELETE($key);
-        return;
-    }
+#    if (!defined $value) {
+#        $self->DELETE($key);
+#        return;
+#    }
     
     # Check if the proposed value is valid, and store if it is.
     # (Validating also de-taints the value, if it's valid)
-    if ($value = $self->_validate($key, $value)) {
+    $value = $self->{object}->_validate($key, $value);
+    if (defined($value)) {
         $self->{payload}->{$key} = $value;
     }
     else {
@@ -563,7 +585,7 @@ sub CLEAR {
 
 sub EXISTS {
     my ($self, $key) = @_;
-    return 1 if exists($self->keys()->{$key});
+    return 1 if exists($self->{object}->keys()->{$key});
     return 0;
 }
 
