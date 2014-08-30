@@ -18,7 +18,7 @@ particular number has been reserved for them.
 * 10-series tests: Proper handling of basic payload data types
 
     *?10-string: Tests against the String and Identifier types.
-    *?11-number: Tests against the Number type.
+    * 11-number: Tests against the Number type.
     *?12-data: Tests against the Data type.
     *?13-bool: Tests against the Boolean type.
     *?14-dict: Tests against the Dict type.
