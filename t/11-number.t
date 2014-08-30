@@ -91,10 +91,10 @@ plan tests => scalar(@baddies) + 3*scalar(@numbers);
 foreach my $number (@numbers) {
     my $object = new Local::Number;
     my $payload = $object->payload;
-    ok('$payload->{numberField} = $number', "Write number $number");
-    my $read_number;
-    ok('$read_number = $payload->{numberField}', 'Read number back');
-    cmp_ok($number, '==', $read_number, 'Compare numbers');
+    lives_ok {$payload->{numberField} = $number} "Write number $number";
+    my $read_number = $payload->{numberField};
+    ok(defined($read_number), 'Read number back');
+    cmp_ok($read_number, '==', $number, 'Compare numbers');
 }
 
 # Make sure all of the not-numbers fail
