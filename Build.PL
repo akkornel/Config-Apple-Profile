@@ -17,6 +17,7 @@ my $builder = Module::Build->new(
         'Module::Build'          => 0,
     },
     build_requires => {
+        'Test::Exception'        => 0,
         'Test::More'             => 0,
         'Module::Signature'      => 0,
     },
