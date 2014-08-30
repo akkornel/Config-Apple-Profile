@@ -259,6 +259,9 @@ Thrown if the payload key referenced is unknown.
 B<NOTE:>  An exception will B<not> be thrown if the value is found to be
 invalid.  This is intentional!
 
+B<NOTE:>  To test the result of this method, you should use C<defined>,
+because it's possible for a valid value to be false (for example, 0)!
+
 =cut
 
 sub _validate {
