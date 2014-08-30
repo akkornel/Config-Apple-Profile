@@ -32,6 +32,7 @@ my $builder = Module::Build->new(
 #        'namespace::autoclean'   => 0,
         'Readonly'               => 0,
         'Regexp::Common'         => 0,
+        'Scalar::Util'           => 0,
     },
     add_to_cleanup     => [ 'XML-AppleConfigProfile-*' ],
     create_makefile_pl => 'traditional',
