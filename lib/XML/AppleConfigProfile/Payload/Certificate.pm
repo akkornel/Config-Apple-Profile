@@ -9,8 +9,8 @@ use warnings FATAL => 'all';
 use base qw(XML::AppleConfigProfile::Payload::Common);
 
 use Readonly;
+use XML::AppleConfigProfile::Payload::Common;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
-
 
 =head1 NAME
 

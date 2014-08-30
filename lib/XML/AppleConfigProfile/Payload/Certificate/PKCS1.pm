@@ -9,6 +9,7 @@ use warnings FATAL => 'all';
 use base qw(XML::AppleConfigProfile::Payload::Common::Certificate);
 
 use Readonly;
+use XML::AppleConfigProfile::Payload::Common::Certificate;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 
 
