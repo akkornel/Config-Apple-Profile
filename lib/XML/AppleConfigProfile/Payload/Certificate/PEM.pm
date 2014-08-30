@@ -6,10 +6,10 @@ package XML::AppleConfigProfile::Payload::Certificate::PEM;
 use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
-use base qw(XML::AppleConfigProfile::Payload::Common::Certificate);
+use base qw(XML::AppleConfigProfile::Payload::Certificate);
 
 use Readonly;
-use XML::AppleConfigProfile::Payload::Common::Certificate;
+use XML::AppleConfigProfile::Payload::Certificate;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 
 
