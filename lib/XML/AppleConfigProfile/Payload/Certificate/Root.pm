@@ -72,7 +72,7 @@ This is fixed to the value C<1>.
 
 Readonly our %payloadKeys => (
     # Bring in the certificate keys...
-    %XML::AppleConfigProfile::Payload::Common::Certificate::payloadKeys,
+    %XML::AppleConfigProfile::Payload::Certificate::payloadKeys,
     
     # Since we can't go any deeper, define the type and version!
     'PayloadType' => {
