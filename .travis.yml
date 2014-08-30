@@ -1,11 +1,13 @@
 language: perl
 perl:
-	- 5.14.4
+  - "5.14"
 before_install:
-	cpanm -n Devel::Cover::Report::Coveralls
-	cpanm -n Module::Build
+  - cpanm Devel::Cover::Report::Coveralls
+  - cpanm Module::Build
+  - cpanm Test::Pod
+  - cpanm Test::Pod::Coverage
 script:
-	perl Build.PL
-	./Build installdeps
-	./Build build
-	cover -test -report coveralls
+  perl Build.PL
+  ./Build installdeps
+  ./Build build
+  cover -test -report coveralls
