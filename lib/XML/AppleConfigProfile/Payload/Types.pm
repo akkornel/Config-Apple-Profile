@@ -184,6 +184,15 @@ line strings are allowed.
 
 Readonly our $ProfileIdentifier => 22;
 
+=head2 Array of Strings (C<$ProfileArrayOfStrings>)
+
+Another convenience type.  This is similar to L</Array>, except that all array
+members must be a L</String>.  The array is accessed as an arrayref.
+
+=cut
+
+Readonly our $ProfileArrayOfStrings => 23;
+
 
 =head1 SEE ALSO
 
