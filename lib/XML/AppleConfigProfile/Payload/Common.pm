@@ -414,10 +414,11 @@ sub _validate {
         }
         
         # Have Data::GUID try to parse the input
+        # If from_any_string doesn't die, then it wored OK
         eval {
             $uuid = Data::GUID->from_any_string($value);
-            return $uuid;
-        }
+        };
+        return $uuid;
         
         # If we're here, the parsing failed, so just fall through to the end.
     } # Done checking the UUID type
