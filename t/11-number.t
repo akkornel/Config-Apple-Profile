@@ -80,6 +80,11 @@ Readonly my @baddies => (
     [qw(1 2 3)],
     {qw(1 hello 2 goodbye)},
     new File::Temp,
+    
+    # How about a few real numbers?
+    1.314159265,
+    1.5663,
+    0.2992,
 );
 
 # We'll do 3 tests for each number:

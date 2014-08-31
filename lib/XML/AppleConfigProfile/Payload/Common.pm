@@ -299,7 +299,7 @@ sub _validate {
         ##use critic
         
         # Numbers must be integers, positive or negative (or zero).
-        if ($value =~ $RE{num}{int}{-keep}) {
+        if ($value =~ /^$RE{num}{int}{-keep}$/) {
             return $1;
         }
     }
