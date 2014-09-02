@@ -286,7 +286,7 @@ sub _validate {
         ##use critic
         
         # Empty strings aren't allowed, either.
-        if ($value =~ m/^(.$)$/s) {
+        if ($value =~ m/^(.+)$/s) {
             return $1;
         }
     }
