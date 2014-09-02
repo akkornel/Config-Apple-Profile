@@ -381,10 +381,12 @@ sub _validate {
         ##use critic
         
         # Empty strings aren't allowed, either.
-        if ($value =~ m/^(.$)$/s) {
+        if ($value =~ m/^(.+)$/s) {
             my $matched_string = $1;
             # Identifiers are one-line strings
-            if ($matched_string !~ m/\n/s) {
+            if (   ($matched_string !~ m/\n/s)
+                && ($matched_string =~ m/^$RE{net}{domain}{-nospace}$/)
+            ) {
                 return $matched_string;
             }
         }
