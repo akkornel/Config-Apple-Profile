@@ -173,12 +173,10 @@ Readonly our $ProfileUUID => 21;
 
 This is another convenience type.  All payloads require an identifier,
 which is a reverse-DNS-style (Java-style) string.  If the client does not
-specify an identifier, then one will be lazily auto-generated.  If the client
-specifies an identifier starting with a dot (such as 'C<.VPNconfig>'), the
-parent's identifier will be lazily prepended.
+specify an identifier, then one will be lazily auto-generated.
 
-The checks for the C<String> type are performed here, except that only single-
-line strings are allowed.
+See RFC 1035 for the standard relating to host and domain names, but please note
+that spaces are I<not> acceptable here, even though they may be in RFC 1035.
 
 =cut
 
