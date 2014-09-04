@@ -4,6 +4,8 @@ use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
 
+use Exporter::Easiest q(OK => $VERSION);
+
 our $VERSION = '0.00_001';
 
 =head1 NAME

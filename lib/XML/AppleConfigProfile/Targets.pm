@@ -4,6 +4,9 @@ use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
 
+use XML::AppleConfigProfile;
+our $VERSION = $XML::AppleConfigProfile::VERSION;
+
 use Exporter::Easy (
     OK => [qw(
         $TargetIOS $TargetMACOSX
