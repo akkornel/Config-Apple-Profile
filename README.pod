@@ -1,0 +1,83 @@
+=pod
+
+=head1 XML-AppleConfigProfile: Make Apple Configuration Profiles in Perl
+
+Text goes here!
+
+=head2 Installation
+
+Installing the distribution is fairly straightforward.  This release uses
+C<Module::Build>, so installation can be completed by running four commands:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+This release relies on a number of dependencies, but they should be easy to
+install:
+
+=over 4
+
+=item *
+
+Data::GUID
+
+=item *
+
+Exporter::Easy
+
+=item *
+
+Mac::PropertyList
+
+=item *
+
+Readonly
+
+B<NOTE:> C<Readonly::XS> is not required, nor is it even necessary any more.
+
+=item *
+
+Regexp::Common
+
+=back
+
+=head2 Documentation
+
+All of the Perl modules have POD embedded throughout.  To get the documentation
+on a particular module, you can use C<perldoc> after installation, for example:
+
+    perldoc XML::AppleConfigProfile
+
+The documentation in C<XML::AppleConfigProfile> is a good place for new clients
+to start reading.
+
+Documentation can also be found on CPAN at
+L<http://search.cpan.org/search?query=XML&mode=module>.
+
+Your code editor probably also has some way of easily accessing module docs.
+
+=head2 Issues
+
+The repository for this software is Github.  You can find us here:
+
+L<http://github.com/akkornel/XML-AppleConfigProfile>
+
+If you have a bug, it should be reported on the Github issue tracker, here:
+
+L<https://github.com/akkornel/XML-AppleConfigProfile/issues>
+
+Contributions are welcome!  At the very least, git-generated patches are needed,
+and Github pull requests are preferred, especially if your contribution is
+closing one or more existing issues!
+
+=head2 Copyright and License
+
+This release is copyright © 2014 A. Karl Kornel
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See L<http://dev.perl.org/licenses/> for more information.
