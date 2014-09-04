@@ -257,6 +257,10 @@ foreach my $guid_group (@tests) {
     undef $object;
     undef $payload;
     undef $read_guid;
+    
+    # TODO: Create Data::UUID object and use that for testing
+    
+    # TODO: Create base64-encoded version and use that for testing
 }
 
 
