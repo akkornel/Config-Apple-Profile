@@ -212,7 +212,7 @@ sub plist {
             || ($type == $ProfileIdentifier)
         ) {
             $value = Mac::PropertyList::string->new(
-                Encode::encode($value, 'UTF-8')
+                Encode::encode('UTF-8', $value)
             );
         }
         
@@ -239,7 +239,7 @@ sub plist {
         # UUIDs are converted to strings, then processed as such
         elsif ($type == $ProfileUUID) {
             $value = Mac::PropertyList::string->new(
-                Encode::encode($value->as_string, 'UTF-8')
+                Encode::encode('UTF-8', $value->as_string())
             );
         }
         
