@@ -11,6 +11,8 @@ use XML::AppleConfigProfile;
 our $VERSION = $XML::AppleConfigProfile::VERSION;
 
 use Data::GUID;
+use Encode;
+use Mac::PropertyList;
 use Readonly;
 use Regexp::Common;
 use Scalar::Util;
@@ -180,7 +182,64 @@ payload for an iOS profile.
 
 sub plist {
     my ($self) = @_;
-    ...
+    
+    # Prepare a hash that will be turned into the dictionary
+    my %dict;
+    
+    # Go through each key that could exist, and skip the ones that are undef.
+    Readonly my $keys => $self->keys();
+    Readonly my $payload => $self->payload();
+    foreach my $key (CORE::keys($keys)) {
+        next unless defined($payload->{$key});
+        
+        # Look up the key type, and act based on that
+        # Also, grab the raw value, and replace it with its plist element
+        Readonly my $type => $keys->{$key}->{type};
+        my $value = $payload->{$key};
+        
+        # Strings need to be encoded as UTF-8 before export
+        if (   ($type == $ProfileString)
+            || ($type == $ProfileIdentifier)
+        ) {
+            $value = Mac::PropertyList::string->new(
+                Encode::encode($value, 'UTF-8')
+            );
+        }
+        
+        # Numbers are easy
+        elsif ($type == $ProfileNumber) {
+            $value = Mac::PropertyList::integer->new($value);
+        }
+        
+        # All data is Base64-encoded for us by Mac::PropertyList
+        elsif ($type == $ProfileData) {
+            $value = Mac::PropertyList::data->new($value);
+        }
+        
+        # There are separate objects for true/false booleans
+        elsif ($type == $ProfileBool) {
+            if ($value) {
+                $value = Mac::PropertyList::true->new;
+            }
+            else {
+                $value = Mac::PropertyList::false->new;
+            }
+        }
+        
+        # UUIDs are converted to strings, then processed as such
+        elsif ($type == $ProfileUUID) {
+            $value = Mac::PropertyList::string->new(
+                Encode::encode($value->as_string, 'UTF-8')
+            );
+        }
+        
+        # Now that we have a $value object, add it to the dictionary hash
+        $dict{$key} = $value;
+    } # Done going through each payload key
+    
+    # Now that we have a populated $dict, make our final plist object!
+    my $plist = Mac::PropertyList::dict->new(\%dict);
+    return $plist;
 }
 
 
