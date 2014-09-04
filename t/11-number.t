@@ -91,16 +91,23 @@ Readonly my @baddies => (
 #  * Write the number into the field without errors.
 #  * Read the number from the field without errors.
 #  * Have the read number equal what was written.
-plan tests => scalar(@baddies) + 3*scalar(@numbers);
+plan tests => scalar(@baddies) + 5*scalar(@numbers);
 
 # Test all of the numbers that should be good.
 foreach my $number (@numbers) {
+    
+    # Make sure the object works properly
     my $object = new Local::Number;
     my $payload = $object->payload;
     lives_ok {$payload->{numberField} = $number} "Write number $number";
     my $read_number = $payload->{numberField};
     ok(defined($read_number), 'Read number back');
     cmp_ok($read_number, '==', $number, 'Compare numbers');
+    
+    # Make sure we get a correct plist out
+    my $plist;
+    lives_ok {$plist = $object->plist} 'Convert to plist';
+    cmp_ok($plist->value->{numberField}->value, '==', $number, 'plist number matches');
 }
 
 # Make sure all of the not-numbers fail
