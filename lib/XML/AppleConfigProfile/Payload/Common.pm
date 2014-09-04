@@ -154,9 +154,19 @@ sub payload {
 
 Return a copy of this payload, represented as a L<Mac::Propertylist> object.
 All strings will be in UTF-8, and all Data entries will be Base64-encoded.
+This method is used when assembling payloads into a profile.
 
-This method is used when assembling payloads into a profile.  Most clients will
-want to use L<string> instead.
+There are two ways to get string output from the plist object:
+
+    # First, get your plist object from the payload
+    my $plist = $payload->plist();
+    
+    # If you just want the <dict> XML element and its contents, do this...
+    my $dict_element = $plist->write;
+    
+    # If you want the complete XML plist, with headers, do this...
+    use Mac::PropertyList;
+    my $complete_plist = Mac::PropertyList::plist_as_string($plist);
 
 If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
 then this will be taken into account.  If a target is not specified, then all
@@ -241,45 +251,6 @@ sub plist {
     my $plist = Mac::PropertyList::dict->new(\%dict);
     return $plist;
 }
-
-
-=head2 string([C<target>])
-
-Return a copy of this payload, represented as a UTF-8 string.
-
-This method may be of most interest to clients that are putting together their
-own profile.
-
-If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
-then this will be taken into account.  If a target is not specified, then all
-set keys will be exported. 
-
-The following exceptions may be thrown:
-
-=over 4
-
-=item XML::AppleConfigProfile::Payload::Common::PayloadIncomplete
-
-Thrown if a required key has not been set.
-
-=item XML::AppleConfigProfile::Payload::Common::PayloadTarget
-
-Thrown if a payload is being exported to a target that simply does not support
-it.  For example, this would be thrown if attempting to export a I<FileVault>
-payload for an iOS profile.
-
-=back
-
-=cut
-
-sub string {
-    my ($self) = @_;
-    
-    # Mac::PropertyList can give us a string, so we'll just defer to that!
-    # All of our exceptions will be thrown by the call to plist().
-    return $self->plist()->write();
-}
-
 
 =head2 exportable([C<target>])
 
