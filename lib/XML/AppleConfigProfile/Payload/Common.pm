@@ -11,10 +11,9 @@ use Data::GUID;
 use Readonly;
 use Regexp::Common;
 use Scalar::Util;
-use Tie::Hash; # Also gives us Tie::StdHash
+use XML::AppleConfigProfile::Payload::Tie::Root;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 use XML::AppleConfigProfile::Targets qw(:all);
-
 
 
 =head1 NAME
@@ -69,7 +68,7 @@ sub new {
     
     # Now that have the object, we can tie up the hash.  YES, this will create
     # a circular reference, which TIEHASH will deal with.
-    tie %payload, 'XML::AppleConfigProfile::Payload::Common::PayloadStorage', $object;
+    tie %payload, 'XML::AppleConfigProfile::Payload::Tie::Root', $object;
     
     # Return the prepared object!
     return $object;    
@@ -512,108 +511,6 @@ Readonly our %payloadKeys => (
             optional => 1,
         },
 );  # End of %payloadKeys
-
-
-package XML::AppleConfigProfile::Payload::Common::PayloadStorage;
-
-# All internal stuff goes here
-
-sub TIEHASH {
-    my ($class, $object_ref) = @_;
-    
-    # $object_ref points to our containing object.  In other words, $object_ref,
-    # if de-referenced, would give us our instance of this class.
-    # Using $object_ref around like this does, I believe, create a circular
-    # reference, which we need to break.
-    Scalar::Util::weaken($object_ref);
-    
-    # Construct our object.  We need a hash for the payload, and we'll also
-    # bring along the reference to our containing instance.
-    # Our class name is made-up, to keep clients from doing weird stuff.
-    return bless {
-        payload => {},
-        object => $object_ref,
-    }, "$class";
-}
-
-
-sub FETCH {
-    my ($self, $key) = @_;
-    
-    # Our EXISTS check returns true if the key is a valid payload key name.
-    # Therefore, we need to do our own exists check, and possible return undef.
-    if (exists $self->{payload}->{$key}) {
-        return $self->{payload}->{$key};
-    }
-    else {
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef;
-        ## use critic
-    }
-}
-
-
-sub STORE {
-    my ($self, $key, $value) = @_;
-    
-    # If we are setting to undef, then just drop the key.
-#    if (!defined $value) {
-#        $self->DELETE($key);
-#        return;
-#    }
-    
-    # Check if the proposed value is valid, and store if it is.
-    # (Validating also de-taints the value, if it's valid)
-    $value = $self->{object}->_validate($key, $value);
-    if (defined($value)) {
-        $self->{payload}->{$key} = $value;
-    }
-    else {
-        die('Invalid value for key');
-    }
-}
-
-
-sub DELETE {
-    my ($self, $key) = @_;
-    delete $self->{payload}->{$key};
-}
-
-
-sub CLEAR {
-    my ($self) = @_;
-    # The CLEAR method implemented in Tie::Hash uses calls to $self
-    # (specifically, calls to FIRSTKEY, NEXTKEY, and DELETE), so let's just
-    # call that code instead of reimplementing it!
-    Tie::Hash::CLEAR($self);
-}
-
-
-sub EXISTS {
-    my ($self, $key) = @_;
-    return 1 if exists($self->{object}->keys()->{$key});
-    return 0;
-}
-
-
-sub FIRSTKEY {
-    my ($self) = @_;
-    # We can use the code from Tie::StdHash::FIRSTKEY, instead of rewriting it.
-    return Tie::StdHash::FIRSTKEY($self->{payload});
-}
-
-
-sub NEXTKEY {
-    my ($self, $previous) = @_;
-    # We can use the code from Tie::StdHash::NEXTKEY, instead of rewriting it.
-    return Tie::StdHash::NEXTKEY($self->{payload});
-}
-
-
-sub SCALAR {
-    my ($self) = @_;
-    return scalar %{$self->{payload}};
-}
 
 
 =head1 DEVELOPER NOTES
