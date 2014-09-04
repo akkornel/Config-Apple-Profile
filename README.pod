@@ -2,7 +2,43 @@
 
 =head1 XML-AppleConfigProfile: Make Apple Configuration Profiles in Perl
 
-Text goes here!
+Apple provides users with a way to configure Apple devices (running iOS or Mac
+OS X) using ready-made configuration files, which Apple calls
+B<Configuration Profiles>.  This suite of Perl modules is intended to aid
+people who would like to generate their own configuration profiles, without
+having to mess around with the XML themselves.
+
+Configuration profiles can be used by iOS and Mac OS X to set a number of
+general and user-specific items.  Examples include:
+
+=over 4
+
+=item *
+
+Configuring an LDAP server, for directory search in Mail and Contacts.
+
+=item *
+
+Specifying password requirements to match company policy (and common sense).
+
+=item *
+
+Configuring an email account, with or without a user's credentials.
+
+=item *
+
+Adding new certificate authorities.
+
+=back
+
+Configuration profiles can be pre-made static files, or they can be
+dynamically-generated with configurations (such as usernames and passwords)
+that are specific to a user.  Configuration profiles may be encrypted (so they
+may only be read on a specific device) and signed (to verify that they have not
+been modified by anyone other than the profile's creator).
+
+Much more information is available in the POD-format documentation embedded in
+each module. 
 
 =head2 Installation
 
