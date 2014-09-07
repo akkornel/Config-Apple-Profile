@@ -54,7 +54,7 @@ Readonly my @IDs => (
     'ThisIsALongHostNameButItShouldBeOK.good',
 );
 
-# @baddies is a list of things that are not numbers, and should fail
+# @baddies is a list of things that are not strings, and should fail
 Readonly my @baddies => (
     # Yes, undef is an entry here:
     undef,
