@@ -521,27 +521,47 @@ Readonly our %payloadKeys => (
             type => $ProfileIdentifier,
             description => ('A Java-style reversed-domain-name identifier for'
             . 'this payload.'),
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             unique => 1,
         },
     'PayloadUUID' => {
             type => $ProfileUUID,
             description => 'A GUID for this payload.',
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             unique => 1,
         },
     'PayloadDisplayName' => {
             type => $ProfileString,
             description => ('A short string that the user will see when '
             . 'installing the profile.'),
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             optional => 1,
         },
     'PayloadDescription' => {
             type => $ProfileString,
             description => "A longer description of the payload's purpose.",
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             optional => 1,
         },
     'PayloadOrganization' => {
             type => $ProfileString,
             description => "The name of the payload's creator.",
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             optional => 1,
         },
 );  # End of %payloadKeys

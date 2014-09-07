@@ -12,6 +12,7 @@ use XML::AppleConfigProfile;
 our $VERSION = $XML::AppleConfigProfile::VERSION;
 
 use Readonly;
+use XML::AppleConfigProfile::Targets qw(:all);
 use XML::AppleConfigProfile::Payload::Certificate;
 use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber $ProfileString);
 
@@ -84,6 +85,10 @@ Readonly our %payloadKeys => (
     'Password' => {
         type => $ProfileString,
         description => 'The password used to decrypt the file.',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
         optional => 1,
         private => 1,
     },
@@ -91,10 +96,18 @@ Readonly our %payloadKeys => (
     # Since we can't go any deeper, define the type and version!
     'PayloadType' => {
         type => $ProfileString,
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
         value => 'com.apple.security.pkcs12',
     },
     'PayloadVersion' => {
         type => $ProfileNumber,
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
         value => 1,
     },
 );  # End of %payloadKeys
