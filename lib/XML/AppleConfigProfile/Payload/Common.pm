@@ -17,6 +17,7 @@ use Readonly;
 use Regexp::Common;
 use Scalar::Util;
 use Tie::Hash; # Also gives us Tie::StdHash
+use Try::Tiny;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 use XML::AppleConfigProfile::Targets qw(:all);
 
@@ -320,8 +321,24 @@ sub _validate {
         
         # Empty strings aren't allowed, either.
         if ($value =~ m/^(.+)$/s) {
-            return $1;
+            $value = $1;
+            
         }
+        else {
+            ## no critic (ProhibitExplicitReturnUndef)
+            return undef;
+            ##use critic
+        }
+        
+        # Try to encode as UTF-8, to make sure it's safe
+        try {
+            encode('UTF-8', $value, Encode::FB_CROAK | Encode::LEAVE_SRC);
+        }
+        catch {
+            $value = undef;
+        };
+        
+        return $value;
     }
     
     # We recognize Number types

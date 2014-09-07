@@ -53,7 +53,8 @@ not allow this.  Empty strings are B<not> allowed.
 
 B<NOTE:>  If your source data was not ASCII, and not UTF-8, then please make
 sure you have converted it before doing anything else!  "converted it" normally
-means using the C<Encode> module to convert from the original encoding. 
+means using the C<Encode> module to convert from the original encoding.  Your
+string will not be valid unless it can be encoded as UTF-8.
 
 =cut
 
