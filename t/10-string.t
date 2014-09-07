@@ -88,7 +88,7 @@ Readonly my @bad_IDs => (
 #  * We can make sure that all IDs are acceptable as strings.
 #  * Make sure obvious non-strings/non-IDs fail.
 #  * We can also test for strings that aren't IDs.
-plan tests => 0 + 4*scalar(@IDs) + 2*scalar(@baddies) + 3*scalar(@bad_IDs);
+plan tests => 0 + 7*scalar(@IDs) + 2*scalar(@baddies) + 5*scalar(@bad_IDs);
 
 # Test all of the numbers that should be good.
 #foreach my $number (@numbers) {
@@ -110,6 +110,16 @@ foreach my $ID (@IDs) {
     lives_ok { $payload->{IDField} = $ID; } '... as an ID';
     $read_item = $payload->{IDField};
     cmp_ok($read_item, 'eq', $ID, 'Compare IDs');
+    
+    # Make sure we get a correct plist out
+    my $plist;
+    lives_ok {$plist = $object->plist} 'Convert to plist';
+    cmp_ok($plist->value->{stringField}->value, 'eq',
+           $payload->{stringField}, 'test string field'
+    );
+    cmp_ok($plist->value->{IDField}->value, 'eq',
+           $payload->{IDField}, 'test ID field'
+    );
 }
 
 # Make sure all of the not-strings not-identifiers fail
@@ -128,6 +138,13 @@ foreach my $not_ID (@bad_IDs) {
     my $read_item = $payload->{stringField};
     cmp_ok($read_item, 'eq', $not_ID, '... works OK as a String');
     dies_ok { $payload->{IDField} = $not_ID; } '... but not as an ID';
+    
+    # Make sure we get a correct plist out
+    my $plist;
+    lives_ok {$plist = $object->plist} 'Convert to plist';
+    cmp_ok($plist->value->{stringField}->value, 'eq',
+           $payload->{stringField}, 'test string field'
+    );
 }
 
 # Done!
