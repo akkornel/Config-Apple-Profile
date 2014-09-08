@@ -17,6 +17,7 @@ use warnings FATAL => 'all';
 
 package Local::UUID;
 
+use File::Temp;
 use Readonly;
 use XML::AppleConfigProfile::Payload::Common;
 use XML::AppleConfigProfile::Payload::Types qw($ProfileUUID);
@@ -198,6 +199,25 @@ Readonly my @tests => (
 );
 
 
+# Here are some things that are definitely not UUIDs (or even GUIDs!)
+Readonly my @baddies => (
+    # Undef is wrong
+    undef,
+    
+    # Numbers are wrong
+    1,
+    -1,
+    3.14159265,
+    
+    # Almost all strings are wrong
+    '',
+    'Karl is awesome!',
+    
+    # Almost all objects are wrong!
+    new File::Temp,
+);
+
+
 # For each GUID, 
 #  * Make 2 Data::GUID objects, one from each string (normal and hex)
 #  * Compare the two objects for equality.
@@ -205,7 +225,7 @@ Readonly my @tests => (
 #  * Read the payload back, and make sure nothing was changed.
 #  * Write in a string to the payload; make sure it reads & compares OK.
 #  * Write in hex to the payload; make sure it reads & compares OK.
-plan tests => (1+3+3+3+2)*scalar(@tests);
+plan tests => (1+3+3+3+2)*scalar(@tests) + scalar(@baddies);
 
 # Test all of the numbers that should be good.
 foreach my $guid_group (@tests) {
@@ -270,6 +290,19 @@ foreach my $guid_group (@tests) {
     cmp_ok($plist->value->{uniqueField}->value, 'eq',
            $payload->{uniqueField}->as_string, 'plist uuid matches'
     );
+}
+
+
+# Make sure each of the baddies fails to process
+my $i = 1;
+foreach my $baddie (@baddies) {
+    my $object = new Local::UUID;
+    my $payload = $object->payload;
+    
+    # Make sure every method of reading fails
+    dies_ok {$payload->{uniqueField} = $baddie} "Non-UUID $i";
+    
+    $i++;
 }
 
 
