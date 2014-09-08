@@ -4,13 +4,16 @@ use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
 
+use XML::AppleConfigProfile;
+our $VERSION = $XML::AppleConfigProfile::VERSION;
+
 use Exporter::Easy (
     OK => [qw(
         $TargetIOS $TargetMACOSX
     )],
     TAGS => [
         'all' => [qw(
-          $TargetIOS $TargetMACOSX
+            $TargetIOS $TargetMACOSX
         )],
     ],
 );
@@ -19,7 +22,7 @@ use Readonly;
 
 =head1 NAME
 
-C<XML::AppleConfigProfile::Targets> - Data types for payload keys
+C<XML::AppleConfigProfile::Targets> - Constants for payload targets
 
 =head1 DESCRIPTION
 
@@ -50,7 +53,7 @@ Apple's Mac OS X.  In general, at least OS X version 10.7 is required.
 
 =cut
 
-Readonly our $TargetOSX => 2;
+Readonly our $TargetMACOSX => 2;
 
 
 =head1 ACKNOWLEDGEMENTS

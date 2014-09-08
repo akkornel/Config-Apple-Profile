@@ -8,7 +8,11 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(XML::AppleConfigProfile::Payload::Certificate);
 
+use XML::AppleConfigProfile;
+our $VERSION = $XML::AppleConfigProfile::VERSION;
+
 use Readonly;
+use XML::AppleConfigProfile::Targets qw(:all);
 use XML::AppleConfigProfile::Payload::Certificate;
 use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber $ProfileString);
 
@@ -77,6 +81,10 @@ Readonly our %payloadKeys => (
     # Since we can't go any deeper, define the type and version!
     'PayloadType' => {
         type => $ProfileString,
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
         value => 'com.apple.security.pkcs1',
     },
     'PayloadVersion' => {

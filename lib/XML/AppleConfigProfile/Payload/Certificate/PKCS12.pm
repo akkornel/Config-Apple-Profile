@@ -8,7 +8,11 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(XML::AppleConfigProfile::Payload::Certificate);
 
+use XML::AppleConfigProfile;
+our $VERSION = $XML::AppleConfigProfile::VERSION;
+
 use Readonly;
+use XML::AppleConfigProfile::Targets qw(:all);
 use XML::AppleConfigProfile::Payload::Certificate;
 use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber $ProfileString);
 
@@ -45,8 +49,9 @@ This class implements the PKCS12 type of Certificate payload.
 This payload contains a single certificate, and the certificate's private key,
 in a PKCS#12 container.  The container is encrypted with a password.
 
-This payload is used to hold B<only one> certificate.  If you have an
-intermediate certificate, use multiple payloads.
+This payload is used to hold B<only one> certificate.  If you have any
+intermediate certificates, you will need to use a second Certificate payload
+(either a PEM or a PKCS1) to hold each intermediate certificate.
 
 
 =head1 PAYLOAD KEYS
@@ -81,6 +86,10 @@ Readonly our %payloadKeys => (
     'Password' => {
         type => $ProfileString,
         description => 'The password used to decrypt the file.',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
         optional => 1,
         private => 1,
     },
@@ -88,10 +97,18 @@ Readonly our %payloadKeys => (
     # Since we can't go any deeper, define the type and version!
     'PayloadType' => {
         type => $ProfileString,
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
         value => 'com.apple.security.pkcs12',
     },
     'PayloadVersion' => {
         type => $ProfileNumber,
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
         value => 1,
     },
 );  # End of %payloadKeys

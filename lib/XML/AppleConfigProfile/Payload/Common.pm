@@ -7,10 +7,17 @@ use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
 
+use XML::AppleConfigProfile;
+our $VERSION = $XML::AppleConfigProfile::VERSION;
+
 use Data::GUID;
+use Encode;
+use Mac::PropertyList;
 use Readonly;
 use Regexp::Common;
 use Scalar::Util;
+use Tie::Hash; # Also gives us Tie::StdHash
+use Try::Tiny;
 use XML::AppleConfigProfile::Payload::Tie::Root;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 use XML::AppleConfigProfile::Targets qw(:all);
@@ -144,31 +151,64 @@ sub payload {
 }
 
 
-=head2 plist([C<target>])
+=head2 plist([C<option1_name> => C<option1_value>, ...])
 
 Return a copy of this payload, represented as a L<Mac::Propertylist> object.
 All strings will be in UTF-8, and all Data entries will be Base64-encoded.
+This method is used when assembling payloads into a profile.
 
-This method is used when assembling payloads into a profile.  Most clients will
-want to use L<string> instead.
+There are two ways to get string output from the plist object:
+
+    # First, get your plist object from the payload
+    my $plist = $payload->plist();
+    
+    # If you just want the <dict> XML element and its contents, do this...
+    my $dict_element = $plist->write;
+    
+    # If you want the complete XML plist, with headers, do this...
+    use Mac::PropertyList;
+    my $complete_plist = Mac::PropertyList::plist_as_string($plist);
+
+Several options can be provided, which will influence how this method runs.
+
+=over 4
+
+=item target
 
 If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
-then this will be taken into account.  If a target is not specified, then all
-set keys will be exported. 
+then this will be taken into account when exporting.  Only payload keys that
+are used on the specified target will be included in the output.
+
+The C<completeness> option controls what happens if keys are excluded.
+
+=item version
+
+If C<version> (a version string) is provided, then only payload keys that work
+on the specified version will be included in the output.  
+
+The C<completeness> option controls what happens if keys are excluded.
+
+=item completeness
+
+If C<completeness> is set to a true value, and keys are excluded because of
+C<target> or C<version>, then C<plist> will throw an exception.  If set to a
+false value, or if not set at all, then no exceptions will be thrown, and a
+less-than-complete (but still valid) plist will be returned.
+
+=back
 
 The following exceptions may be thrown:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::PayloadIncomplete
+=item XML::AppleConfigProfile::Exception::KeyRequired
 
 Thrown if a required key has not been set.
 
-=item XML::AppleConfigProfile::Payload::Common::PayloadTarget
+=item XML::AppleConfigProfile::Exception::Incomplete
 
-Thrown if a payload is being exported to a target that simply does not support
-it.  For example, this would be thrown if attempting to export a I<FileVault>
-payload for an iOS profile.
+Thrown if payload keys are being excluded from the output because of C<target>
+or C<version>.
 
 =back
 
@@ -176,47 +216,65 @@ payload for an iOS profile.
 
 sub plist {
     my ($self) = @_;
-    ...
-}
-
-
-=head2 string([C<target>])
-
-Return a copy of this payload, represented as a UTF-8 string.
-
-This method may be of most interest to clients that are putting together their
-own profile.
-
-If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
-then this will be taken into account.  If a target is not specified, then all
-set keys will be exported. 
-
-The following exceptions may be thrown:
-
-=over 4
-
-=item XML::AppleConfigProfile::Payload::Common::PayloadIncomplete
-
-Thrown if a required key has not been set.
-
-=item XML::AppleConfigProfile::Payload::Common::PayloadTarget
-
-Thrown if a payload is being exported to a target that simply does not support
-it.  For example, this would be thrown if attempting to export a I<FileVault>
-payload for an iOS profile.
-
-=back
-
-=cut
-
-sub string {
-    my ($self) = @_;
     
-    # Mac::PropertyList can give us a string, so we'll just defer to that!
-    # All of our exceptions will be thrown by the call to plist().
-    return $self->plist()->write();
+    # Prepare a hash that will be turned into the dictionary
+    my %dict;
+    
+    # Go through each key that could exist, and skip the ones that are undef.
+    Readonly my $keys => $self->keys();
+    Readonly my $payload => $self->payload();
+    foreach my $key (CORE::keys($keys)) {
+        next unless defined($payload->{$key});
+        
+        # Look up the key type, and act based on that
+        # Also, grab the raw value, and replace it with its plist element
+        Readonly my $type => $keys->{$key}->{type};
+        my $value = $payload->{$key};
+        
+        # Strings need to be encoded as UTF-8 before export
+        if (   ($type == $ProfileString)
+            || ($type == $ProfileIdentifier)
+        ) {
+            $value = Mac::PropertyList::string->new(
+                Encode::encode('UTF-8', $value)
+            );
+        }
+        
+        # Numbers are easy
+        elsif ($type == $ProfileNumber) {
+            $value = Mac::PropertyList::integer->new($value);
+        }
+        
+        # All data is Base64-encoded for us by Mac::PropertyList
+        elsif ($type == $ProfileData) {
+            $value = Mac::PropertyList::data->new($value);
+        }
+        
+        # There are separate objects for true/false booleans
+        elsif ($type == $ProfileBool) {
+            if ($value) {
+                $value = Mac::PropertyList::true->new;
+            }
+            else {
+                $value = Mac::PropertyList::false->new;
+            }
+        }
+        
+        # UUIDs are converted to strings, then processed as such
+        elsif ($type == $ProfileUUID) {
+            $value = Mac::PropertyList::string->new(
+                Encode::encode('UTF-8', $value->as_string())
+            );
+        }
+        
+        # Now that we have a $value object, add it to the dictionary hash
+        $dict{$key} = $value;
+    } # Done going through each payload key
+    
+    # Now that we have a populated $dict, make our final plist object!
+    my $plist = Mac::PropertyList::dict->new(\%dict);
+    return $plist;
 }
-
 
 =head2 exportable([C<target>])
 
@@ -286,8 +344,24 @@ sub _validate {
         
         # Empty strings aren't allowed, either.
         if ($value =~ m/^(.+)$/s) {
-            return $1;
+            $value = $1;
+            
         }
+        else {
+            ## no critic (ProhibitExplicitReturnUndef)
+            return undef;
+            ##use critic
+        }
+        
+        # Try to encode as UTF-8, to make sure it's safe
+        try {
+            encode('UTF-8', $value, Encode::FB_CROAK | Encode::LEAVE_SRC);
+        }
+        catch {
+            $value = undef;
+        };
+        
+        return $value;
     }
     
     # We recognize Number types
@@ -487,27 +561,47 @@ Readonly our %payloadKeys => (
             type => $ProfileIdentifier,
             description => ('A Java-style reversed-domain-name identifier for'
             . 'this payload.'),
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             unique => 1,
         },
     'PayloadUUID' => {
             type => $ProfileUUID,
             description => 'A GUID for this payload.',
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             unique => 1,
         },
     'PayloadDisplayName' => {
             type => $ProfileString,
             description => ('A short string that the user will see when '
             . 'installing the profile.'),
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             optional => 1,
         },
     'PayloadDescription' => {
             type => $ProfileString,
             description => "A longer description of the payload's purpose.",
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             optional => 1,
         },
     'PayloadOrganization' => {
             type => $ProfileString,
             description => "The name of the payload's creator.",
+            targets => {
+                $TargetIOS => '5.0',
+                $TargetMACOSX => '10.7', 
+            },
             optional => 1,
         },
 );  # End of %payloadKeys

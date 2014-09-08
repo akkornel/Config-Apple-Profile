@@ -205,7 +205,7 @@ Readonly my @tests => (
 #  * Read the payload back, and make sure nothing was changed.
 #  * Write in a string to the payload; make sure it reads & compares OK.
 #  * Write in hex to the payload; make sure it reads & compares OK.
-plan tests => (1+3+3+3)*scalar(@tests);
+plan tests => (1+3+3+3+2)*scalar(@tests);
 
 # Test all of the numbers that should be good.
 foreach my $guid_group (@tests) {
@@ -248,15 +248,28 @@ foreach my $guid_group (@tests) {
     undef $read_guid;
     
     # And now, once again, but with the hex value as the payload input
+    # (This is our last payload class test, so keep $object and $payload
+    # around for plist testing)
     $object = new Local::UUID;
     $payload = $object->payload;
     lives_ok {$payload->{uniqueField} = $guid_as_hex} 'Write hex';
     $read_guid = $payload->{uniqueField};
     ok(defined($read_guid), 'Read was-hex-now-object back');
     cmp_ok($read_guid, '==', $guid_reference, 'Compare hex');
-    undef $object;
-    undef $payload;
+#    undef $object;
+#    undef $payload;
     undef $read_guid;
+    
+    # TODO: Create Data::UUID object and use that for testing
+    
+    # TODO: Create base64-encoded version and use that for testing
+    
+    # Make sure we get a correct plist out
+    my $plist;
+    lives_ok {$plist = $object->plist} 'Convert to plist';
+    cmp_ok($plist->value->{uniqueField}->value, 'eq',
+           $payload->{uniqueField}->as_string, 'plist uuid matches'
+    );
 }
 
 
