@@ -18,6 +18,7 @@ use Regexp::Common;
 use Scalar::Util;
 use Tie::Hash; # Also gives us Tie::StdHash
 use Try::Tiny;
+use version 0.77; 
 use XML::AppleConfigProfile::Payload::Tie::Root;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 use XML::AppleConfigProfile::Targets qw(:all);
@@ -169,7 +170,7 @@ There are two ways to get string output from the plist object:
     use Mac::PropertyList;
     my $complete_plist = Mac::PropertyList::plist_as_string($plist);
 
-Several options can be provided, which will influence how this method runs.
+Several parameters can be provided, which will influence how this method runs.
 
 =over 4
 
@@ -184,7 +185,10 @@ The C<completeness> option controls what happens if keys are excluded.
 =item version
 
 If C<version> (a version string) is provided, then only payload keys that work
-on the specified version will be included in the output.  
+on the specified version will be included in the output.
+
+If C<version> is provided, then C<target> must also be set, but C<target> can
+be set without setting C<version>.
 
 The C<completeness> option controls what happens if keys are excluded.
 
@@ -215,7 +219,45 @@ or C<version>.
 =cut
 
 sub plist {
-    my ($self) = @_;
+    my $self = $_[0];
+    
+    # Process parameters
+    my %params;
+    for (my $i = 1; $i < scalar(@_); $i += 2) {
+        my ($name, $value) = @_[$i,$i+1];
+        
+        # We have three parameters possible.  Process each one
+        if ($name eq 'target') {
+            unless (   ($value == $TargetIOS)
+                    || ($value == $TargetMACOSX)
+            ) {
+                die "Invalid target $value";
+            }
+            $params{target} = $value;
+        }
+        
+        elsif ($name eq 'version') {
+            try {
+                $params{version} = version->parse($value);
+            }
+            catch {
+                die "Failed to parse version $value";
+            }
+        }
+        
+        elsif ($name eq 'completeness') {
+            $params{completeness} = ($value ? 1 : 0);
+        }
+    } # Done inputting parameters
+    
+    # Catch someone setting version without setting target
+    if (   (exists $params{version})
+        && (!exists $params{target})
+    ) {
+        die "Version has been set, but no target was provided";
+    }
+    
+    # We're done with parameter processing and validation; do some work!
     
     # Prepare a hash that will be turned into the dictionary
     my %dict;
@@ -224,7 +266,43 @@ sub plist {
     Readonly my $keys => $self->keys();
     Readonly my $payload => $self->payload();
     foreach my $key (CORE::keys($keys)) {
+        # If the key isn't set, then skip it
         next unless defined($payload->{$key});
+        
+        # If target has been set, check it against the key's target
+        if (exists $params{target}) {
+            if (!exists($keys->{$key}->{targets}->{$params{target}})) {
+                # This key isn't used on this target, should we die?
+                if (   (exists($params{completeness}))
+                    && ($params{completeness})
+                ) {
+                    die "Key $key has been set, but isn't supported on this target";
+                }
+                
+                # If we're here, this key isn't used on this target, but we
+                # shouldn't die, so just skip the key.
+                next;
+            }
+            
+            # If we're here, this key is used on this target; check the version!
+            my $key_version = $keys->{$key}->{targets}->{$params{target}};
+            if (   (exists($params{version}))
+                && ($params{version} < version->parse($key_version))
+            ) {
+                # This key is too new for us, should we die?
+                if (   (exists($params{completeness}))
+                    && ($params{completeness})
+                ) {
+                    die "Key $key is only supported in newer OS versions";
+                }
+                
+                # If we're here, this key is too new for us, but we shouldn't
+                # die, so just skip the key.
+                next;
+            }
+            
+            # If we're here, then the version isn't set, or we're new enough!
+        } # Done checking target & version
         
         # Look up the key type, and act based on that
         # Also, grab the raw value, and replace it with its plist element
