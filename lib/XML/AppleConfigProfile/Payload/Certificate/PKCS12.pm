@@ -49,8 +49,9 @@ This class implements the PKCS12 type of Certificate payload.
 This payload contains a single certificate, and the certificate's private key,
 in a PKCS#12 container.  The container is encrypted with a password.
 
-This payload is used to hold B<only one> certificate.  If you have an
-intermediate certificate, use multiple payloads.
+This payload is used to hold B<only one> certificate.  If you have any
+intermediate certificates, you will need to use a second Certificate payload
+(either a PEM or a PKCS1) to hold each intermediate certificate.
 
 
 =head1 PAYLOAD KEYS
