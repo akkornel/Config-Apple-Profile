@@ -151,7 +151,7 @@ sub payload {
 }
 
 
-=head2 plist([C<target>])
+=head2 plist([C<option1_name> => C<option1_value>, ...])
 
 Return a copy of this payload, represented as a L<Mac::Propertylist> object.
 All strings will be in UTF-8, and all Data entries will be Base64-encoded.
@@ -169,23 +169,46 @@ There are two ways to get string output from the plist object:
     use Mac::PropertyList;
     my $complete_plist = Mac::PropertyList::plist_as_string($plist);
 
+Several options can be provided, which will influence how this method runs.
+
+=over 4
+
+=item target
+
 If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
-then this will be taken into account.  If a target is not specified, then all
-set keys will be exported. 
+then this will be taken into account when exporting.  Only payload keys that
+are used on the specified target will be included in the output.
+
+The C<completeness> option controls what happens if keys are excluded.
+
+=item version
+
+If C<version> (a version string) is provided, then only payload keys that work
+on the specified version will be included in the output.  
+
+The C<completeness> option controls what happens if keys are excluded.
+
+=item completeness
+
+If C<completeness> is set to a true value, and keys are excluded because of
+C<target> or C<version>, then C<plist> will throw an exception.  If set to a
+false value, or if not set at all, then no exceptions will be thrown, and a
+less-than-complete (but still valid) plist will be returned.
+
+=back
 
 The following exceptions may be thrown:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::PayloadIncomplete
+=item XML::AppleConfigProfile::Exception::KeyRequired
 
 Thrown if a required key has not been set.
 
-=item XML::AppleConfigProfile::Payload::Common::PayloadTarget
+=item XML::AppleConfigProfile::Exception::Incomplete
 
-Thrown if a payload is being exported to a target that simply does not support
-it.  For example, this would be thrown if attempting to export a I<FileVault>
-payload for an iOS profile.
+Thrown if payload keys are being excluded from the output because of C<target>
+or C<version>.
 
 =back
 
