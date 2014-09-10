@@ -37,14 +37,18 @@ my $builder = Module::Build->new(
     },
     add_to_cleanup     => [ 'XML-AppleConfigProfile-*' ],
     create_makefile_pl => 'traditional',
-    homepage       => 'https://github.com/akkornel/XML-AppleConfigProfile',
-    bugtracker     => {
-        web        => 'https://github.com/akkornel/XML-AppleConfigProfile/issues',
-    },
-    repository     => {
-        url        => 'git://github.com/akkornel/XML-AppleConfigProfile.git',
-        web        => 'https://github.com/akkornel/XML-AppleConfigProfile',
-        type       => 'git',
+    meta_merge => {
+        resources => {
+            bugtracker => [
+                'https://github.com/akkornel/XML-AppleConfigProfile/issues'
+            ],
+            repository => {
+                url  => 'git://github.com/akkornel/XML-AppleConfigProfile.git',
+                web  => 'https://github.com/akkornel/XML-AppleConfigProfile',
+                type => 'git',
+            },
+            repository => 'https://github.com/akkornel/XML-AppleConfigProfile',
+        },
     },
 );
 
