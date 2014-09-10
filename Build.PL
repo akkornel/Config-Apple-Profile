@@ -8,7 +8,7 @@ my $builder = Module::Build->new(
     abstract            => 'Create, parse, and manipulate Apple Configuration '
                            . 'Profile (.mobileconfig) files.',
     keywords            => [qw(iOS mobileconfig plist)],
-#    license             => 'perl_5',
+    license             => 'perl',
     dist_author         => q{A. Karl Kornel <karl@kornel.us>},
     dist_version_from   => 'lib/XML/AppleConfigProfile.pm',
     release_status      => 'unstable',
