@@ -5,8 +5,6 @@ use Module::Build;
 
 my $builder = Module::Build->new(
     module_name         => 'XML::AppleConfigProfile',
-    abstract            => 'Create, parse, and manipulate Apple Configuration '
-                           . 'Profile (.mobileconfig) files.',
     keywords            => [qw(iOS mobileconfig plist)],
     license             => 'perl',
     create_license      => 1,
