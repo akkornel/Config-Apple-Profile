@@ -11,6 +11,8 @@ BEGIN {
         XML::AppleConfigProfile
         XML::AppleConfigProfile::Targets
         XML::AppleConfigProfile::Payload::Common
+        XML::AppleConfigProfile::Payload::Tie::Array
+        XML::AppleConfigProfile::Payload::Tie::Root
         XML::AppleConfigProfile::Payload::Types
         XML::AppleConfigProfile::Payload::Certificate
         XML::AppleConfigProfile::Payload::Certificate::PEM
