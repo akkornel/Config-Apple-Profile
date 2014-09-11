@@ -3,43 +3,96 @@ package XML::AppleConfigProfile;
 use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
+use base qw(XML::AppleConfigProfile::Payload::Common);
 
 use Exporter::Easiest q(OK => $VERSION);
+use Readonly;
+use XML::AppleConfigProfile::Payload::Common;
+use XML::AppleConfigProfile::Payload::Types qw(:all);
+use XML::AppleConfigProfile::Targets qw(:all);
 
 our $VERSION = '0.00_001';
 
+
 =head1 NAME
 
-XML::Apple::ConfigProfile - The great new XML::Apple::ConfigProfile!
+XML::AppleConfigProfile - An OO interface to Apple Configuration Profiles.
 
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+    use File::Temp;
+    use XML::AppleConfigProfile;
+    use XML::AppleConfigProfile::Payload::Certificate::PEM;
+    use XML::AppleConfigProfile::Payload::Wireless;
 
-Perhaps a little code snippet.
+    my $cert = new XML::AppleConfigProfile::Payload::Certificate::PEM;
+    my $cert_payload = $cert->payload;
+    $cert_payload->{PayloadIdentifier} = 'com.example.group15.payload.cert';
+    $cert_payload->{PayloadCertificateFileName} = 'myCA.pem';
+    $cert_payload->{PayloadContent} = <<END;
+    ----- BEGIN CERTIFICATE -----
+    dsfkldfsbnjksjkgnndbfjkdgnjdfkgjkndfg
+    # snip
+    dgkdfgldmklbgklmd==
+    ----- END CERTIFICATE -----
+    ENDCERT
 
-    use XML::Apple::ConfigProfile;
+    my $wifi = new XML::AppleConfigProfile::Payload::Wireless;
+    my $wifi_payload = $wifi->payload;
+    $wifi_payload->{PayloadIdentifier} = 'com.example.group15.payload.wireless';
+    $wifi_payload->{SSID_STR} = 'CorpNet Public';
+    $wifi_payload->{EncryptionType} = 'None';
 
-    my $foo = XML::Apple::ConfigProfile->new();
-    ...
+    my $profile = new XML::AppleConfigProfile;
+    my $profile_payload = $profile->payload;
+    $profile_payload->{PayloadIdentifier} = 'com.example.group15.payload';
+    $profile_payload->{PayloadDisplayName} = "My Group's Profile";
+    push @{$profile_payload->{PayloadContent}}, $cert_payload, $wireless_payload;
+
+    my ($fh, $file) = tempfile('CorpConfig',
+                               SUFFIX => '.mobileconfig', UNLINK => 0);
+    print $fh $profile->export;
+    close $fh;
+    print "Configuration Profile written to $file\n";
 
 
 =head1 DESCRIPTION
 
-Apple provides organizations (be they enterprises or other) a way to configure
-Apple devices, called B<Configuration Profiles>.  A configuration profile is
-essentially a .plist file, which is XML but with a plist DOCTYPE.  The MIME
-type for a configuration profile is C<application/x-apple-aspen-config>, and
-typically use the C<.mobileconfig> file extension.
+Apple provides users with a way to configure Apple devices (running iOS or Mac
+OS X) using ready-made configuration files, which Apple calls
+B<Configuration Profiles>.  This suite of Perl modules is intended to aid
+people who would like to generate their own configuration profiles, without
+having to mess around with the XML themselves.
 
 Configuration profiles can be used by iOS and Mac OS X to set a number of
 general and user-specific items.  Examples include:
 
-* Configuring an LDAP server, for directory search in Mail and Contacts.
-* Specifying password requirements to match company policy (and common sense).
-* Configuring an email account, with or without a user's credentials.
-* Adding new certificate authorities.
+=over 4
+
+=item *
+
+Configuring an LDAP server, for directory search in Mail and Contacts.
+
+=item *
+
+Specifying password requirements to match company policy (and common sense).
+
+=item *
+
+Configuring an email account, with or without a user's credentials.
+
+=item *
+
+Adding new certificate authorities.
+
+=back
+
+Configuration profiles can be pre-made static files, or they can be
+dynamically-generated with configurations (such as usernames and passwords)
+that are specific to a user.  Configuration profiles may be encrypted (so they
+may only be read on a specific device) and signed (to verify that they have not
+been modified by anyone other than the profile's creator).
 
 A configuration profile contains one or more B<Payloads>, in addition to some
 header information.  In Perl terms, a payload can be thought of as a Hash.
@@ -55,17 +108,25 @@ I<Configuration Profile Reference> linked below.  Not all payloads are
 implemented in this release.  If you are interested in seeing more payloads
 supported, please contribute!  See the L<SOURCE> section below for more info.  
 
-Files in this release are arranged as follows:
+
+=head1 CLASS HIERARCHY
+
+Classes are laid out in the following hierarchy:
 
  XML::
-   AppleConfigProfile.pm:   <-- This file
+   AppleConfigProfile:      <-- This file
    AppleConfigProfile::
-     Profile.pm:            <-- The root of any configuration profile
-     
      Payload::              <-- All payload-related classes are in here
        Common.pm            <-- Common payload elements are here
        Certificate.pm       <-- The Certificate payload type
+       Certificate::        <-- Certificate sub-types are here
        Email.pm             <-- The Email payload type
+       Tie::                <-- Internal support code
+     Encryption.pm          <-- Profile encryption (TBI)
+     Signing.pm             <-- Profile signing (TBI)
+
+Clients need only C<use> the modules that directly provide the functionality
+they are looking for.
 
 As an example, if you want to create a configuration profile that configures an
 IMAP email account, an LDAP server, and a passcode policy, you would need the
@@ -75,54 +136,349 @@ following modules:
 * L<XML::AppleConfigProfile::Payload::LDAP> would configure the LDAP server.
 * L<XML::AppleConfigProfile::Payload::Passcode> would configure the passcode
 policy.
-* L<XML::AppleConfigProfile::Profile> would put everything together, and give
-you the final profile.
+* This module would put everything together, and give you the final profile.
+
+=cut
 
 
-=head1 EXPORT
+=head1 CLASS METHODS
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+=head2 new()
+
+Returns a new object.
+
+=cut
+
+# This call automatically goes up to XML::AppleConfigProfile::Payload::Common
 
 
-=head1 BUGS
+=head1 INSTANCE METHODS
 
-Please report any bugs or feature requests to C<bug-xml-apple-configprofile at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=XML-Apple-ConfigProfile>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+=head2 INHERITED METHODS
+
+Most of the methods, including critical ones such as C<keys> and C<payload>,
+are implemented in the module C<XML::AppleConfigProfile::Payload::Common>,
+and are not reimplemented here.  See L<XML::AppleConfigProfile::Payload::Common>.
+
+
+=head2 export()
+
+    export([C<option1_name> => C<option1_value>, ...])
+
+Return a string containing the profile, serialized as XML.  The entire string
+will already be encoded as UTF-8.  This method is used when it is time to
+output a profile.
+
+Several parameters can be provided, which will influence how this method runs.
+
+=over 4
+
+=item target
+
+If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
+then this will be taken into account when exporting.  Only payload keys that
+are used on the specified target will be included in the output.
+
+The C<completeness> option controls what happens if keys are excluded.
+
+=item version
+
+If C<version> (a version string) is provided, then only payload keys that work
+on the specified version will be included in the output.
+
+If C<version> is provided, then C<target> must also be set, but C<target> can
+be set without setting C<version>.
+
+The C<completeness> option controls what happens if keys are excluded.
+
+=item completeness
+
+If C<completeness> is set to a true value, and keys are excluded because of
+C<target> or C<version>, then C<plist> will throw an exception.  If set to a
+false value, or if not set at all, then no exceptions will be thrown, and a
+less-than-complete (but still valid) plist will be returned.
+
+=back
+
+The following exceptions may be thrown:
+
+=over 4
+
+=item XML::AppleConfigProfile::Exception::KeyRequired
+
+Thrown if a required key has not been set.
+
+=item XML::AppleConfigProfile::Exception::Incomplete
+
+Thrown if payload keys are being excluded from the output because of C<target>
+or C<version>.
+
+=back
+
+=cut
+
+sub export {
+    ...
+}
+
+
+=head1 PAYLOAD KEYS
+
+Payload keys are the keys that you can use when manipulating the hash returned
+by C<payload>.
+
+All of the payload keys defined in L<XML::AppleConfigProfile::Payload::Common>
+are used by this payload.
+
+This payload has the following additional keys:
+
+=head2 C<PayloadContent>
+
+I<Optional, but not really>
+
+An array of C<XML::AppleConfigProfile::Payload::> objects.
+
+=head2 C<EncryptedPayloadContent>
+
+I<Optional>
+
+Payload contents that are encrypted, such that only a single device may decrypt
+and read it.  This is a Data type, which is formed by first taking the contents
+of C<PayloadContent>, and serializing them as a plist with an array as the root
+element.  Next, the contents are CMS-encrypted as enveloped data, then finally
+DER-encoded.
+
+Until C<XML::AppleConfigProfile::Encryption> is implemented, the following
+OpenSSL command can be used to encrypt the plist.
+
+    openssl cms -encrypt -in your.mobileconfig_fragment 
+    -out your.mobileconfig_fragment.encrypted -outform der -cmsout
+    your_recipients_cert.pem
+
+OpenSSL 1 or later is required for the C<cms> command.
+
+=head2 C<PayloadScope>
+
+I<Optional>
+
+Applies to Mac OS X only.
+
+Can be set to "System", in which case the profile will apply system-wide,
+or "User", in which case the profile will only apply to the user installing
+the profile.
+
+If not set, the default is "User". 
+
+=head2 C<ConsentText>
+
+I<Optional>
+
+XXXXXX
+
+=head2 C<PayloadRemovalDisallowed>
+
+I<Optional>
+
+A boolean.  If set to C<true>, then the profile may only be removed if a
+profile removal password is provided.  To set such a password, include an object
+from L<XML::AppleConfigProfile::Payload::ProfileRemovalPassword> as part of
+C<PayloadContents>.
+
+=head2 C<DurationUntilRemoval>
+
+I<Optional>
+
+A floating-point number, the number of seconds that the profile will remain on
+the device before it is automatically removed.
+
+If C<RemovalDate> is set, this value will be ignored.
+
+=head2 C<RemovalDate>
+
+I<Optional>
+
+A date.  Once past, the profile will be automatically removed from the device.
+
+This value overrides C<DurationUntilRemoval>.
+
+=head2 C<PayloadExpirationDate>
+
+I<Optional>
+
+A date.  This only applies to payloads delivered over-the-air, using a mobile
+device management (MDM) solution.  Once past, this profile will be marked as
+"expired", and will be eligible for updating over-the-air.
+
+=cut
+
+Readonly our %payloadKeys => (
+    # Bring in the certificate keys...
+    %XML::AppleConfigProfile::Payload::Common::payloadKeys,
+    
+    # Since we can't go any deeper, define the type and version!
+    'PayloadContent' => {
+        type => $ProfileArray,
+        description => 'The payloads to be delivered in this profile.',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7',
+        },
+        optional => 1,
+    },
+    'EncryptedPayloadContent' => {
+        type => $ProfileData,
+        description => 'Payload content that has been encrypted to a specific '
+            . 'user.  The contents of "PayloadContent" must be serialized as '
+            . 'an array plist, then CMS-encrypted (as enveloped data), and '
+            . 'finally serialized in DER format.',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7',
+        },
+        optional => 1,
+    }
+#    'PayloadExpirationDate' => {
+#        type => $ProfileDate,
+#        description => 'For profiles delivered via OTA, the date when the '
+#            . 'profile has expired and can be updated (again via OTA).',
+#        targets => {
+#            $TargetIOS => '5.0',
+#            $TargetMACOSX => '10.7',
+#        },
+#        optional => 1,
+#    },
+    'PayloadRemovalDisallowed' => {
+        type => $ProfileBool,
+        description => 'If true, the profile may only be removed if a profile-'
+            . 'removal password has been set, and the password is provided '
+            . 'by the user.',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7',
+        },
+        optional => 1,
+    },
+    'PayloadScope' => {
+        type => $ProfileString,
+        description => 'Controls if the profile applies to the entire "System",'
+            . ' or if just to the specific "User".  If one of those two values '
+            . 'is not provided, "User" will be used as the default.',
+        targets => {
+            # Desktop only, not for iOS
+            $TargetMACOSX => '10.7',
+        },
+        optional => 1,
+    },
+#    'RemovalDate' => {
+#        type => $ProfileDate,
+#        description => 'The date when the profile will be automatically removed'
+#            . ' from the device.  Overrides DurationUntilRemoval.',
+#        targets => {
+#            $TargetIOS => '5.0',
+#            $TargetMACOSX => '10.7',
+#        },
+#        optional => 1,
+#    },
+#    'DurationUntilRemoval' => {
+#        type => $ProfileFloat,
+#        description => 'The number of seconds until the profile is '
+#            . 'automatically removed from the device.  The RemovalDate profile '
+#            . 'key overrides this one.',
+#        targets => {
+#            $TargetIOS => '5.0',
+#            $TargetMACOSX => '10.7',
+#        },
+#        optional => 1,
+#    },
+    'ConsentText' => {
+        type => $ProfileDict,
+        description => 'A dictionary where the keys are canonicalized IETF BCP '
+            . '47 locale strings.  The key "default" may be used as the '
+            . 'default entry.  The values are localized messages that the user '
+            . 'must accept before the profile is installed.',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
+        optional => 1,
+    },
+    'PayloadType' => {
+        type => $ProfileString,
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7', 
+        },
+        value => 'Configuration',
+    },
+    'PayloadVersion' => {
+        type => $ProfileNumber,
+        value => 1,
+    },
+);  # End of %payloadKeys
 
 
 =head1 SEE ALSO
 
-* "Configuration Profile Reference".  I<iOS Developer Library>.  L<https://developer.apple.com/library/ios/featuredarticles/iphoneconfigurationprofileref/Introduction/Introduction.html>
-* "Over-the-Air Profile Delivery and Configuration".  I<iOS Developer Library>.  L<https://developer.apple.com/library/iOs/documentation/NetworkingInternet/Conceptual/iPhoneOTAConfiguration/Introduction/Introduction.html>.
+=over 4
+
+=item * Apple's "Configuration Profile Reference".
+
+L<https://developer.apple.com/library/ios/featuredarticles/iphoneconfigurationprofileref/Introduction/Introduction.html>
+
+=item * Apple's "Over-the-Air Profile Delivery and Configuration" document.
+
+L<https://developer.apple.com/library/iOs/documentation/NetworkingInternet/Conceptual/iPhoneOTAConfiguration/Introduction/Introduction.html>.
+
+=back
 
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc XML::Apple::ConfigProfile
+    perldoc XML::AppleConfigProfile
 
-You can also look for information at:
+All modules have some POD inside them.  If you're not interested in using the
+command-line, your IDE may have PerlDoc support, or you can go here:
 
 =over 4
 
-=item * RT: CPAN's request tracker (report bugs here)
+=item * MetaCPAN
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=XML-Apple-ConfigProfile>
+L<https://metacpan.org/release/XML-AppleConfigProfile>
+
+=item * search.cpan.org
+
+L<http://search.cpan.org/perldoc?XML::AppleConfigProfile>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/XML-Apple-ConfigProfile>
+L<http://annocpan.org/dist/XML-AppleConfigProfile>
+
+=back
+
+If you have found a bug, or want to request an enhancement of some sort, you
+may do so here:
+
+=over 4
+
+=item * Github's issue section
+
+https://github.com/akkornel/XML-AppleConfigProfile/issues
+
+=item * RT: CPAN's request tracker (for people who don't use Github)
+
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=XML-AppleConfigProfile>
+
+=back
+
+Finally, feel free to rate the release!
+
+=over 4
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/XML-Apple-ConfigProfile>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/XML-Apple-ConfigProfile/>
+L<http://cpanratings.perl.org/d/XML-AppleConfigProfile>
 
 =back
 
@@ -132,7 +488,7 @@ L<http://search.cpan.org/dist/XML-Apple-ConfigProfile/>
 This project is on GitHub:
 
  L<https://github.com/akkornel/XML-AppleConfigProfile>
- 
+
 The web site linked above has the most recently-pushed code, along with
 information on how to get a copy to your computer.
 
