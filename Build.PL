@@ -5,10 +5,9 @@ use Module::Build;
 
 my $builder = Module::Build->new(
     module_name         => 'XML::AppleConfigProfile',
-    abstract            => 'Create, parse, and manipulate Apple Configuration '
-                           . 'Profile (.mobileconfig) files.',
     keywords            => [qw(iOS mobileconfig plist)],
-#    license             => 'perl_5',
+    license             => 'perl',
+    create_license      => 1,
     dist_author         => q{A. Karl Kornel <karl@kornel.us>},
     dist_version_from   => 'lib/XML/AppleConfigProfile.pm',
     release_status      => 'unstable',
@@ -37,14 +36,18 @@ my $builder = Module::Build->new(
     },
     add_to_cleanup     => [ 'XML-AppleConfigProfile-*' ],
     create_makefile_pl => 'traditional',
-    homepage       => 'https://github.com/akkornel/XML-AppleConfigProfile',
-    bugtracker     => {
-        web        => 'https://github.com/akkornel/XML-AppleConfigProfile/issues',
-    },
-    repository     => {
-        url        => 'git://github.com/akkornel/XML-AppleConfigProfile.git',
-        web        => 'https://github.com/akkornel/XML-AppleConfigProfile',
-        type       => 'git',
+    meta_merge => {
+        resources => {
+            bugtracker => [
+                'https://github.com/akkornel/XML-AppleConfigProfile/issues'
+            ],
+            repository => {
+                url  => 'git://github.com/akkornel/XML-AppleConfigProfile.git',
+                web  => 'https://github.com/akkornel/XML-AppleConfigProfile',
+                type => 'git',
+            },
+            repository => 'https://github.com/akkornel/XML-AppleConfigProfile',
+        },
     },
 );
 

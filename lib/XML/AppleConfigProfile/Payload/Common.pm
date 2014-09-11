@@ -7,8 +7,7 @@ use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
 
-use XML::AppleConfigProfile;
-our $VERSION = $XML::AppleConfigProfile::VERSION;
+our $VERSION = '0.00_001';
 
 use Data::GUID;
 use Encode;
@@ -18,9 +17,10 @@ use Regexp::Common;
 use Scalar::Util;
 use Tie::Hash; # Also gives us Tie::StdHash
 use Try::Tiny;
+use version 0.77; 
+use XML::AppleConfigProfile::Payload::Tie::Root;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 use XML::AppleConfigProfile::Targets qw(:all);
-
 
 
 =head1 NAME
@@ -75,7 +75,7 @@ sub new {
     
     # Now that have the object, we can tie up the hash.  YES, this will create
     # a circular reference, which TIEHASH will deal with.
-    tie %payload, 'XML::AppleConfigProfile::Payload::Common::PayloadStorage', $object;
+    tie %payload, 'XML::AppleConfigProfile::Payload::Tie::Root', $object;
     
     # Return the prepared object!
     return $object;    
@@ -151,7 +151,7 @@ sub payload {
 }
 
 
-=head2 plist([C<target>])
+=head2 plist([C<option1_name> => C<option1_value>, ...])
 
 Return a copy of this payload, represented as a L<Mac::Propertylist> object.
 All strings will be in UTF-8, and all Data entries will be Base64-encoded.
@@ -169,30 +169,94 @@ There are two ways to get string output from the plist object:
     use Mac::PropertyList;
     my $complete_plist = Mac::PropertyList::plist_as_string($plist);
 
+Several parameters can be provided, which will influence how this method runs.
+
+=over 4
+
+=item target
+
 If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
-then this will be taken into account.  If a target is not specified, then all
-set keys will be exported. 
+then this will be taken into account when exporting.  Only payload keys that
+are used on the specified target will be included in the output.
+
+The C<completeness> option controls what happens if keys are excluded.
+
+=item version
+
+If C<version> (a version string) is provided, then only payload keys that work
+on the specified version will be included in the output.
+
+If C<version> is provided, then C<target> must also be set, but C<target> can
+be set without setting C<version>.
+
+The C<completeness> option controls what happens if keys are excluded.
+
+=item completeness
+
+If C<completeness> is set to a true value, and keys are excluded because of
+C<target> or C<version>, then C<plist> will throw an exception.  If set to a
+false value, or if not set at all, then no exceptions will be thrown, and a
+less-than-complete (but still valid) plist will be returned.
+
+=back
 
 The following exceptions may be thrown:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::PayloadIncomplete
+=item XML::AppleConfigProfile::Exception::KeyRequired
 
 Thrown if a required key has not been set.
 
-=item XML::AppleConfigProfile::Payload::Common::PayloadTarget
+=item XML::AppleConfigProfile::Exception::Incomplete
 
-Thrown if a payload is being exported to a target that simply does not support
-it.  For example, this would be thrown if attempting to export a I<FileVault>
-payload for an iOS profile.
+Thrown if payload keys are being excluded from the output because of C<target>
+or C<version>.
 
 =back
 
 =cut
 
 sub plist {
-    my ($self) = @_;
+    my $self = $_[0];
+    
+    # Process parameters
+    my %params;
+    for (my $i = 1; $i < scalar(@_); $i += 2) {
+        my ($name, $value) = @_[$i,$i+1];
+        
+        # We have three parameters possible.  Process each one
+        if ($name eq 'target') {
+            unless (   ($value == $TargetIOS)
+                    || ($value == $TargetMACOSX)
+            ) {
+                die "Invalid target $value";
+            }
+            $params{target} = $value;
+        }
+        
+        elsif ($name eq 'version') {
+            try {
+                $params{version} = version->parse($value);
+            }
+            catch {
+                die "Failed to parse version $value";
+            }
+        }
+        
+        elsif ($name eq 'completeness') {
+            $params{completeness} = ($value ? 1 : 0);
+        }
+    } # Done inputting parameters
+    
+    # Catch someone setting version without setting target
+    if (   (exists $params{version})
+        && (!exists $params{target})
+    ) {
+        die "Version has been set, but no target was provided";
+    }
+    
+    # We're done with parameter processing and validation; do some work!
     
     # Prepare a hash that will be turned into the dictionary
     my %dict;
@@ -201,7 +265,43 @@ sub plist {
     Readonly my $keys => $self->keys();
     Readonly my $payload => $self->payload();
     foreach my $key (CORE::keys($keys)) {
+        # If the key isn't set, then skip it
         next unless defined($payload->{$key});
+        
+        # If target has been set, check it against the key's target
+        if (exists $params{target}) {
+            if (!exists($keys->{$key}->{targets}->{$params{target}})) {
+                # This key isn't used on this target, should we die?
+                if (   (exists($params{completeness}))
+                    && ($params{completeness})
+                ) {
+                    die "Key $key has been set, but isn't supported on this target";
+                }
+                
+                # If we're here, this key isn't used on this target, but we
+                # shouldn't die, so just skip the key.
+                next;
+            }
+            
+            # If we're here, this key is used on this target; check the version!
+            my $key_version = $keys->{$key}->{targets}->{$params{target}};
+            if (   (exists($params{version}))
+                && ($params{version} < version->parse($key_version))
+            ) {
+                # This key is too new for us, should we die?
+                if (   (exists($params{completeness}))
+                    && ($params{completeness})
+                ) {
+                    die "Key $key is only supported in newer OS versions";
+                }
+                
+                # If we're here, this key is too new for us, but we shouldn't
+                # die, so just skip the key.
+                next;
+            }
+            
+            # If we're here, then the version isn't set, or we're new enough!
+        } # Done checking target & version
         
         # Look up the key type, and act based on that
         # Also, grab the raw value, and replace it with its plist element
@@ -582,108 +682,6 @@ Readonly our %payloadKeys => (
             optional => 1,
         },
 );  # End of %payloadKeys
-
-
-package XML::AppleConfigProfile::Payload::Common::PayloadStorage;
-
-# All internal stuff goes here
-
-sub TIEHASH {
-    my ($class, $object_ref) = @_;
-    
-    # $object_ref points to our containing object.  In other words, $object_ref,
-    # if de-referenced, would give us our instance of this class.
-    # Using $object_ref around like this does, I believe, create a circular
-    # reference, which we need to break.
-    Scalar::Util::weaken($object_ref);
-    
-    # Construct our object.  We need a hash for the payload, and we'll also
-    # bring along the reference to our containing instance.
-    # Our class name is made-up, to keep clients from doing weird stuff.
-    return bless {
-        payload => {},
-        object => $object_ref,
-    }, "$class";
-}
-
-
-sub FETCH {
-    my ($self, $key) = @_;
-    
-    # Our EXISTS check returns true if the key is a valid payload key name.
-    # Therefore, we need to do our own exists check, and possible return undef.
-    if (exists $self->{payload}->{$key}) {
-        return $self->{payload}->{$key};
-    }
-    else {
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef;
-        ## use critic
-    }
-}
-
-
-sub STORE {
-    my ($self, $key, $value) = @_;
-    
-    # If we are setting to undef, then just drop the key.
-#    if (!defined $value) {
-#        $self->DELETE($key);
-#        return;
-#    }
-    
-    # Check if the proposed value is valid, and store if it is.
-    # (Validating also de-taints the value, if it's valid)
-    $value = $self->{object}->_validate($key, $value);
-    if (defined($value)) {
-        $self->{payload}->{$key} = $value;
-    }
-    else {
-        die('Invalid value for key');
-    }
-}
-
-
-sub DELETE {
-    my ($self, $key) = @_;
-    delete $self->{payload}->{$key};
-}
-
-
-sub CLEAR {
-    my ($self) = @_;
-    # The CLEAR method implemented in Tie::Hash uses calls to $self
-    # (specifically, calls to FIRSTKEY, NEXTKEY, and DELETE), so let's just
-    # call that code instead of reimplementing it!
-    Tie::Hash::CLEAR($self);
-}
-
-
-sub EXISTS {
-    my ($self, $key) = @_;
-    return 1 if exists($self->{object}->keys()->{$key});
-    return 0;
-}
-
-
-sub FIRSTKEY {
-    my ($self) = @_;
-    # We can use the code from Tie::StdHash::FIRSTKEY, instead of rewriting it.
-    return Tie::StdHash::FIRSTKEY($self->{payload});
-}
-
-
-sub NEXTKEY {
-    my ($self, $previous) = @_;
-    # We can use the code from Tie::StdHash::NEXTKEY, instead of rewriting it.
-    return Tie::StdHash::NEXTKEY($self->{payload});
-}
-
-
-sub SCALAR {
-    my ($self) = @_;
-    return scalar %{$self->{payload}};
-}
 
 
 =head1 DEVELOPER NOTES
