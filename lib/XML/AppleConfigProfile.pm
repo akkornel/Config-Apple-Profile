@@ -6,6 +6,7 @@ use warnings FATAL => 'all';
 use base qw(XML::AppleConfigProfile::Payload::Common);
 
 use Exporter::Easiest q(OK => $VERSION);
+use Mac::PropertyList;
 use Readonly;
 use XML::AppleConfigProfile::Payload::Common;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
@@ -218,7 +219,10 @@ or C<version>.
 =cut
 
 sub export {
-    ...
+    my $self = shift @_;
+    
+    my $plist = $self->plist(@_);
+    return Mac::PropertyList::plist_as_string($plist);
 }
 
 
@@ -336,7 +340,7 @@ Readonly our %payloadKeys => (
             $TargetMACOSX => '10.7',
         },
         optional => 1,
-    }
+    },
 #    'PayloadExpirationDate' => {
 #        type => $ProfileDate,
 #        description => 'For profiles delivered via OTA, the date when the '
