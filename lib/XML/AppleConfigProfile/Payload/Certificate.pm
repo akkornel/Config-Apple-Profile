@@ -72,6 +72,18 @@ PEM-format certificate), or binary (as in a DER-format certificate).
 As a reminder, this key takes binary data, even if that data happens to be
 text.  You do not need to worry about the encoding.
 
+B<WARNING: > iOS does not trust certificates that use MD5 as the signature
+method.  Such certificates can be installed, but they will not be trusted, and
+will cause the user to see warnings.
+
+B<WARNING: > Certificates with 1024-bit RSA keys are rapidly becoming untrusted
+by browsers.  Such certificates can be installed, but they are quickly going the
+way of MD5 certificates (see the warning above).
+
+B<WARNING: > Certificates with SHA-1 signatures are going to start losing trust
+in many browsers starting in 2016.  Plan ahead by minting new certificates with
+SHA-256 signatures!
+
 =cut
 
 Readonly our %payloadKeys => (
