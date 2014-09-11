@@ -8,7 +8,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(XML::AppleConfigProfile::Payload::Common);
 
-use XML::AppleConfigProfile;
+require XML::AppleConfigProfile;
 our $VERSION = $XML::AppleConfigProfile::VERSION;
 
 use Readonly;
