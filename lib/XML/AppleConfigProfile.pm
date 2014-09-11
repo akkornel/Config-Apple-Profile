@@ -277,7 +277,14 @@ If not set, the default is "User".
 
 I<Optional>
 
-XXXXXX
+A dictionary of strings.  The keys are locale identifiers, specifically
+canonicalized IETF BCP 47 locale strings.  Each value is a localized text string
+containing a message that the user will see when installing the profile.  This
+is a place to put warnings, agreements, etc..
+
+An extra pair, with the key "default", may be included to provide a default
+consent message.  If no default is set, the "en" localization will be used as a
+last resort.
 
 =head2 C<PayloadRemovalDisallowed>
 
