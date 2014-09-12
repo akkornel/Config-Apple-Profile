@@ -10,6 +10,8 @@ use warnings FATAL => 'all';
 our $VERSION = '0.00_001';
 
 use Tie::Hash; # Also gives us Tie::StdHash
+use XML::AppleConfigProfile::Payload::Tie::Array;
+use XML::AppleConfigProfile::Payload::Types qw($ProfileArray $ProfileDict $ProfileClass);
 
 
 =head1 NAME
@@ -102,6 +104,53 @@ sub FETCH {
     if (exists $self->{payload}->{$key}) {
         return $self->{payload}->{$key};
     }
+    
+    # At this point, our key doesn't exist right now, but we need to check for
+    # some complex types.
+    my $key_info = $self->{object}->keys()->{$key};
+    my $type = $key_info->{type};
+    
+    # If the key is an array, set up a new Array tie
+    # Exception:  If the subtype is a class, then use construct()
+    if ($type == $ProfileArray) {
+        my $subtype = $key_info->{subtype};
+        
+        if ($subtype == $ProfileClass) {
+            my $object = $self->{object}->construct($key);
+            $self->{payload}->{$key} = $object;
+        }
+        else {
+            tie my @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $subtype;
+            $self->{payload}->{$key} = \@array;
+        }
+        
+        return $self->{payload}->{$key};
+    }
+    
+    # If the key is a dictionary, set up a new Hash tie
+    # Exception:  If the subtype is a class, then use construct()
+#    elsif ($type == $ProfileDict) {
+#        my $subtype = $key_info->{subtype};
+#        if ($subtype == $ProfileClass) {
+#            my $object = $self->{object}->construct($key);
+#            $self->{payload}->{$key} = $object;
+#        }
+#        else {
+#            tie my @array, 'XML::AppleConfigProfile::Payload::Tie::Hash', $subtype;
+#            $self->{payload}->{$key} = \@array;
+#        }
+#        
+#        return $self->{payload}->{$key};
+#    }
+    
+    # If the key is a class, instantiate it, add it to the payload, and return
+    elsif ($type == $ProfileClass) {
+        my $object = $self->{object}->construct($key);
+        $self->{payload}->{$key} = $object;
+        return $object;
+    }
+    
+    # The catch-all:  The key doesn't exist, and isn't special, so return undef.
     else {
         ## no critic (ProhibitExplicitReturnUndef)
         return undef;
