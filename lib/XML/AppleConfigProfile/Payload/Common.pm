@@ -353,6 +353,56 @@ sub plist {
     return $plist;
 }
 
+
+=head2 populate_id()
+
+Populates the C<PayloadIdentifier> and C<PayloadUUID> fields, if they are not
+already set.  In addition, if the payload has any keys of type
+C<$PayloadClass>, then C<populate_id> will also be called on them.
+
+Sub-classes may decide to override this, so as to add extra functionality.
+
+=cut
+
+sub populate_id {
+    my ($self) = @_;
+    
+    my $keys = $self->keys;
+    my $payload = $self->payload;
+    
+    # Go through each key, and check the type
+    foreach my $key (CORE::keys %$keys) {
+        # We can fill in UUIDs
+        if ($keys->{$key}->{type} eq $ProfileUUID) {
+            if (defined $payload->{$key}) {
+                # Make a new (random) GUID
+                $payload->{$key} = new Data::GUID;
+            }
+        }
+        
+        # We can fill in identifiers
+        elsif ($keys->{$key}->{type} eq $ProfileIdentifier) {
+            if (defined $payload->{$key}) {
+                # Just make some simple random identifier
+                $payload->{$key} = 'payload' . int(rand(2**30));
+            }
+        }
+        
+        # We can call this method on other classes
+        elsif ($keys->{$key}->{type} eq $ProfileClass) {
+            # Only populate IDs on objects that exist
+            if (defined $payload->{$key}) {
+                my $object = $payload->{$key};
+                $object->populate_id();
+            }
+        }
+        
+        # That's it!  Move on to the next key
+    }
+}
+
+
+
 =head2 exportable([C<target>])
 
 Returns true if the payload is complete enough to be exported.  In other words,
