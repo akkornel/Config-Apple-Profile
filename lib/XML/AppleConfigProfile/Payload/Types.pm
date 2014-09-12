@@ -120,17 +120,6 @@ specific key.
 
 Readonly our $ProfileArray => 11;
 
-=head2 Array of Dictionaries (C<$ProfileArrayOfDicts>)
-
-An array of dictionaries, equivalent to a Perl array of hashes (or, more
-realisticly, an array of hashrefs).  The client should expect the array to only
-accept certain types of C<XML::AppleConfigProfile::Payload::> modules.
-For more information, see the documentation for the specific key.
-
-=cut
-
-Readonly our $ProfileArrayOfDicts => 12;
-
 =head2 NSData Blob
 
 This is a weird type.  The only place it appears in the I<Configuration Profile
@@ -184,15 +173,6 @@ that spaces are I<not> acceptable here, even though they may be in RFC 1035.
 =cut
 
 Readonly our $ProfileIdentifier => 22;
-
-=head2 Array of Strings (C<$ProfileArrayOfStrings>)
-
-Another convenience type.  This is similar to L</Array>, except that all array
-members must be a L</String>.  The array is accessed as an arrayref.
-
-=cut
-
-Readonly our $ProfileArrayOfStrings => 23;
 
 
 =head2  (C<$ProfileClass>)
