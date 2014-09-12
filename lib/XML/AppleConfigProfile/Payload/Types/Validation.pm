@@ -94,18 +94,6 @@ sub validate {
         return validate_data($value);
     }
     
-    # We recognize Dictionaries
-    elsif ($type == $ProfileDict) {
-        # As a simple check, look for a hashref
-        return $value if ref($value) eq 'HASH';
-    }
-    
-    # We recognize Arrays
-    elsif ($type == $ProfileArray) {
-        # As a simple check, look for an arrayref
-        return $value if ref($value) eq 'ARRAY';
-    }
-    
     # We recognize Identifier types
     elsif ($type == $ProfileIdentifier) {
         return validate_identifier($value);
