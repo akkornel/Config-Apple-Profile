@@ -423,7 +423,6 @@ sub validate_key {
         || ($type == $ProfileArrayOfDicts)
         || ($type == $ProfileIdentifier)
         || ($type == $ProfileUUID)
-        || ()
     ) {
         return XML::AppleConfigProfile::Payload::Types::Validation::validate($type, $value);
     }
