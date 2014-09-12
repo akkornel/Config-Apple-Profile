@@ -378,7 +378,7 @@ new value.  This class will perform checking for all payload types except for
 Data payloads.  The checks performed will be very basic.
 
 Subclasses should override this method to check their keys, and then call
-SUPER::_validate($self, $key, $value) to check the remaining keys.
+SUPER::validate_key($self, $key, $value) to check the remaining keys.
 
 The following exceptions may be thrown:
 
