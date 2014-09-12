@@ -13,13 +13,13 @@ use Data::GUID;
 use Encode;
 use Mac::PropertyList;
 use Readonly;
-use Regexp::Common;
 use Scalar::Util;
 use Tie::Hash; # Also gives us Tie::StdHash
 use Try::Tiny;
 use version 0.77; 
 use XML::AppleConfigProfile::Payload::Tie::Root;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
+use XML::AppleConfigProfile::Payload::Types::Validation;
 use XML::AppleConfigProfile::Targets qw(:all);
 
 
@@ -412,168 +412,21 @@ sub _validate {
     # Get our payload key's value type
     my $type = $self->keys()->{$key}->{type};
     
-    # We recognize String types
-    if ($type == $ProfileString) {
-        # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
-        
-        # Empty strings aren't allowed, either.
-        if ($value =~ m/^(.+)$/s) {
-            $value = $1;
-            
-        }
-        else {
-            ## no critic (ProhibitExplicitReturnUndef)
-            return undef;
-            ##use critic
-        }
-        
-        # Try to encode as UTF-8, to make sure it's safe
-        try {
-            encode('UTF-8', $value, Encode::FB_CROAK | Encode::LEAVE_SRC);
-        }
-        catch {
-            $value = undef;
-        };
-        
-        return $value;
-    }
-    
-    # We recognize Number types
-    elsif ($type == $ProfileNumber) {
-        # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
-        
-        # Numbers must be integers, positive or negative (or zero).
-        if ($value =~ /^$RE{num}{int}{-keep}$/) {
-            return $1;
-        }
-    }
-    
-    # We recognize Boolean types
-    elsif ($type == $ProfileBool) {
-        # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
-        
-        # A simple evaluation!
-        if ($value) {
-            return 1;
-        }
-        if (!$value) {
-            return 0;
-        }
-    }
-    
-    # We recognize Data types
-    elsif (   ($type == $ProfileData)
-           || ($type == $ProfileNSDataBlob)
+    # If we are working with a basic type, then call the basic validator!
+    if (   ($type == $ProfileString)
+        || ($type == $ProfileNumber)
+        || ($type == $ProfileBool)
+        || ($type == $ProfileData)
+        || ($type == $ProfileNSDataBlob)
+        || ($type == $ProfileDict)
+        || ($type == $ProfileArray)
+        || ($type == $ProfileArrayOfDicts)
+        || ($type == $ProfileIdentifier)
+        || ($type == $ProfileUUID)
+        || ()
     ) {
-        # How we act here depends if we have a string or a filehandle
-        # Let's first check if we were given an open filehandle
-        if (Scalar::Util::openhandle($value)) {
-            # We've got an open file, so we're good!
-            return $value;
-        }
-        
-        # If we don't have an open handle, then make sure it's not an object
-        unless (ref($value)) {
-            # We have a string.  Let's make sure it's binary, and non-empty.
-            if (   (!utf8::is_utf8($value))
-                && (length($value) > 0)
-            ) {
-                # Pull the string into an in-memory file, and return that.
-                my ($memory, $file);
-                $file = IO::File::new(\$memory, 'w+');
-                binmode($file);
-                $file->print($value);
-                $file->seek(0, 0);
-                return $file;
-            }
-        }
+        return XML::AppleConfigProfile::Payload::Types::Validation::validate($type, $value);
     }
-    
-    # We recognize Dictionaries
-    elsif ($type == $ProfileDict) {
-        # As a simple check, look for a hashref
-        return $value if ref($value) eq 'HASH';
-    }
-    
-    # We recognize Arrays
-    elsif ($type == $ProfileArray) {
-        # As a simple check, look for an arrayref
-        return $value if ref($value) eq 'ARRAY';
-    }
-    
-    # We recognize arrays of dictionaries
-    elsif ($type == $ProfileArrayOfDicts) {
-        # First, make sure the outer container is an arrayref
-        if (ref($value) eq 'ARRAY') {
-            # Make sure each array item is a hashref
-            my $all_are_hashrefs = 1;
-            foreach my $i (@$value) {
-                $all_are_hashrefs = 0 if ref($i) ne 'HASH';
-            }
-            return $value if $all_are_hashrefs;
-        }
-    }
-    
-    # We recognize Identifier types
-    elsif ($type == $ProfileIdentifier) {
-        # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
-        
-        # Empty strings aren't allowed, either.
-        if ($value =~ m/^(.+)$/s) {
-            my $matched_string = $1;
-            # Identifiers are one-line strings
-            if (   ($matched_string !~ m/\n/s)
-                && ($matched_string =~ m/^$RE{net}{domain}{-nospace}$/)
-            ) {
-                return $matched_string;
-            }
-        }
-    }
-    
-    # We recognize UUID types
-    elsif ($type == $ProfileUUID) {
-        my $class = ref($value);
-        my $uuid;
-        
-        # We accept Data::UUID objects
-        if ($class eq 'Data::UUID') {
-            $uuid = Data::GUID::from_data_uuid($value);
-            return $uuid;
-        }
-        
-        # We accept Data::GUID objects
-        if ($class eq 'Data::GUID') {
-            return $value;
-        }
-        
-        # We don't accept other kinds of objects
-        if ($class ne '') {
-            ## no critic (ProhibitExplicitReturnUndef)
-            return undef;
-            ## use critic
-        }
-        
-        # Have Data::GUID try to parse the input
-        # If from_any_string doesn't die, then it wored OK
-        eval {
-            $uuid = Data::GUID->from_any_string($value);
-        };
-        return $uuid;
-        
-        # If we're here, the parsing failed, so just fall through to the end.
-    } # Done checking the UUID type
     
     # If we're still here, then something's wrong, so fail.
     ## no critic (ProhibitExplicitReturnUndef)
