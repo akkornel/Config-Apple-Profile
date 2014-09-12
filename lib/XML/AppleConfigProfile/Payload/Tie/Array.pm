@@ -226,7 +226,7 @@ An exception will be thrown if either of the two points above fails.
 
 =cut
 
-sub push {
+sub PUSH {
     my $self = CORE::shift @_;
     
     # Run the validation
@@ -243,7 +243,7 @@ Works as expected for a Perl array.
 
 =cut
 
-sub pop {
+sub POP {
     my ($self) = @_;
     return Tie::StdArray::POP($self->{array});
 }
@@ -255,7 +255,7 @@ Works as expected for a Perl array.
 
 =cut
 
-sub shift {
+sub SHIFT {
     my ($self) = @_;
     return Tie::StdArray::SHIFT($self->{array});
 }
@@ -281,7 +281,7 @@ being added to the array.
 An exception will be thrown if either of the two points above fails.
 =cut
 
-sub unshift {
+sub UNSHIFT {
     my $self = CORE::shift @_;
     
     # Run the validation
@@ -314,7 +314,7 @@ An exception will be thrown if either of the two points above fails.
 
 =cut
 
-sub splice {
+sub SPLICE {
     my $self = CORE::shift @_;
     
     # If splice was called with more than three parameters, then we need to
@@ -349,11 +349,18 @@ sub _validate {
         die "_validate expects to return an array";
     }
     
+    # We can't use a foreach loop, because our items might be Readonly,
+    # and the way Perl does aliasing means assigning to the foreach $item
+    # triggers a "modification of a read-only value" error.
+    my @validated_array;
+    
     # Go through each item, making sure it is valid
-    foreach my $item (@_) {
+    for (my $i = 0; $i < scalar @_; $i++) {
+        my $item = $_[$i];
+        
         # Undef is not a valid value
         if (!defined $item) {
-            die "Adding undef items is not allowed"
+            die "Adding undef items is not allowed";
         }
         
         # If we are an array of objects, check the class name
@@ -362,19 +369,24 @@ sub _validate {
             if ($item_class ne $self->{validator}) {
                 die "Attempting to add item of a different class";
             }
+            $validated_array[$i] = $item;
         }
         
         # If we are not objects, then use the validation routine
         else {
             # Call the validation routine
-            $item = &{$self->{validator}}($item);
+            my $validated_item = $self->{validator}->($item);
         
             # If $item suddenly became undef, it was invalid
-            if (!defined $item) {
+            if (!defined $validated_item) {
                 die "Attempting to insert invalid item";
             }
+            
+            $validated_array[$i] = $validated_item;
         } # Done checking class or not-class
     } # Done checking each item
+    
+    return @validated_array;
 }
 
 
