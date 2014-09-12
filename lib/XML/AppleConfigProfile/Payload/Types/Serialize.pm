@@ -76,7 +76,9 @@ sub serialize {
         }
         
         # All data is Base64-encoded for us by Mac::PropertyList
-        elsif ($type == $ProfileData) {
+        elsif (   ($type == $ProfileData)
+               || ($type == $ProfileNSDataBlob)
+        ) {
             $value = Mac::PropertyList::data->new($value);
         }
         
