@@ -20,7 +20,7 @@ package Local::UUID;
 use File::Temp;
 use Readonly;
 use XML::AppleConfigProfile::Payload::Common;
-use XML::AppleConfigProfile::Payload::Types qw($ProfileUUID);
+use XML::AppleConfigProfile::Payload::Types qw($ProfileArray $ProfileUUID);
 
 use base qw(XML::AppleConfigProfile::Payload::Common);
 
@@ -29,6 +29,11 @@ Readonly our %payloadKeys => (
         type => $ProfileUUID,
         description => 'A field containing a number.',
     },
+    'arrayField' => {
+        type => $ProfileArray,
+        subtype => $ProfileUUID,
+        description => 'An array of UUIDs',
+    }
 );
 
 
@@ -223,27 +228,37 @@ Readonly my @baddies => (
 #  * Compare the two objects for equality.
 #  * Make a copy, and hand the copy off to the payload
 #  * Read the payload back, and make sure nothing was changed.
+#  * Push or unshift the payload onto the array.
+#  * Check the array length
 #  * Write in a string to the payload; make sure it reads & compares OK.
 #  * Write in hex to the payload; make sure it reads & compares OK.
-plan tests => (1+3+3+3+2)*scalar(@tests) + scalar(@baddies);
+plan tests => (1+3+3+3+3+1+2)*scalar(@tests) + 1 + (3+6)*scalar(@tests) + 3*scalar(@baddies);
+
+# Make an object that we'll use for array testing
+my $uuid_array_object = new Local::UUID;
+my $uuid_array = $uuid_array_object->payload->{arrayField};
+my @reference_array = ();
 
 # Test all of the numbers that should be good.
+my $i = 1;
 foreach my $guid_group (@tests) {
     Readonly my $guid_as_string => $guid_group->[0];
     Readonly my $guid_as_hex => $guid_group->[1];
     
     # Make sure we're reading GUIDs properly
+    # (Keep $guid1 and $guid2 for array test)
     my $guid1 = Data::GUID->from_string($guid_as_string);
     my $guid2 = Data::GUID->from_hex($guid_as_hex);
     cmp_ok($guid1, '==', $guid2,
            'Comparing ' . $guid_as_string . ' and ' . $guid_as_hex);
-    undef $guid1;
-    undef $guid2;
+#    undef $guid1;
+#    undef $guid2;
     
     # Keep a GUID copy for reference
     my $guid_reference = Data::GUID->from_string($guid_as_string);
     
     # See if our payload can accept the Data::GUID object
+    # (Keep $guid1a for array test)
     my $guid1a = Data::GUID->from_string($guid_as_string);
     my $object = new Local::UUID;
     my $payload = $object->payload;
@@ -251,7 +266,7 @@ foreach my $guid_group (@tests) {
     my $read_guid = $payload->{uniqueField};
     ok(defined($read_guid), 'Read object back');
     cmp_ok($read_guid, '==', $guid_reference, 'Compare objects');
-    undef $guid1a;
+#    undef $guid1a;
     undef $object;
     undef $payload;
     undef $read_guid;
@@ -284,23 +299,98 @@ foreach my $guid_group (@tests) {
     
     # TODO: Create base64-encoded version and use that for testing
     
+    # Put all forms (object, string, hex) of the UUID onto the array.
+    # If even, push; if odd, unshift
+    # The reference array does not convert, so only add objects there
+    my $orig_array_len = scalar @$uuid_array;
+    if ($i % 2 == 0) {
+        lives_ok {push @$uuid_array, $guid1a} 'Pushing object onto array';
+        push @reference_array, $guid1a;
+        lives_ok {push @$uuid_array, $guid_as_string} 'Pushing string onto array';
+        push @reference_array, $guid1;
+        lives_ok {push @$uuid_array, $guid_as_hex} 'Pushing hex onto array';
+        push @reference_array, $guid2;
+    }
+    else {
+        lives_ok {unshift @$uuid_array, $guid1a} 'Pushing object onto array';
+        unshift @reference_array, $guid1a;
+        lives_ok {unshift @$uuid_array, $guid_as_string} 'Pushing string onto array';
+        unshift @reference_array, $guid1;
+        lives_ok {unshift @$uuid_array, $guid_as_hex} 'Pushing hex onto array';
+        unshift @reference_array, $guid2;
+    }
+    
+    # Make sure the array count is updated
+    cmp_ok(scalar @$uuid_array, '==', $orig_array_len + 3,
+           "Confirm array's new size"
+    );
+    
     # Make sure we get a correct plist out
+    # (We'll check the array at the end)
     my $plist;
     lives_ok {$plist = $object->plist} 'Convert to plist';
     cmp_ok($plist->value->{uniqueField}->value, 'eq',
            $payload->{uniqueField}->as_string, 'plist uuid matches'
     );
+    
+    $i++;
 }
 
 
+# Compare our regular array to our array of objects
+cmp_ok(scalar @$uuid_array, '==', scalar @reference_array, 
+       'Confirm expected array size'
+);
+
+# Go through each array item, and compare
+# (FYI: `my $i` is OK here because we're making a new lexical layer!)
+for (my $i = 0; $i < scalar @reference_array; $i++) {
+    my $string = $uuid_array->[$i];
+    $string = "$string";
+    
+    my $reference_string = $reference_array[$i];
+    $reference_string = "$reference_string";
+    
+    cmp_ok($string, 'eq', $reference_string,
+           "Confirm array index $i matches"
+    );
+}
+
+# Alternate pop and shift, make sure the array drains
+$i = 0;
+while (scalar @reference_array > 0) {
+    my ($string, $reference_string);
+    
+    if ($i % 2 == 0) {
+        lives_ok {$string = shift @$uuid_array} 'Shift string from array';
+        $reference_string = shift @reference_array;
+    }
+    else {
+        lives_ok {$string = pop @$uuid_array} 'Pop string from array';
+        $reference_string = pop @reference_array;
+    }
+    
+    $string = "$string";
+    $reference_string = "$reference_string";
+    
+    cmp_ok($string, 'eq', $reference_string, 'Compare');
+    
+    $i++;
+}
+
+# TODO: Test STORE, STORESIZE, DELETE, CLEAR, and SPLICE
+
+
 # Make sure each of the baddies fails to process
-my $i = 1;
+$i = 1;
 foreach my $baddie (@baddies) {
     my $object = new Local::UUID;
     my $payload = $object->payload;
     
     # Make sure every method of reading fails
     dies_ok {$payload->{uniqueField} = $baddie} "Non-UUID $i";
+    dies_ok {push @{$payload->{arrayField}}, $baddie} 'Pushing onto array';
+    dies_ok {unshift @{$payload->{arrayField}}, $baddie} 'Unshifting onto array';
     
     $i++;
 }
