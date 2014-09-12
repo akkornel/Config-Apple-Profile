@@ -378,8 +378,6 @@ while (scalar @reference_array > 0) {
     $i++;
 }
 
-# TODO: Test STORE, STORESIZE, DELETE, CLEAR, and SPLICE
-
 
 # Make sure each of the baddies fails to process
 $i = 1;
