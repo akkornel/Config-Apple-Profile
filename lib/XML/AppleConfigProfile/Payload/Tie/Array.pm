@@ -12,6 +12,7 @@ our $VERSION = '0.00_001';
 use Scalar::Util qw(blessed);
 use Tie::Array; # Also gives us Tie::StdArray
 use XML::AppleConfigProfile::Payload::Types qw(:all);
+use XML::AppleConfigProfile::Payload::Types::Validation qw(:types);
 
 
 =head1 NAME
@@ -33,26 +34,20 @@ This class is used by payload classes to represent an array.
 
 =head2 "CLASS" METHODS
 
-=head2 tie @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $value_type,
-$validator_ref
+=head2 tie @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $value_type
 
 When this class is tied to an array, C<TIEARRAY> will be called, with the class
-name as the first argument.  At least one more argument (C<$value_type>) must
-be provided, and C<$validator_ref> is optional.
+name as the first argument.
 
 C<$value_type> can be a scalar or a ref.  If C<$value_type> is a reference, it
 must be blessed.  We keep a record of C<$value_type>'s class, and all values
 placed into the array must be of the same class.  We let the class take
-responsibility for validating its contents, and C<$validator_ref> is ignored.
+responsibility for validating its contents.
 
 If C<$value_type> is a scalar, then C<$value_type> must
-match one of the types from L<XML::AppleConfigProfile::Payload::Types>.  If
-provided, C<$validator_ref> must be a code reference.  The referenced function
-will be given one argument, which is a value to validate, and should either
-return the validated (and de-tained) value, or C<undef> if the value is invalid.
-
-If C<$value_type> is a scalar but C<$validator_ref> is undefined, then only
-basic type validation will be performed.
+match one of the types from L<XML::AppleConfigProfile::Payload::Types>,
+except for C<$ProfileClass>.  The standard type validation function from
+L<XML::AppleConfigProfile::Payload::Types::Validation> will be used.
 
 If C<$value_type> is not a valid scalar or a valid reference, then an exception
 will be thrown.
@@ -80,38 +75,32 @@ sub TIEARRAY {
     
     # If we don't have a ref, then it needs to be a specific scalar
     else {
-        # Make sure we have a valid value type
-        if (   ($value_type != $ProfileString)
-            && ($value_type != $ProfileNumber)
-            && ($value_type != $ProfileData)
-            && ($value_type != $ProfileBool)
-            && ($value_type != $ProfileDict)
-            && ($value_type != $ProfileArray)
-            && ($value_type != $ProfileNSDataBlob)
-            && ($value_type != $ProfileUUID)
-            && ($value_type != $ProfileIdentifier)
+        $object{is_class} = 0;
+        
+        # Set up the appropriate validator, based on the type
+        if ($value_type == $ProfileString) {
+            $object{validator} = \&validate_string;
+        }
+        elsif ($value_type == $ProfileNumber) {
+            $object{validator} = \&validate_number;
+        }
+        elsif (   ($value_type == $ProfileData)
+               || ($value_type == $ProfileNSDataBlob)
         ) {
+            $object{validator} = \&validate_data;
+        }
+        elsif ($value_type == $ProfileBool) {
+            $object{validator} = \&validate_bool;
+        }
+        elsif ($value_type == $ProfileUUID) {
+            $object{validator} = \&validate_uuid;
+        }
+        elsif ($value_type == $ProfileIdentifier) {
+            $object{validator} = \&validate_identifier;
+        }
+        else {
             die "Value type is unknown";
         }
-        
-        # If the validator is defined, it must be a coderef
-        if (defined $validator_ref) {
-            if (ref $validator_ref ne 'CODE') {
-                die "Validator is not a code reference";
-            }
-            $object{validator} = $validator_ref;
-        }
-        
-        # If the validator function isn't defined, make one
-        else {
-            $object{validator} = sub {
-                my ($value) = @_;
-                $value =~ m/^(.*)$/;
-                return $1;
-            };
-        } # Done testing the validator
-        
-        $object{is_class} = 0;
     } # Done checking for ref vs. scalar
 
     return bless \%object, $class;
