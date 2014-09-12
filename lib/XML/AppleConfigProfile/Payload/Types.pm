@@ -16,7 +16,7 @@ use Exporter::Easy (
         'all' => [qw(
           $ProfileString $ProfileNumber $ProfileData $ProfileBool
           $ProfileDict $ProfileArray $ProfileArrayOfDicts
-          $ProfileNSDataBlob $ProfileUUID $ProfileIdentifier
+          $ProfileNSDataBlob $ProfileUUID $ProfileIdentifier $ProfileClass
         )],
     ],
 );
@@ -193,6 +193,19 @@ members must be a L</String>.  The array is accessed as an arrayref.
 =cut
 
 Readonly our $ProfileArrayOfStrings => 23;
+
+
+=head2  (C<$ProfileClass>)
+
+This profile type is used to indicate that the value is an instance of a class.
+The class is a sub-class of C<XML::AppleConfigProfile::Payload::Common>, so the
+methods implemented in that class are all available.  More information about
+what specific sub-class is used can be found in the documentation of the
+containing class.
+
+=cut
+
+Readonly our $ProfileClass => 24;
 
 
 =head1 SEE ALSO
