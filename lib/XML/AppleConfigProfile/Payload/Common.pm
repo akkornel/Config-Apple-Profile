@@ -19,6 +19,7 @@ use Try::Tiny;
 use version 0.77; 
 use XML::AppleConfigProfile::Payload::Tie::Root;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
+use XML::AppleConfigProfile::Payload::Types::Serialize qw(serialize);
 use XML::AppleConfigProfile::Payload::Types::Validation;
 use XML::AppleConfigProfile::Targets qw(:all);
 
@@ -303,49 +304,8 @@ sub plist {
             # If we're here, then the version isn't set, or we're new enough!
         } # Done checking target & version
         
-        # Look up the key type, and act based on that
-        # Also, grab the raw value, and replace it with its plist element
-        Readonly my $type => $keys->{$key}->{type};
-        my $value = $payload->{$key};
-        
-        # Strings need to be encoded as UTF-8 before export
-        if (   ($type == $ProfileString)
-            || ($type == $ProfileIdentifier)
-        ) {
-            $value = Mac::PropertyList::string->new(
-                Encode::encode('UTF-8', $value)
-            );
-        }
-        
-        # Numbers are easy
-        elsif ($type == $ProfileNumber) {
-            $value = Mac::PropertyList::integer->new($value);
-        }
-        
-        # All data is Base64-encoded for us by Mac::PropertyList
-        elsif ($type == $ProfileData) {
-            $value = Mac::PropertyList::data->new($value);
-        }
-        
-        # There are separate objects for true/false booleans
-        elsif ($type == $ProfileBool) {
-            if ($value) {
-                $value = Mac::PropertyList::true->new;
-            }
-            else {
-                $value = Mac::PropertyList::false->new;
-            }
-        }
-        
-        # UUIDs are converted to strings, then processed as such
-        elsif ($type == $ProfileUUID) {
-            $value = Mac::PropertyList::string->new(
-                Encode::encode('UTF-8', $value->as_string())
-            );
-        }
-        
-        # Now that we have a $value object, add it to the dictionary hash
-        $dict{$key} = $value;
+        # Serialize the payload contents as a plist fragment, and store
+        $dict{$key} = serialize($keys->{$key}->{type}, $payload->{$key});
     } # Done going through each payload key
     
     # Now that we have a populated $dict, make our final plist object!
