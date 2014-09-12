@@ -147,7 +147,7 @@ sub STORE {
     
     # Check if the proposed value is valid, and store if it is.
     # (Validating also de-taints the value, if it's valid)
-    $value = $self->{object}->_validate($key, $value);
+    $value = $self->{object}->validate_key($key, $value);
     if (defined($value)) {
         $self->{payload}->{$key} = $value;
     }

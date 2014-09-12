@@ -368,7 +368,7 @@ sub exportable {
     ...
 }
 
-=head2 _validate($key, $value)
+=head2 validate_key($key, $value)
 
 Confirm the value provided is valid for the given payload key, and return a
 de-tained copy of C<$value>, or C<undef> if the provided value is invalid. 
@@ -398,7 +398,7 @@ because it's possible for a valid value to be false (for example, 0)!
 
 =cut
 
-sub _validate {
+sub validate_key {
     my ($self, $key, $value) = @_;
     
     # Does our payload key exist?
