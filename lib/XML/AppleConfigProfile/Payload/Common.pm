@@ -608,11 +608,49 @@ It is used to specify the type of data the profile key contains.
 The type is used when creating L<Mac::PropertyList> objects, and when doing
 value-checking.
 
+If a payload class uses <$ProfileClass> as a type, then the payload class is
+responsible for providing an instance method named C<construct>, which takes
+the payload key name as its only parameter, and returns a new object.
+
+This key must be present.
+
+=item C<subtype>
+
+This key is required when C<type> is set to C<$ProfileDict> or C<$ProfileArray>.
+
+If C<type> is set to C<$ProfileDict>, then C<subtype> contains the type of
+data stored as values.  That data type will be used for validation, when
+entries are added to the Perl hash representing the dictionary.
+
+If C<type> is set to C<$ProfileArray>, then C<subtype> contains the type of
+data stored in the array.  That data type will be used for validation, when
+entries are added to the Perl array.
+
+If a payload class uses <$ProfileClass> as a subtype, then the payload class is
+responsible for providing an instance method named C<construct>, which takes
+the payload key name as its only parameter, and returns a new object.
+
+For other values of the C<type> key, this key must I<not> be present.
+
 =item C<description>
 
 This key's value contains a human-readable description of the profile key.  The
 purpose of this is so that client software can easily enumerate profile keys,
 such as when making a web application.
+
+This key must be present.
+
+=item C<targets>
+
+This key's value is a hashref.  Within the hashref, the keys are platform
+identifiers, scalars taken from C<XML::AppleConfigProfile::Targets>.  The value
+for each key is a version object representing the earliest version of the
+named platform's OS which supports this payload key.
+
+If a platform does not support a particular key at all, that platform should not
+be included in the hashref.
+
+This key must be present, and the hashref must contain at least one entry.
 
 =item C<optional>
 
