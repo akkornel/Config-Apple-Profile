@@ -106,19 +106,6 @@ sub validate {
         return $value if ref($value) eq 'ARRAY';
     }
     
-    # We recognize arrays of dictionaries
-    elsif ($type == $ProfileArrayOfDicts) {
-        # First, make sure the outer container is an arrayref
-        if (ref($value) eq 'ARRAY') {
-            # Make sure each array item is a hashref
-            my $all_are_hashrefs = 1;
-            foreach my $i (@$value) {
-                $all_are_hashrefs = 0 if ref($i) ne 'HASH';
-            }
-            return $value if $all_are_hashrefs;
-        }
-    }
-    
     # We recognize Identifier types
     elsif ($type == $ProfileIdentifier) {
         return validate_identifier($value);

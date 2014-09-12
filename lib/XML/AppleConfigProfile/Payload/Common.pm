@@ -470,7 +470,6 @@ sub validate_key {
         || ($type == $ProfileNSDataBlob)
         || ($type == $ProfileDict)
         || ($type == $ProfileArray)
-        || ($type == $ProfileArrayOfDicts)
         || ($type == $ProfileIdentifier)
         || ($type == $ProfileUUID)
     ) {

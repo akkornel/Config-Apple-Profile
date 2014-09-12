@@ -87,7 +87,6 @@ sub TIEARRAY {
             && ($value_type != $ProfileBool)
             && ($value_type != $ProfileDict)
             && ($value_type != $ProfileArray)
-            && ($value_type != $ProfileArrayOfDicts)
             && ($value_type != $ProfileNSDataBlob)
             && ($value_type != $ProfileUUID)
             && ($value_type != $ProfileIdentifier)
