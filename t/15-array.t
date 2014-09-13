@@ -57,7 +57,7 @@ use Test::More;
 #    * Remove some from the end
 #    * Splice the entire array
 
-plan tests => 2 + 4 + (1 + 20 + 1) + 2 + (4 * 2) + (5 + 7) + 13 + 15;
+plan tests => 4 + 4 + (1 + 20 + 1) + 4 + 2 + (4 * 2) + (5 + 7) + 13 + 15;
 
 # Create an array to use for testing
 my $object = new Local::Array;
@@ -66,6 +66,8 @@ my $array = $object->payload->{arrayField};
 # First, put the numbers 1 to 20 into the array
 lives_ok { push @$array, (11..20); } 'Push numbers onto array';
 lives_ok { unshift @$array, (1..10); } 'Unshift numbers onto array';
+cmp_ok(exists $array->[19], '==', 1, 'Confirm index 19 exists');
+cmp_ok(exists $array->[20], '==', 0, 'Confirm index 20 does not exist');
 
 
 # Storing into indexes should fail (weather they exist or not)
@@ -88,6 +90,16 @@ foreach my $item (@$plist_array) {
     $i++;
 }
 cmp_ok($i, '==', 21, 'Confirm 20 items were read');
+
+
+# Make sure expanding the array by STORESIZE does nothing
+lives_ok { $#{$array} = 30; } 'Try to grow array';
+cmp_ok(scalar @$array, '==', 20, 'Confirm array did not grow');
+
+# Try to use STORESIZE to shrink the array by 4 items
+# We're subtracing 5 because we're changing the max index, which is offset by 1
+lives_ok { $#{$array} = scalar(@$array) - 5; } 'Try to shrink array';
+cmp_ok(scalar @$array, '==', 16, 'Confirm array is now smaller by 4');
 
 
 # Clear the array, and make sure it's now empty
