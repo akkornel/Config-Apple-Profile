@@ -107,17 +107,8 @@ Readonly my @bad_IDs => (
 #  * We can also test for strings that aren't IDs.
 #  * Pushing onto a list should be OK, and they should come out OK
 #    (More detailed testing is in 17-uuid.t and 15-array.t)
-plan tests => 0 + 11*scalar(@IDs) + 4*scalar(@baddies) + 5*scalar(@bad_IDs);
+plan tests => 11*scalar(@IDs) + 4*scalar(@baddies) + 5*scalar(@bad_IDs);
 
-# Test all of the numbers that should be good.
-#foreach my $number (@numbers) {
-#    my $object = new Local::Number;
-#    my $payload = $object->payload;
-#    lives_ok {$payload->{numberField} = $number} "Write number $number";
-#    my $read_number = $payload->{numberField};
-#    ok(defined($read_number), 'Read number back');
-#    cmp_ok($read_number, '==', $number, 'Compare numbers');
-#}
 
 # A reference array, for comparison
 my @reference_array = ();
