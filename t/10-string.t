@@ -110,9 +110,6 @@ Readonly my @bad_IDs => (
 plan tests => 11*scalar(@IDs) + 4*scalar(@baddies) + 5*scalar(@bad_IDs);
 
 
-# A reference array, for comparison
-my @reference_array = ();
-
 # Make sure all of the identifiers pass, as both strings and IDs
 foreach my $ID (@IDs) {
     my $object = new Local::StringID;
@@ -127,7 +124,6 @@ foreach my $ID (@IDs) {
     # Push the identifier into the string and ID array
     lives_ok { push @{$payload->{stringArrayField}}, $ID; } 'Push string onto array';
     lives_ok { push @{$payload->{IDArrayField}}, $ID; } 'Push ID onto array';
-    push @reference_array, $ID;
     
     # Make sure we get a correct plist out
     my $plist;
