@@ -9,13 +9,13 @@ our $VERSION = '0.00_001';
 use Exporter::Easy (
     OK => [qw(
         $ProfileString $ProfileNumber $ProfileData $ProfileBool
-        $ProfileDict $ProfileArray
+        $ProfileReal $ProfileDate $ProfileDict $ProfileArray
         $ProfileNSDataBlob $ProfileUUID $ProfileIdentifier
     )],
     TAGS => [
         'all' => [qw(
           $ProfileString $ProfileNumber $ProfileData $ProfileBool
-          $ProfileDict $ProfileArray
+          $ProfileReal $ProfileDate $ProfileDict $ProfileArray
           $ProfileNSDataBlob $ProfileUUID $ProfileIdentifier $ProfileClass
         )],
     ],
@@ -68,6 +68,17 @@ a range, but one may be imposed by specific keys.
 
 Readonly our $ProfileNumber => 2;
 
+
+=head2 Real (C<$ProfileReal>)
+
+A real number, positive, zero, or negative.  The plist standard doesn't specify
+a range, but one may be imposed by specific keys.
+
+=cut
+
+Readonly our $ProfileReal => 5;
+
+
 =head2 Data (C<$ProfileData>)
 
 Binary data.  Binary data may be provided by the client in multiple ways.
@@ -98,6 +109,24 @@ accepted!
 =cut
 
 Readonly our $ProfileBool => 4;
+
+
+=head2 Date (C<$ProfileDate>)
+
+A date.  This is stored internally as a C<DateTime> object, and when read a
+C<DateTime> object will be returned.  When serialized into plist form, the
+time will be in UTC, but no other guarantees are made about the timezone when
+the object is stored internally, so if you read a Date, be sure to call
+C<< ->set_time_zone() >> before outputting it yourself.
+
+If a string is provided, L<DateTime::Format::Flexible> will be used to parse it.
+For best results, parse it yourself, and provide the resulting C<DateTime>
+object!
+
+=cut
+
+Readonly our $ProfileDate => 5;
+
 
 =head2 Dictionary (C<$ProfileDict>)
 

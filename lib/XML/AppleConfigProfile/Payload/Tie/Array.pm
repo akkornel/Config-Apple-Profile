@@ -84,6 +84,9 @@ sub TIEARRAY {
         elsif ($value_type == $ProfileNumber) {
             $object{validator} = \&validate_number;
         }
+        elsif ($value_type == $ProfileReal) {
+            $object{validator} = \&validate_real;
+        }
         elsif (   ($value_type == $ProfileData)
                || ($value_type == $ProfileNSDataBlob)
         ) {
@@ -91,6 +94,9 @@ sub TIEARRAY {
         }
         elsif ($value_type == $ProfileBool) {
             $object{validator} = \&validate_bool;
+        }
+        elsif ($value_type == $ProfileDate) {
+            $object{validator} = \&validate_date;
         }
         elsif ($value_type == $ProfileUUID) {
             $object{validator} = \&validate_uuid;

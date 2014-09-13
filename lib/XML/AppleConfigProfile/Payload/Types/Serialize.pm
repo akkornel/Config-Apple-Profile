@@ -9,6 +9,7 @@ use warnings FATAL => 'all';
 
 our $VERSION = '0.00_001';
 
+use DateTime;
 use Encode qw(encode);
 use Exporter::Easy (
     OK => [qw(
@@ -76,6 +77,11 @@ sub serialize {
             $value = Mac::PropertyList::integer->new($value);
         }
         
+        # Reals are similarly easy
+        elsif ($type == $ProfileReal) {
+            $value = Mac::PropertyList::real->new($value);
+        }
+        
         # All data is Base64-encoded for us by Mac::PropertyList
         elsif (   ($type == $ProfileData)
                || ($type == $ProfileNSDataBlob)
@@ -91,6 +97,14 @@ sub serialize {
             else {
                 $value = Mac::PropertyList::false->new;
             }
+        }
+        
+        # Date
+        elsif ($type == $ProfileDate) {
+            # Set the time zone to UTC, make a string, and plist that
+            $value->set_time_zone('UTC');
+            my $string = $value->ymd . 'T' . $value->hms . 'Z';
+            $value = Mac::PropertyList::date->new($string);
         }
         
         # UUIDs are converted to strings, then processed as such

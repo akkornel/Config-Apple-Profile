@@ -428,8 +428,10 @@ sub validate_key {
     # If we are working with a basic type, then call the basic validator!
     if (   ($type == $ProfileString)
         || ($type == $ProfileNumber)
+        || ($type == $ProfileReal)
         || ($type == $ProfileBool)
         || ($type == $ProfileData)
+        || ($type == $ProfileDate)
         || ($type == $ProfileNSDataBlob)
         || ($type == $ProfileDict)
         || ($type == $ProfileArray)

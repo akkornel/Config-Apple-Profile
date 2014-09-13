@@ -6,21 +6,23 @@ use warnings FATAL => 'all';
 
 our $VERSION = '0.00_001';
 
+use DateTime;
+use DateTime::Format::Flexible;
 use Encode qw(encode);
 use Exporter::Easy (
     OK => [qw(
         validate 
-        validate_string validate_number
+        validate_string validate_number validate_real validate_date
         validate_boolean validate_data validate_identifier validate_uuid
     )],
     TAGS => [
         'all' => [qw(
             validate
-            validate_string validate_number
+            validate_string validate_number validate_real validate_date
             validate_boolean validate_data validate_identifier validate_uuid
         )],
         'types' => [qw(
-            validate_string validate_number
+            validate_string validate_number validate_real validate_date
             validate_boolean validate_data validate_identifier validate_uuid
         )],
     ],
@@ -82,6 +84,11 @@ sub validate {
         return validate_number($value);
     }
     
+    # We recognize Real (floating-point number) types
+    elsif ($type == $ProfileReal) {
+        return validate_real($value);
+    }
+    
     # We recognize Boolean types
     elsif ($type == $ProfileBool) {
         return validate_boolean($value);
@@ -92,6 +99,11 @@ sub validate {
            || ($type == $ProfileNSDataBlob)
     ) {
         return validate_data($value);
+    }
+    
+    # We recognize Date types
+    elsif ($type == $ProfileDate) {
+        return validate_date ($value);
     }
     
     # We recognize Identifier types
@@ -176,6 +188,36 @@ sub validate_number {
 }
 
 
+=head2 validate_real
+
+    my $number = validate_real($value)
+
+Returns a de-tainted C<$value> if it is an integer or a floating-point number.
+A loading C<+> is OK.  An exponent, positive or negative, is also OK.
+Any other input returns C<undef>.
+
+=cut
+
+sub validate_real {
+    my ($value) = @_;
+    
+    # References aren't allowed here
+    ## no critic (ProhibitExplicitReturnUndef)
+    return undef if ref($value);
+    ##use critic
+    
+    # Numbers must be floating-point, positive or negative (or zero).
+    if ($value =~ /^$RE{num}{real}{-keep}$/i) {
+        return $1;
+    }
+    
+    # If we're here, the matching failed, so return undef
+    ## no critic (ProhibitExplicitReturnUndef)
+    return undef;
+    ##use critic
+}
+
+
 =head2 validate_boolean
 
     my $boolean = validate_boolean($value);
@@ -201,6 +243,48 @@ sub validate_boolean {
         return 0;
     }
 }
+
+
+=head2 validate_date
+
+    my $date_object = validate_date($value);
+
+If C<$value> is already a finite C<DateTime> object, it is returned immediately.
+If C<$value> is a string, and can be parsed by L<DateTime::Format::Flexible>,
+the resulting C<DateTime> object will be returned.
+
+Unparseable strings, infinite C<DateTime> objects, and any other input will
+return C<undef>.
+
+=cut
+
+sub validate_date {
+    my ($value) = @_;
+    
+    # If we have a blessed ref, which is a DateTime object, and it represents
+    # a finite time, then we're good!
+    if (ref $value) {
+        ## no critic (ProhibitExplicitReturnUndef)
+        return undef unless blessed($value);
+        return undef unless $value->isa('DateTime');
+        return undef unless $value->is_finite;
+        ##use critic
+        
+        return $value
+    }
+    
+    # At this point, we have a scalar, so let's see if it can be parsed
+    try {
+        $value = DateTime::Format::Flexible->parse_datetime($value);
+        return $value;
+    }
+    
+    # I give up!
+    ## no critic (ProhibitExplicitReturnUndef)
+    return undef;
+    ##use critic
+}
+
 
 =head2 validate_data
 
