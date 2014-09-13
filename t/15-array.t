@@ -43,8 +43,6 @@ use Test::More;
 # basic data types.  However, there are some array-specific tests that are
 # here.
 
-# TODO: Test STORESIZE, and SPLICE
-
 # We will be testing the following
 #  * Storing into an array should fail
 #  * Deleting from an array should fail
@@ -52,10 +50,14 @@ use Test::More;
 #  * Clearing an array shoud work
 #  * Putting items into a cleared array should work
 #  * All forms of splicing should work:
-#    * Splicing to clear an array
-#    * 
+#    * Splice into the start
+#    * Splice into the end
+#    * Splice into the middle
+#    * Remove some from the middle
+#    * Remove some from the end
+#    * Splice the entire array
 
-plan tests => 2 + 4 + (1 + 20 + 1) + 2;
+plan tests => 2 + 4 + (1 + 20 + 1) + 2 + (4 * 2) + (5 + 7) + 13 + 15;
 
 # Create an array to use for testing
 my $object = new Local::Array;
@@ -93,23 +95,73 @@ lives_ok { @$array = (); } 'Clear array';
 cmp_ok(scalar @$array, '==', 0, 'Confirm array is empty');
 
 
+# A helper sub for the next section
+sub compare_arrays {
+    my ($array1, $array2) = @_;
+    
+    # Confirm lenghts are identical
+    cmp_ok(scalar @$array1, '==', scalar @$array2, 'Check array lengths');
+    
+    # Compare arrays
+    for (my $i = 0; $i < scalar @$array1; $i++) {
+        cmp_ok($array1->[$i], '==', $array2->[$i], "Compare index $i");
+    }
+}
+
+# Use a few arrays for tracking
+my @reference_array = ();
+my @items_returned = ();
+
+
 # Add 5 items to the array
+lives_ok { push @$array, (6..10); } 'Add 5 items to array';
+push @reference_array, (6..10);
+cmp_ok(scalar @$array, '==', 5, 'Confirm array has 5 items');
 
 # Splice 5 items onto the beginning
+lives_ok { @items_returned = splice @$array, 0, 0, (1..5); }
+         'Splice 5 items at start of array';
+splice @reference_array, 0, 0, (1..5);
+cmp_ok(scalar @items_returned, '==', 0, '... nothing returned');
 
 # Splice 3 items onto the end
+lives_ok { @items_returned = splice @$array, (scalar @$array), 0, (997..999); }
+         'Splice 3 items at end of array';
+splice @reference_array, (scalar @reference_array), 0, (997..999);
+cmp_ok(scalar @items_returned, '==', 0, '... nothing returned');
 
 # Splice 7 items in near the middle
+lives_ok { @items_returned = splice @$array, 6, 0, (100..106); }
+         'Splice 7 items in middle of array';
+splice @reference_array, 6, 0, (100..106);
+cmp_ok(scalar @items_returned, '==', 0, '... nothing returned');
+
 
 # Remove 3 items from near the middle
+lives_ok { @items_returned = splice @$array, 4, 3; }
+         'Remove 3 items from near the middle';
+splice @reference_array, 4, 3;
+compare_arrays(\@items_returned, [5,6,100]);
 
 # Remove 5 items off the end
+lives_ok { @items_returned = splice @$array, -5, 5; }
+         'Remove 5 items from the end';
+splice @reference_array, -5, 5;
+compare_arrays(\@items_returned, [9,10,997,998,999]);
+
 
 # Check that the array has 12 items, in expected order
+compare_arrays($array, \@reference_array);
+
 
 # Splice the array into emptiness
+lives_ok { @items_returned = splice @$array; }
+         'Splice array into nothingness';
+compare_arrays(\@items_returned, \@reference_array);
 
 # Check that the array is empty
+cmp_ok(scalar @$array, '==', 0, 'Confirm array is empty');
+
 
 # Done!
 done_testing();
