@@ -305,10 +305,7 @@ sub plist {
         } # Done checking target & version
         
         # Serialize the payload contents as a plist fragment, and store
-        $dict{$key} = serialize($keys->{$key}->{type},
-                                $payload->{$key},
-                                $keys->{$key}->{subtype} || undef
-        );
+        $dict{$key} = serialize($keys->{$key}->{type}, $payload->{$key});
     } # Done going through each payload key
     
     # Now that we have a populated $dict, make our final plist object!
