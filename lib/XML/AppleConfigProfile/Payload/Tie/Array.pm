@@ -171,7 +171,7 @@ end of the array.  Making the array bigger (that is, presizing) has no effect.
 sub STORESIZE {
     my ($self, $count) = @_;
     
-    return if ($count >= scalar @{$self->{array}});
+    return if ($count >= $self->FETCHSIZE);
     $#{$self->{array}} = $count - 1; 
 }
 
