@@ -43,7 +43,7 @@ use Test::More;
 # basic data types.  However, there are some array-specific tests that are
 # here.
 
-# TODO: Test STORESIZE, CLEAR, and SPLICE
+# TODO: Test STORESIZE, and SPLICE
 
 # We will be testing the following
 #  * Storing into an array should fail
@@ -55,7 +55,7 @@ use Test::More;
 #    * Splicing to clear an array
 #    * 
 
-plan tests => 2 + 4 + (1 + 20 + 1);
+plan tests => 2 + 4 + (1 + 20 + 1) + 2;
 
 # Create an array to use for testing
 my $object = new Local::Array;
@@ -89,6 +89,9 @@ cmp_ok($i, '==', 21, 'Confirm 20 items were read');
 
 
 # Clear the array, and make sure it's now empty
+lives_ok { @$array = (); } 'Clear array';
+cmp_ok(scalar @$array, '==', 0, 'Confirm array is empty');
+
 
 # Add 5 items to the array
 

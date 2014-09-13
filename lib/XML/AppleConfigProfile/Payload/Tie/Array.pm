@@ -176,6 +176,17 @@ sub STORESIZE {
 }
 
 
+=head3 EXTEND
+
+If Perl attempts to pre-extend the array, nothing happens.
+
+=cut
+
+sub EXTEND {
+    my ($self, $count) = @_;
+}
+
+
 =head2 exists
 
 Works as expected for a Perl array: Returns true if the specified index is
