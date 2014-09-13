@@ -19,7 +19,7 @@ package Local::Number;
 
 use Readonly;
 use XML::AppleConfigProfile::Payload::Common;
-use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber);
+use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber $ProfileArray);
 
 use base qw(XML::AppleConfigProfile::Payload::Common);
 
@@ -27,6 +27,11 @@ Readonly our %payloadKeys => (
     'numberField' => {
         type => $ProfileNumber,
         description => 'A field containing a number.',
+    },
+    'numberArrayField' => {
+        type => $ProfileArray,
+        subtype => $ProfileNumber,
+        description => 'An array of numbers.',
     },
 );
 
@@ -91,7 +96,7 @@ Readonly my @baddies => (
 #  * Write the number into the field without errors.
 #  * Read the number from the field without errors.
 #  * Have the read number equal what was written.
-plan tests => scalar(@baddies) + 5*scalar(@numbers);
+plan tests => 7*scalar(@numbers) + 2*scalar(@baddies);
 
 # Test all of the numbers that should be good.
 foreach my $number (@numbers) {
@@ -103,11 +108,16 @@ foreach my $number (@numbers) {
     my $read_number = $payload->{numberField};
     ok(defined($read_number), 'Read number back');
     cmp_ok($read_number, '==', $number, 'Compare numbers');
+    lives_ok { push @{$payload->{numberArrayField}}, $number; }
+             'Push number onto array';
     
     # Make sure we get a correct plist out
     my $plist;
     lives_ok {$plist = $object->plist} 'Convert to plist';
     cmp_ok($plist->value->{numberField}->value, '==', $number, 'plist number matches');
+    cmp_ok($plist->value->{numberArrayField}->value->[-1]->value,
+           'eq', $payload->{numberField}, 'test number at the end of array'
+    );
 }
 
 # Make sure all of the not-numbers fail
@@ -115,6 +125,8 @@ foreach my $not_number (@baddies) {
     my $object = new Local::Number;
     my $payload = $object->payload;
     dies_ok { $payload->{numberField} = $not_number; } 'A non-number';
+    dies_ok { push @{$payload->{numberArrayField}}, $not_number; }
+            '... pushing also fails';
 }
 
 # Done!
