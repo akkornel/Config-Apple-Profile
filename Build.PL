@@ -23,6 +23,7 @@ my $builder = Module::Build->new(
     },
     requires => {
         'Data::GUID'             => 0,
+        'DateTime'               => 0,
         'Exporter::Easy'         => 0,
         'Mac::PropertyList'      => 1.40,
 #        'Moo'                    => 0,
