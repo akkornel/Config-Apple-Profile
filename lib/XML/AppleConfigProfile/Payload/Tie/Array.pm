@@ -326,19 +326,30 @@ An exception will be thrown if either of the two points above fails.
 =cut
 
 sub SPLICE {
+    # We can't use Tie::Array or Tie::StdArray for this, because it expects
+    # something we can't easily give.  We'll have to do it ourselves.
     my $self = CORE::shift @_;
     
-    # If splice was called with more than three parameters, then we need to
-    # check each of the list items that are being inserted.
-    if (scalar @_ >= 3) {
-        my $offset = CORE::shift @_;
-        my $length = CORE::shift @_;
+    # We'll need the current array size for reference
+    my $size = $self->FETCHSIZE;
+    
+    # Get the offset from the parameters, or default to 0
+    # If offset is negative, make it relative to the array end
+    my $offset = scalar @_ ? shift @_ : 0;
+    $offset += $size if $offset < 0;
+    
+    # Get the length from the parameters.  If length wasn't provided, then
+    # we're grabbing all of the array starting at $offset
+    my $length = scalar @_ ? shift @_ : $size - $offset;
+    
+    # If there are any parameters left, then they are items to insert.
+    # Validate them before continuing.
+    if (scalar @_ >= 0) {
         @_ = $self->_validate(@_);
-        CORE::unshift @_, ($offset, $length);
     }
     
-    # Once validation is done, let Tie::StdArray take over
-    return Tie::StdArray::SPLICE($self->{array}, @_);
+    # Do the splice and return.
+    return splice($self->{array}, $offset , $length, @_);
 }
 
 
