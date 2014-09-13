@@ -40,26 +40,27 @@ plist form.
 
 =head2 serialize
 
-    my $plist_fragment = serialize($type, $value);
+    my $plist_fragment = serialize($type, $value, [$subtype]);
 
 Given C<$value>, returns a C<Mac::PropertyList> object containing the contents
 of C<$value>.  C<$type> must be one of the types listed in
 L<XML::AppleConfigProfile::Payload::Types>, and is used to identify which type
 of plist item to create (string, number, array, etc.).
 
-If C<$type> is C<$ProfileArray> or C<$ProfileDict>, C<serialize> will recurse
-into the structure, serialize it, and then put everything into the appropriate
-plist array or dict, which will be returned.
+If C<$type> is C<$ProfileArray> or C<$ProfileDict>, C<$subtype> must be defined.
+C<serialize> will recurse into the structure, serialize it, and then put
+everything into the appropriate plist array or dict, which will be returned.
+C<$subtype> is the type of contents for the C<$ProfileArray> or C<$ProfileDict>.
 
 If C<$type> is C<$ProfileClass>, then C<< $value->plist >> will be called,
 and the 
 
-An exception will be thrown if C<$type> is not recognized.
+An exception will be thrown if C<$type> or C<$subtype> are not recognized.
 
 =cut
 
 sub serialize {
-    my ($type, $value) = @_;
+    my ($type, $value, $subtype) = @_;
     
         # Strings need to be encoded as UTF-8 before export
         if (   ($type == $ProfileString)
@@ -97,6 +98,40 @@ sub serialize {
             $value = Mac::PropertyList::string->new(
                 Encode::encode('UTF-8', $value->as_string())
             );
+        }
+        
+        # For arrays, make a Perl array of fragments, then plist that
+        elsif ($type == $ProfileArray) {
+            my @array;
+            
+            # Go through each array item, serialize it, and add it to our array
+            foreach my $item (@$value) {
+                push @array, serialize($subtype, $item, undef);
+            }
+            
+            $value = Mac::PropertyList::array->new(\@array);
+        }
+        
+        # For hashed, make a Perl hash of fragments, then plist that
+        elsif ($type == $ProfileDict) {
+            my %hash;
+            
+            # Go through each hash key, serialize it, and add it to our array
+            foreach my $key (keys %$value) {
+                $hash{$key} = serialize($subtype, $value->{$key}, undef);
+            }
+            
+            $value = Mac::PropertyList::dict->new(\%hash);
+        }
+        
+        # For class, let it serialize itself
+        elsif ($type == $ProfileClass) {
+            return $value->plist;
+        }
+        
+        # We've checked all the types we know about
+        else {
+            die "Unknown type $type";
         }
         
         return $value;
