@@ -23,7 +23,7 @@ use Readonly;
 
 =head1 NAME
 
-C<XML::AppleConfigProfile::Targets> - Constants for payload targets
+XML::AppleConfigProfile::Targets - Constants for payload targets
 
 =head1 DESCRIPTION
 
@@ -31,7 +31,7 @@ Apple Configuration Profiles can be used on different platforms.  Although some
 payloads only work on specific platforms, most payloads can be at least
 partially applied to all platforms that support Apple Configuration Profiles.
 
-Provided in this module are a number of Readonly scalars that will be used
+Provided in this module are a number of read-only scalars that will be used
 (instead of strings) to identify the platforms supported by configuration
 profiles.  The scalars are all OK for import into your local namespace, or you
 can simply import C<:all> to get all of them at once. 
@@ -40,7 +40,7 @@ can simply import C<:all> to get all of them at once.
 
 Apple Configuration Profiles can be targeted to the following platforms:
 
-=head2 C<TargetIOS>
+=head2 iOS C<$TargetIOS>
 
 Apple's iOS.  In general, at least iOS version 5.0 is required.
 
@@ -48,7 +48,7 @@ Apple's iOS.  In general, at least iOS version 5.0 is required.
 
 Readonly our $TargetIOS => 1;
 
-=head2 C<TargetOSX>
+=head2 Mac OS X C<$TargetOSX>
 
 Apple's Mac OS X.  In general, at least OS X version 10.7 is required.
 
