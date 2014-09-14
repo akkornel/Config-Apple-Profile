@@ -24,11 +24,11 @@ different Certificate payload types.
 =head1 DESCRIPTION
 
 This class I<partially> implements the Certificate payload.  This payload
-is used to send certificates, and certificate-key pairs, to a phone.
+is used to send certificates, and certificate-key pairs, to a device.
 
 This payload is typically used early in the provisioning process, in order to
 load a non-standard certificate authority (or intermediate certificate) onto the
-phone.  In addition, this payload can be used to load a user's private key and
+device.  In addition, this payload can be used to load a user's private key and
 public certificate onto the phone, so that it can be used for email (using
 S/MIME) and web (client certificate) authentication.
 
@@ -38,13 +38,13 @@ determine what type of certificate is being installed.
 
 B<NOTE:>  Installing a certificate does not automatically make it trusted!  In
 order for the OS to trust a certificate, the entire chain (from a root cert
-down) must be present.  So, if the root already exists in the system, you may
+down) must be present.  Eveb if the root already exists on the device, you may
 still need to install an intermediate certificate.
 
 B<NOTE:>  As per L<http://support.apple.com/kb/TS4133>, starting with iOS 5,
 if a certificate chain includes a cert that uses MD5 hashing, then that cert,
 I<along with every cert below it>, will be untrusted.  You should only ever use
-certificates with SHA signatures.
+certificates with SHA signatures, and preferably SHA-256 or better.
 
 B<NOTE:> Typically, you will B<not> use this module directly!  Apple defines
 four different types of certificate payloads, each with a different identifier.
@@ -108,7 +108,7 @@ Readonly our %payloadKeys => (
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<XML::AppleConfigProfile> for acknowledgements.
 
 =head1 AUTHOR
 
