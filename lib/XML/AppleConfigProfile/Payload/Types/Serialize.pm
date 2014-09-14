@@ -77,9 +77,9 @@ sub serialize {
             $value = Mac::PropertyList::integer->new($value);
         }
         
-        # Reals are similarly easy
+        # Reals are similarly easy, but use an uppercase E
         elsif ($type == $ProfileReal) {
-            $value = Mac::PropertyList::real->new($value);
+            $value = Mac::PropertyList::real->new(uc($value));
         }
         
         # All data is Base64-encoded for us by Mac::PropertyList
