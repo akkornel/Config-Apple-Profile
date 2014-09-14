@@ -23,6 +23,8 @@ use Exporter::Easy (
 use Readonly;
 
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Types - Data types for payload keys.

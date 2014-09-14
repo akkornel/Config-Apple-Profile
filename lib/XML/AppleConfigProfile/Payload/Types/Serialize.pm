@@ -25,6 +25,8 @@ use Mac::PropertyList;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Types::Serialize - Convert common payload

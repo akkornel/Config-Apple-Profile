@@ -15,6 +15,8 @@ use XML::AppleConfigProfile::Payload::Types qw(:all);
 use XML::AppleConfigProfile::Payload::Types::Validation qw(:types);
 
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Tie::Array - Tying class for arrays of things.

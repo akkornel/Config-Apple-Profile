@@ -14,6 +14,8 @@ use XML::AppleConfigProfile::Payload::Tie::Array;
 use XML::AppleConfigProfile::Payload::Types qw($ProfileArray $ProfileDict $ProfileClass);
 
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Tie::Root - Tying class for payload storage.

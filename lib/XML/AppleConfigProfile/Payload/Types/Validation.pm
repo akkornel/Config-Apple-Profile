@@ -33,6 +33,8 @@ use Try::Tiny;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Types::Validation - Validation of common

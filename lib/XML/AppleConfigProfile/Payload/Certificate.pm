@@ -14,6 +14,8 @@ use Readonly;
 use XML::AppleConfigProfile::Payload::Common;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Certificate - Base class for the four

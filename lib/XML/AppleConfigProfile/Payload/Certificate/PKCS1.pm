@@ -16,6 +16,8 @@ use XML::AppleConfigProfile::Payload::Certificate;
 use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber $ProfileString);
 
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Certificate::PKCS1 - Certificate payload with

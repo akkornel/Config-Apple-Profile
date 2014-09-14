@@ -15,6 +15,8 @@ use XML::AppleConfigProfile::Targets qw(:all);
 our $VERSION = '0.00_001';
 
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile - An OO interface to Apple Configuration Profiles.

@@ -24,6 +24,8 @@ use XML::AppleConfigProfile::Payload::Types::Validation;
 use XML::AppleConfigProfile::Targets qw(:all);
 
 
+=encoding utf8
+
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Common - Base class for almost all payload
