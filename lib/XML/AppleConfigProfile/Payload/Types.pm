@@ -44,7 +44,7 @@ import C<:all> to get all of them at once.
 
 =head1 TYPES
 
-Apple Configuration Profile payloads use the following types, 
+Apple Configuration Profile payloads use the following types:
 
 =head2 String (C<$ProfileString>)
 
@@ -54,17 +54,18 @@ not allow this.  Empty strings are B<not> allowed.
 
 B<NOTE:>  If your source data was not ASCII, and not UTF-8, then please make
 sure you have converted it before doing anything else!  "converted it" normally
-means using the C<Encode> module to convert from the original encoding.  Your
+means using C<Encode::decode> to convert from the original encoding.  Your
 string will not be valid unless it can be encoded as UTF-8.
 
 =cut
 
 Readonly our $ProfileString => 1;
 
+
 =head2 Number (C<$ProfileNumber>)
 
-An Integer, positive, zero, or negative.  The plist standard doesn't specify
-a range, but one may be imposed by specific keys.
+An Integer, which may be positive, zero, or negative.  The plist standard
+doesn't specify a range, but one may be imposed by specific keys.
 
 =cut
 
@@ -73,8 +74,9 @@ Readonly our $ProfileNumber => 2;
 
 =head2 Real (C<$ProfileReal>)
 
-A real number, positive, zero, or negative.  The plist standard doesn't specify
-a range, but one may be imposed by specific keys.
+A real number, which may be positive, zero, or negative.  It may also have
+an exponent.  The plist standard doesn't specify a range, but one may be
+imposed by specific keys.
 
 =cut
 
@@ -83,22 +85,23 @@ Readonly our $ProfileReal => 5;
 
 =head2 Data (C<$ProfileData>)
 
-Binary data.  Binary data may be provided by the client in multiple ways.
+Binary data.
 
+Binary data may be provided by the client in multiple ways.
 Clients can provide an open filehandle, or an open C<IO> object.
 C<Scalar::Util::openhandle> is used to make sure the handle/object is open.
 
-B<NOTE:>  When opening the file, please remember to use C<binmode()> before you
-do anything else with the file.  Also, make sure the handle is open for reading!
+The file needs to be open for reading.
 
 The client may also provide a string.  If a string is provided, then it must be
 a I<non-empty>, I<binary> string.  In other words, C<utf8::is_utf8> needs to
-return C<false>; if it's returning C<true>, then you probably need to use
+return C<false>.  If the flag is C<true>, then you probably need to use
 C<Encode::encode> (or maybe C<Encode::encode_utf8>) to get a binary string.
 
 =cut
 
 Readonly our $ProfileData => 3;
+
 
 =head2 Boolean (C<$ProfileBool>)
 
@@ -133,19 +136,20 @@ Readonly our $ProfileDate => 5;
 =head2 Dictionary (C<$ProfileDict>)
 
 A dictionary is the plist equivalent to a Perl hash, and that is what will be
-made available.  The client should expect the hash to only accept certain types
-of C<XML::AppleConfigProfile::Payload::> modules.  For more information, see the
-documentation for the specific key.
+made available.  The client should expect the hash to restrict what key names,
+and what values, are accepted.  For more information, see the
+documentation for the specific payload key.
 
 =cut
 
 Readonly our $ProfileDict => 10;
 
+
 =head2 Array (C<$ProfileArray>)
 
 An array, similar to a Perl array.  The client should expect the array to only
 accept certain data types.  For more information, see the documentation for the
-specific key.
+specific payload key.
 
 =cut
 
@@ -167,9 +171,10 @@ C<Data> type.
 
 Readonly our $ProfileNSDataBlob => 20;
 
+
 =head1 CUSTOM TYPES
 
-The following types are not actual profile key types, but they are being
+The following types are not defined in the plist standard, but they are being
 treated specially here.
 
 =head2 UUID (C<$ProfileUUID>)
@@ -177,8 +182,8 @@ treated specially here.
 I<Also known as a GUID>
 
 Although the plist format does not have a special type for UUIDs (a simple
-String is used), these modules designate a special type for UUIDs, as a
-convenience to the client:  All payloads have a UUID as one of the required
+String is used), these modules designate a special type for UUIDs as a
+convenience to the client.  All payloads have a UUID as one of the required
 keys.  If the client does not specify a UUID when creating a payload, then
 one will be lazily auto-generated.
 
@@ -192,6 +197,7 @@ string very easily:
 =cut
 
 Readonly our $ProfileUUID => 21;
+
 
 =head2 Identifier (C<$ProfileIdentifier>)
 
@@ -212,8 +218,8 @@ Readonly our $ProfileIdentifier => 22;
 This profile type is used to indicate that the value is an instance of a class.
 The class is a sub-class of C<XML::AppleConfigProfile::Payload::Common>, so the
 methods implemented in that class are all available.  More information about
-what specific sub-class is used can be found in the documentation of the
-containing class.
+what specific sub-class is used can be found in the documentation for the
+specific payload key.
 
 =cut
 
