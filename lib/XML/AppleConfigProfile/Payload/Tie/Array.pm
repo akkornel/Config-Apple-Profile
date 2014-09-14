@@ -36,7 +36,7 @@ This class is used by payload classes to represent an array.
 
 =head2 "CLASS" METHODS
 
-=head2 tie @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $value_type
+=head3 tie @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $value_type
 
 When this class is tied to an array, C<TIEARRAY> will be called, with the class
 name as the first argument.
@@ -115,7 +115,7 @@ sub TIEARRAY {
 }
 
 
-=head2 FETCH
+=head3 FETCH
 
 Works as one would expect with a Perl array.  Returns the entry at the specified
 index.  Since methods are in place to prevent storing C<undef>, as long as the
@@ -130,7 +130,7 @@ sub FETCH {
 }
 
 
-=head2 STORE
+=head3 STORE
 
 Storing items at a specific index is not allowed.  This is to help prevent
 C<undef> from appearing in the array.  Instead, use C<push> or C<unshift>.
@@ -195,7 +195,7 @@ sub EXTEND {
 }
 
 
-=head2 exists
+=head3 exists
 
 Works as expected for a Perl array: Returns true if the specified index is
 still valid for the array.
@@ -210,7 +210,7 @@ sub EXISTS {
 }
 
 
-=head2 CLEAR
+=head3 CLEAR
 
 Replacing the array with an empty list works to remove all of the entries from
 the array.
@@ -224,7 +224,7 @@ sub CLEAR {
 }
 
 
-=head2 push
+=head3 push
 
 Works as expected for a Perl array, with two exceptions:
 
@@ -256,7 +256,7 @@ sub PUSH {
 }
 
 
-=head2 pop
+=head3 pop
 
 Works as expected for a Perl array.
 
@@ -268,7 +268,7 @@ sub POP {
 }
 
 
-=head2 shift
+=head3 shift
 
 Works as expected for a Perl array.
 
@@ -280,7 +280,7 @@ sub SHIFT {
 }
 
 
-=head2 unshift
+=head3 unshift
 
 Works as expected for a Perl array, with two exceptions:
 
@@ -311,7 +311,7 @@ sub UNSHIFT {
 }
 
 
-=head2 splice
+=head3 splice
 
 Works as expected for a Perl array, but if you are using C<splice> to add
 entries to the array, take note of these two exceptions:
@@ -361,7 +361,7 @@ sub SPLICE {
 }
 
 
-=head2 _validate
+=head3 _validate
 
 Given a list of items, each one will be validated, and the validated list will
 be returned.
