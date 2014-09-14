@@ -507,7 +507,7 @@ L<http://cpanratings.perl.org/d/XML-AppleConfigProfile>
 
 This project is on GitHub:
 
- L<https://github.com/akkornel/XML-AppleConfigProfile>
+L<https://github.com/akkornel/XML-AppleConfigProfile>
 
 The web site linked above has the most recently-pushed code, along with
 information on how to get a copy to your computer.
