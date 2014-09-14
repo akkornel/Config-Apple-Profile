@@ -207,7 +207,7 @@ that spaces are I<not> acceptable here, even though they may be in RFC 1035.
 Readonly our $ProfileIdentifier => 22;
 
 
-=head2  (C<$ProfileClass>)
+=head2 Class (C<$ProfileClass>)
 
 This profile type is used to indicate that the value is an instance of a class.
 The class is a sub-class of C<XML::AppleConfigProfile::Payload::Common>, so the
