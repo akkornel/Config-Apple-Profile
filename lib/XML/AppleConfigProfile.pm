@@ -135,11 +135,18 @@ As an example, if you want to create a configuration profile that configures an
 IMAP email account, an LDAP server, and a passcode policy, you would need the
 following modules:
 
-* L<XML::AppleConfigProfile::Payload::Email> would configure the email account.
-* L<XML::AppleConfigProfile::Payload::LDAP> would configure the LDAP server.
-* L<XML::AppleConfigProfile::Payload::Passcode> would configure the passcode
+=over 4
+
+=item * L<XML::AppleConfigProfile::Payload::Email> would configure the email account.
+
+=item * L<XML::AppleConfigProfile::Payload::LDAP> would configure the LDAP server.
+
+=item * L<XML::AppleConfigProfile::Payload::Passcode> would configure the passcode
 policy.
-* This module would put everything together, and give you the final profile.
+
+=item * This module would put everything together, and give you the final profile.
+
+=back
 
 =cut
 
