@@ -46,7 +46,7 @@ a PEM-format certificate.
 This class implements the PEM type of Certificate payload.
 
 This payload contains a single certificate, in a PKCS#1 container,
-PEM-encoded.  In other words, if you've got a file that has "BEGIN CERTIFICATE"
+PEM-encoded.  If you have a file that has "BEGIN CERTIFICATE"
 in it, you've probably got this type of certificate.
 
 This payload is used to hold B<only one> certificate.  If you have multiple
@@ -98,7 +98,7 @@ Readonly our %payloadKeys => (
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<XML::AppleConfigProfile> for acknowledgements.
 
 =head1 AUTHOR
 
