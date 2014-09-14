@@ -39,7 +39,7 @@ the list from C<XML::AppleConfigProfile::Payload::Common>.
 
 =head2 "CLASS" METHODS
 
-=head2 tie %hash, 'XML::AppleConfigProfile::Payload::Tie::Root', $self
+=head3 tie %hash, 'XML::AppleConfigProfile::Payload::Tie::Root', $self
 
 This method is not useful in client code, but it is documented for future
 developers of this software.
@@ -89,7 +89,7 @@ sub TIEHASH {
 }
 
 
-=head2 FETCH
+=head3 FETCH
 
 Works as one would expect with a Perl hash.  Either the value is returned, or
 C<undef> is returned.  Exactly I<what> you get depends on the payload class and
@@ -161,7 +161,7 @@ sub FETCH {
 }
 
 
-=head2 STORE
+=head3 STORE
 
 Works I<almost> as one would expect with a Perl hash.  When setting a value to
 a key, two checks are performed:
@@ -257,7 +257,7 @@ sub EXISTS {
 }
 
 
-=head2 keys
+=head3 keys
 
 C<keys> returns a list of keys I<only for payload keys that have been set>.
 
@@ -284,7 +284,7 @@ sub NEXTKEY {
 }
 
 
-=head2 scalar
+=head3 scalar
 
 C<scalar> returns the number of payload keys that have values set.
 
