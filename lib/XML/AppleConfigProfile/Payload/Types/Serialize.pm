@@ -30,7 +30,7 @@ use XML::AppleConfigProfile::Payload::Types qw(:all);
 =head1 NAME
 
 XML::AppleConfigProfile::Payload::Types::Serialize - Convert common payload
-types to plist form
+types to plist form.
 
 
 =head1 DESCRIPTION
@@ -50,13 +50,14 @@ of C<$value>.  C<$type> must be one of the types listed in
 L<XML::AppleConfigProfile::Payload::Types>, and is used to identify which type
 of plist item to create (string, number, array, etc.).
 
-If C<$type> is C<$ProfileArray> or C<$ProfileDict>, C<$subtype> must be defined.
-C<serialize> will recurse into the structure, serialize it, and then put
-everything into the appropriate plist array or dict, which will be returned.
-C<$subtype> is the type of contents for the C<$ProfileArray> or C<$ProfileDict>.
+If C<$type> is C<$ProfileArray> or C<$ProfileDict>, then C<$subtype> must be
+defined.  C<serialize> will recurse into the structure, serialize it, and then
+put everything into the appropriate plist array or dictionary, which will be
+returned.  C<$subtype> is used to tell C<serialize> what type of data is being
+used within the array or dictionary.
 
 If C<$type> is C<$ProfileClass>, then C<< $value->plist >> will be called,
-and the 
+and the result will be returned.
 
 An exception will be thrown if C<$type> or C<$subtype> are not recognized.
 
