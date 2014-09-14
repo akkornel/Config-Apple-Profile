@@ -348,16 +348,16 @@ Readonly our %payloadKeys => (
         },
         optional => 1,
     },
-#    'PayloadExpirationDate' => {
-#        type => $ProfileDate,
-#        description => 'For profiles delivered via OTA, the date when the '
-#            . 'profile has expired and can be updated (again via OTA).',
-#        targets => {
-#            $TargetIOS => '5.0',
-#            $TargetMACOSX => '10.7',
-#        },
-#        optional => 1,
-#    },
+    'PayloadExpirationDate' => {
+        type => $ProfileDate,
+        description => 'For profiles delivered via OTA, the date when the '
+            . 'profile has expired and can be updated (again via OTA).',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7',
+        },
+        optional => 1,
+    },
     'PayloadRemovalDisallowed' => {
         type => $ProfileBool,
         description => 'If true, the profile may only be removed if a profile-'
@@ -380,27 +380,27 @@ Readonly our %payloadKeys => (
         },
         optional => 1,
     },
-#    'RemovalDate' => {
-#        type => $ProfileDate,
-#        description => 'The date when the profile will be automatically removed'
-#            . ' from the device.  Overrides DurationUntilRemoval.',
-#        targets => {
-#            $TargetIOS => '5.0',
-#            $TargetMACOSX => '10.7',
-#        },
-#        optional => 1,
-#    },
-#    'DurationUntilRemoval' => {
-#        type => $ProfileFloat,
-#        description => 'The number of seconds until the profile is '
-#            . 'automatically removed from the device.  The RemovalDate profile '
-#            . 'key overrides this one.',
-#        targets => {
-#            $TargetIOS => '5.0',
-#            $TargetMACOSX => '10.7',
-#        },
-#        optional => 1,
-#    },
+    'RemovalDate' => {
+        type => $ProfileDate,
+        description => 'The date when the profile will be automatically removed'
+            . ' from the device.  Overrides DurationUntilRemoval.',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7',
+        },
+        optional => 1,
+    },
+    'DurationUntilRemoval' => {
+        type => $ProfileReal,
+        description => 'The number of seconds until the profile is '
+            . 'automatically removed from the device.  The RemovalDate profile '
+            . 'key overrides this one.',
+        targets => {
+            $TargetIOS => '5.0',
+            $TargetMACOSX => '10.7',
+        },
+        optional => 1,
+    },
     'ConsentText' => {
         type => $ProfileDict,
         description => 'A dictionary where the keys are canonicalized IETF BCP '
