@@ -190,12 +190,6 @@ If the validation fails, the program dies.
 sub STORE {
     my ($self, $key, $value) = @_;
     
-    # If we are setting to undef, then just drop the key.
-#    if (!defined $value) {
-#        $self->DELETE($key);
-#        return;
-#    }
-    
     # Check if the proposed value is valid, and store if it is.
     # (Validating also de-taints the value, if it's valid)
     $value = $self->{object}->validate_key($key, $value);
