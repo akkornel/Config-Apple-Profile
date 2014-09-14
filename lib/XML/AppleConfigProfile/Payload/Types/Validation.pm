@@ -54,12 +54,12 @@ The scalars are all OK for import into your local namespace, or you can simply
 import C<:all> to get all of them at once. 
 
 
-=head1 METHODS
+=head1 FUNCTIONS
 
 =head2 validate
 
     my $validated_value = validate($type, $value);
-    
+
 Validates C<$value> as a valid C<$type>.  If valid, returns the de-tainted
 C<$value>.  If invalid, returns C<undef>.
 
@@ -67,9 +67,6 @@ C<$type> is one of the values from L<XML::AppleConfigProfile::Payload::Types>.
 C<$value> is the value to be validated.
 
 IF C<$type> is not valid, or C<$value> is C<undef>, then C<undef> is returned.
-
-This is a convenience method for when you can specify the type of data as a
-parameter.
 
 =cut
 
@@ -125,7 +122,7 @@ sub validate {
     my $valid_string = validate_string($value);
 
 Returns a de-tained C<$value> if it is a defined, non-empty scalar, and can be
-UTF-8 encoded.
+encoded as UTF-8 by L<Encode>.
 
 =cut
 
@@ -165,7 +162,7 @@ sub validate_string {
 
     my $number = validate_number($value)
 
-Returns a de-tained C<$value> if it is an integer.  A leading C<+> is OK.
+Returns a de-tained C<$value> if it is an integer.  A leading + is OK.
 Any other input returns C<undef>.
 
 =cut
@@ -224,8 +221,8 @@ sub validate_real {
 
     my $boolean = validate_boolean($value);
 
-If C<$value> can be evaluated as true or false, returns a C<1> or a C<0>.  Will
-return C<undef> if a reference is passed.
+If C<$value> can be evaluated as true or false, returns a C<1> or a C<0>,
+respectively.  Will return C<undef> if a reference is passed.
 
 =cut
 
@@ -300,9 +297,8 @@ If passed an already-open file handle, or any object that represents a file
 (such as an C<IO::> object), will return what was passed.
 
 If passed a scalar, it will be checked to make sure it is not empty, and that
-is not a utf8 string (which it would be if it was a string).  The contents of
-the string will be placed into an in-memory file, and an IO::File object will
-be returned.
+is not a utf8 string.  The contents of the string will be placed into an
+in-memory file, and an IO::File object will be returned.
 
 =cut
 
@@ -377,7 +373,12 @@ sub validate_identifier {
 
     my $guid = validate_uuid($value);
 
-Returns a Data::GUID object if C<$value> can be parsed as a UUID.
+If C<$value> is a C<Data::GUID> object, it is returned immediately.
+If C<$value> is a C<Data::UUID> object, an equivalent C<Data::GUID> object is
+returned.  Objects of other types return C<undef>.
+
+If C<$value> is a string that can be parsed as a GUID, an equivalent
+C<Data::GUID> object is returned.  Otherwise, C<undef> is returned.
 
 =cut
 
