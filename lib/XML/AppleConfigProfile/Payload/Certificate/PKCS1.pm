@@ -25,7 +25,7 @@ a DER-format certificate.
 
 =head1 SYNOPSIS
 
-    use XML::AppleConfigProfile::Profile;
+    use XML::AppleConfigProfile;
     use XML::AppleConfigProfile::Payload::Certificate::PKCS1;
     
     my $cert = new XML::AppleConfigProfile::Payload::Certificate::PKCS1;
@@ -36,7 +36,7 @@ a DER-format certificate.
     $cert->payload->{PayloadCertificateFileName} = 'acme.crt'; 
     $cert->payload->{PayloadContent} = '.............'; # Long binary data here
     
-    my $profile = new XML::AppleConfigProfile::Profile;
+    my $profile = new XML::AppleConfigProfile;
     push @{$profile->content}, $cert;
     
     print $profile->string;

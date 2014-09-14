@@ -25,7 +25,7 @@ a PEM-format certificate.
 
 =head1 SYNOPSIS
 
-    use XML::AppleConfigProfile::Profile;
+    use XML::AppleConfigProfile;
     use XML::AppleConfigProfile::Payload::Certificate::PEM;
     
     my $cert = new XML::AppleConfigProfile::Payload::Certificate::PEM;
@@ -36,7 +36,7 @@ a PEM-format certificate.
     $cert->payload->{PayloadCertificateFileName} = 'acme.crt'; 
     $cert->payload->{PayloadContent} = '.................'; # Long string here
     
-    my $profile = new XML::AppleConfigProfile::Profile;
+    my $profile = new XML::AppleConfigProfile;
     push @{$profile->content}, $cert;
     
     print $profile->string;

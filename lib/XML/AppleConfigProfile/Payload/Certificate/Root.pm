@@ -25,7 +25,7 @@ a DER-format certificate.
 
 =head1 SYNOPSIS
 
-    use XML::AppleConfigProfile::Profile;
+    use XML::AppleConfigProfile;
     use XML::AppleConfigProfile::Payload::Certificate::Root;
     
     my $cert = new XML::AppleConfigProfile::Payload::Certificate::Root;
