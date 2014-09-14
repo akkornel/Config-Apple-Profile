@@ -143,8 +143,7 @@ you can use C<defined> to test if a particular key actually has a value defined.
 Take note that calling C<defined> with an invalid key name will always return
 false.
 
-You can use C<delete> to delete a key, even if that key is required.  Setting
-the key's value to C<undef> will do the same thing.
+You can use C<delete> to delete a key.
 
 =cut
 
