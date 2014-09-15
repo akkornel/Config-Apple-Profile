@@ -266,7 +266,7 @@ sub plist {
     # Go through each key that could exist, and skip the ones that are undef.
     Readonly my $keys => $self->keys();
     Readonly my $payload => $self->payload();
-    foreach my $key (CORE::keys($keys)) {
+    foreach my $key (CORE::keys(%$keys)) {
         # If the key isn't set, then skip it
         next unless defined($payload->{$key});
         
