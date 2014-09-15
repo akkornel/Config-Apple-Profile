@@ -357,7 +357,7 @@ sub SPLICE {
     }
     
     # Do the splice and return.
-    return splice($self->{array}, $offset , $length, @_);
+    return splice(@{$self->{array}}, $offset , $length, @_);
 }
 
 
