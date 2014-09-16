@@ -32,6 +32,9 @@
 # Mac OS X files
 \B\.DS_Store
 
+# Travis-CI configuration
+^\.travis\.yml
+
 # Other stuff
 ^nytprof.out$
 ^pm_to_blib/
