@@ -1,6 +1,6 @@
 =pod
 
-=head1 XML-AppleConfigProfile: Make Apple Configuration Profiles in Perl
+=head1 Config-Apple-Profile: Make Apple Configuration Profiles in Perl
 
 Apple provides users with a way to configure Apple devices (running iOS or Mac
 OS X) using ready-made configuration files, which Apple calls
@@ -90,7 +90,7 @@ The documentation in C<Config::Apple::Profile> is a good place for new clients
 to start reading.
 
 Documentation can also be found on CPAN at
-L<http://search.cpan.org/search?query=XML&mode=module>.
+L<http://search.cpan.org/search?query=Config::Apple::Profile&mode=module>.
 
 Your code editor probably also has some way of easily accessing module docs.
 
@@ -98,11 +98,11 @@ Your code editor probably also has some way of easily accessing module docs.
 
 The repository for this software is Github.  You can find us here:
 
-L<http://github.com/akkornel/XML-AppleConfigProfile>
+L<https://github.com/akkornel/Config-Apple-Profile>
 
 If you have a bug, it should be reported on the Github issue tracker, here:
 
-L<https://github.com/akkornel/XML-AppleConfigProfile/issues>
+L<https://github.com/akkornel/Config-Apple-Profile/issues>
 
 Contributions are welcome!  At the very least, git-generated patches are needed,
 and Github pull requests are preferred, especially if your contribution is
