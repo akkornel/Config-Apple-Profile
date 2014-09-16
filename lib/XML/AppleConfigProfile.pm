@@ -338,7 +338,7 @@ Readonly our %payloadKeys => (
     #... and define our own!
     'PayloadContent' => {
         type => $ProfileArray,
-        subtype => 'XML::AppleConfigProfile::Payload::Common',
+        subtype => $ProfileClass,
         description => 'The payloads to be delivered in this profile.',
         targets => {
             $TargetIOS => '5.0',
