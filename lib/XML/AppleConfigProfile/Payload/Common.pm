@@ -338,8 +338,19 @@ sub populate_id {
     foreach my $key (CORE::keys %$keys) {
         my $type = $keys->{$key}->{type};
         
+        # We can call this method on other classes
+        if (   ($type !~ m/^\d+$/)
+            || ($type eq $ProfileClass)
+        ) {
+            # Only populate IDs on objects that exist
+            if (defined $payload->{$key}) {
+                my $object = $payload->{$key};
+                $object->populate_id();
+            }
+        }
+
         # We can fill in UUIDs
-        if ($type eq $ProfileUUID) {
+        elsif ($type eq $ProfileUUID) {
             if (!defined $payload->{$key}) {
                 # Make a new (random) GUID
                 $payload->{$key} = new Data::GUID;
@@ -351,15 +362,6 @@ sub populate_id {
             if (!defined $payload->{$key}) {
                 # Just make some simple random identifier
                 $payload->{$key} = 'payload' . int(rand(2**30));
-            }
-        }
-        
-        # We can call this method on other classes
-        elsif ($type eq $ProfileClass) {
-            # Only populate IDs on objects that exist
-            if (defined $payload->{$key}) {
-                my $object = $payload->{$key};
-                $object->populate_id();
             }
         }
         
