@@ -8,7 +8,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(XML::AppleConfigProfile::Payload::Certificate);
 
-our $VERSION = '0.00_001';
+our $VERSION = '0.00_002';
 
 use Readonly;
 use XML::AppleConfigProfile::Targets qw(:all);

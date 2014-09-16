@@ -12,7 +12,7 @@ use XML::AppleConfigProfile::Payload::Common;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 use XML::AppleConfigProfile::Targets qw(:all);
 
-our $VERSION = '0.00_001';
+our $VERSION = '0.00_002';
 
 
 =encoding utf8

@@ -4,7 +4,7 @@ use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.00_001';
+our $VERSION = '0.00_002';
 
 use Exporter::Easy (
     OK => [qw(
