@@ -1,17 +1,34 @@
+#!perl -w
+
+# Build.PL: Build script leveraging Module::Build.
+# 
+# Copyright © 2014 A. Karl Kornel.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of either: the GNU General Public License as published
+# by the Free Software Foundation; or the Artistic License.
+# 
+# See http://dev.perl.org/licenses/ for more information.
+
 use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
+
 use Module::Build;
 
 my $builder = Module::Build->new(
+    # Basic release information
     module_name         => 'XML::AppleConfigProfile',
-    keywords            => [qw(iOS mobileconfig plist)],
-    license             => 'perl',
-    create_license      => 1,
     dist_author         => q{A. Karl Kornel <karl@kornel.us>},
+    keywords            => [qw(iOS mobileconfig plist)],
     dist_version_from   => 'lib/XML/AppleConfigProfile.pm',
     release_status      => 'unstable',
-    sign                => 1,
+    
+    # Software license
+    license             => 'perl',
+    create_license      => 1,
+        
+    # Our prerequisites
     configure_requires => {
         'Module::Build'          => 0,
     },
@@ -33,8 +50,8 @@ my $builder = Module::Build->new(
         'Scalar::Util'           => 0,
         'Try::Tiny'              => 0,
     },
-    add_to_cleanup     => [ 'XML-AppleConfigProfile-*' ],
-    create_makefile_pl => 'traditional',
+    
+    # Project-related resources on the web
     meta_merge => {
         resources => {
             bugtracker => [
@@ -48,6 +65,12 @@ my $builder = Module::Build->new(
             repository => 'https://github.com/akkornel/XML-AppleConfigProfile',
         },
     },
+    
+    # Misc. stuff
+    add_to_cleanup     => [ 'XML-AppleConfigProfile-*' ],
+    create_makefile_pl => 'traditional',
+    sign                => 1,
 );
 
+# Let Mobule::Build take things from here!
 $builder->create_build_script();
