@@ -8,7 +8,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(Config::Apple::Profile::Payload::Common);
 
-our $VERSION = '0.00_002';
+our $VERSION = '0.55';
 
 use Email::Valid;
 use Readonly;

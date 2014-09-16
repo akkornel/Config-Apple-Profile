@@ -7,7 +7,7 @@ use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.00_002';
+our $VERSION = '0.55';
 
 use Tie::Hash; # Also gives us Tie::StdHash
 use Config::Apple::Profile::Payload::Tie::Array;
