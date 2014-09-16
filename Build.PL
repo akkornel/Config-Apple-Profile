@@ -29,6 +29,7 @@ my $builder = Module::Build->new(
     create_license      => 1,
         
     # Our prerequisites
+    dynamic_config     => 0,
     configure_requires => {
         'Module::Build'          => 0,
     },
