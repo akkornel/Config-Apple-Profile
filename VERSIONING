@@ -1,0 +1,67 @@
+This document describes all of the planned features for this software,
+and how each feature will contribute to the version number.
+
+The version number can be thought of as a three-digit number (X.YY <=> XYY).
+Each feature below has a specific number of points assigned to it.  As a
+feature is implemented, those points are added up, and converted to a version
+number.  So, once 100 points have been earned, the version number will hit 1.00!
+
+Any time there are just bug fixes, without any of the below features being
+implemented, the third part of the version number will be incremented.
+(So, for example, from 0.89 to 0.89.1).
+
+Development releases will have the standard "_AAA" version added to the end.
+
+        Basic Types
+√ 5 points  Create common profile types and targets
+√ 5 points  Create Array type
+  5 points  Create Dictionary type
+  
+        Basic Functionality
+√20 points  Create root class for payloads
+√ 5 points  Serialization of types
+√ 5 points  Validation of types
+ 10 points  Use exceptions instead of die
+
+        Import/Export
+√ 5 points  Create root Profile object
+ 20 points  Importing existing profiles
+
+        Crypto
+ 10 points  OpenSSL executable detection & qualification
+  5 points  Cert validation
+ 10 points  Profile encryption
+ 10 points  Profile signing
+
+        Payload Types
+  5 points  Active Directory Certificate Profile implementation & test suite
+  5 points  AirPlay implementation & test suite
+  2 points  AirPrint implementation & test suite
+  5 points  APN implementation & test suite
+  5 points  App Lock implementation & test suite
+  2 points  CalDAV implementation & test suite
+  2 points  Calendar Subscription implementation & test suite
+  2 points  CardDAV implementation & test suite
+  2 points  Cellular implementation & test suite
+√ 5 points  Certificate implementation & test suite
+√ 5 points  Email implementation & test suite
+  5 points  Exchange implementation & test suite
+  2 points  FileVault 2 implementation & test suite
+  2 points  Font implementation & test suite
+  2 points  Global HTTP Proxy implementation & test suite
+  2 points  Identification implementation & test suite
+  5 points  LDAP implementation & test suite
+  2 points  Passcode Policy implementation & test suite
+  2 points  Profile Removal Password implementation & test suite
+  5 points  Restrictions implementation & test suite
+  5 points  SCEP implementation & test suite
+  2 points  Single Sign-On Account implementation & test suite
+  2 points  System Policy Control implementation & test suite
+  2 points  System Policy Rule implementation & test suite
+  2 points  System Policy Managed implementation & test suite
+ 10 points  VPN implementation & test suite
+  2 points  Per-App VPN implementation & test suite
+  2 points  App-to-Per-App VPN Mapping implementation & test suite
+  2 points  Web Clip implementation & test suite
+  2 points  Web Content Filter implementation & test suite
+ 10 points  Wi-Fi implementation & test suite

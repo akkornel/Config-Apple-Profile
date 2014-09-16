@@ -1,0 +1,12 @@
+Revision history for Config-Apple-Profile
+
+0.55    2014-09-16 12:55 US/Pacific
+        Created root classes for payloads (20 points)
+        Enabled serialization to plist (5 points)
+        Enabled validation of common types (5 points)
+        Created root profile type (5 points)
+        Created common profile types and targets (5 points)
+        Created Array type (5 points)
+        Implemented Certificate payloads (5 points)
+        Implemented Email payloads (5 points)
+        
