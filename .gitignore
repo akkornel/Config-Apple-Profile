@@ -30,6 +30,7 @@ cover_db/
 /MYMETA.*
 
 # Other stuff
+.DS_Store
 nytprof.out
 /pm_to_blib
 karl*

@@ -30,3 +30,4 @@
 ^MYMETA\.json$
 .*\.swp$
 ^karl
+\B\.DS_Store\B
