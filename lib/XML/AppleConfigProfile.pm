@@ -332,12 +332,13 @@ device management (MDM) solution.  Once past, this profile will be marked as
 =cut
 
 Readonly our %payloadKeys => (
-    # Bring in the certificate keys...
+    # Bring in the common keys...
     %XML::AppleConfigProfile::Payload::Common::payloadKeys,
     
-    # Since we can't go any deeper, define the type and version!
+    #... and define our own!
     'PayloadContent' => {
         type => $ProfileArray,
+        subtype => 'XML::AppleConfigProfile::Payload::Common',
         description => 'The payloads to be delivered in this profile.',
         targets => {
             $TargetIOS => '5.0',
