@@ -1,11 +1,21 @@
 #!perl -T
+
+# Test suite 01-load: Test that modules actually load.
+# 
+# Copyright © 2014 A. Karl Kornel.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of either: the GNU General Public License as published
+# by the Free Software Foundation; or the Artistic License.
+# 
+# See http://dev.perl.org/licenses/ for more information.
+
 use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
 use Test::More;
 
-# Test 
-
+# List all modules, and make sure they `use` OK.
 BEGIN {
     my @modules = qw(
         XML::AppleConfigProfile
