@@ -31,7 +31,7 @@ my $builder = Module::Build->new(
     # Our prerequisites
     dynamic_config     => 0,
     configure_requires => {
-        'Module::Build'          => 0,
+        'Module::Build'          => '0.4210',
     },
     build_requires => {
         'Test::Exception'        => 0,
