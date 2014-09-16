@@ -89,6 +89,9 @@ sub serialize {
     elsif (   ($type == $ProfileData)
            || ($type == $ProfileNSDataBlob)
     ) {
+        # Slurp the file, and then hand it over
+        local $/ = undef;
+        $value = <$value>;
         $value = Mac::PropertyList::data->new($value);
     }
     
