@@ -14,21 +14,24 @@ use Exporter::Easy (
         validate 
         validate_string validate_number validate_real validate_date
         validate_boolean validate_data validate_identifier validate_uuid
+        validate_class
     )],
     TAGS => [
         'all' => [qw(
             validate
             validate_string validate_number validate_real validate_date
             validate_boolean validate_data validate_identifier validate_uuid
+            validate_class
         )],
         'types' => [qw(
             validate_string validate_number validate_real validate_date
             validate_boolean validate_data validate_identifier validate_uuid
+            validate_class
         )],
     ],
 );
 use Regexp::Common;
-use Scalar::Util qw(openhandle);
+use Scalar::Util qw(openhandle blessed);
 use Try::Tiny;
 use XML::AppleConfigProfile::Payload::Types qw(:all);
 
@@ -113,7 +116,12 @@ sub validate {
     # We recognize UUID types
     elsif ($type == $ProfileUUID) {
         return validate_uuid($value);
-    } # Done checking the UUID type
+    }
+    
+    # We recognize classes
+    elsif ($type == $ProfileClass) {
+        return validate_class($value);
+    }
 }
 
 
@@ -416,6 +424,36 @@ sub validate_uuid {
     return $uuid;
 }
 
+
+=head2 validate_class
+
+    my $object = validate_class($value)
+
+If C<$value> is an object, and is also an instance of
+C<XML::AppleConfigProfile::Payload::Common> (or something that is a subclass),
+then C<$value> is returned.  Otherwise, C<undef> is returned.
+
+=cut
+
+sub validate_class {
+    my ($object) = @_;
+    
+    # We don't accept non-references
+    if (!blessed($object)) {
+        ## no critic (ProhibitExplicitReturnUndef)
+        return undef;
+        ## use critic
+    }
+    
+    if ($object->isa('XML::AppleConfigProfile::Payload::Common')) {
+        return $object;
+    }
+    
+    # If we're here, then we have an object of the wrong class
+    ## no critic (ProhibitExplicitReturnUndef)
+    return undef;
+    ## use critic
+}
 
 =head1 ACKNOWLEDGEMENTS
 
