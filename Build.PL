@@ -33,7 +33,6 @@ my $builder = Module::Build->new(
         'Module::Build'          => 0,
     },
     build_requires => {
-        'File::Temp'             => 0,
         'Test::Exception'        => 0,
         'Test::More'             => 0,
         'Module::Signature'      => 0,
@@ -44,6 +43,9 @@ my $builder = Module::Build->new(
         'DateTime::Format::Flexible' => 0,
         'Email::Valid'           => 0,
         'Exporter::Easy'         => 0,
+        'File::Temp'             => 0,
+        'IO::Dir'                => 0,
+        'IO::File'               => 0,
         'Mac::PropertyList'      => 1.40,
         'Readonly'               => 0,
         'Regexp::Common'         => 0,
