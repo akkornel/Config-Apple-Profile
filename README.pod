@@ -45,7 +45,7 @@ each module.
 Installing the distribution is fairly straightforward.  This release uses
 C<Module::Build>, so installation can be completed by running four commands:
 
-	perl Build.PL
+	perl -w Build.PL
 	./Build
 	./Build test
 	./Build install
@@ -58,6 +58,14 @@ install:
 =item *
 
 Data::GUID
+
+=item *
+
+DateTime and DateTime::Format::Flexible
+
+=item *
+
+Email::Valid
 
 =item *
 
@@ -76,6 +84,10 @@ B<NOTE:> C<Readonly::XS> is not required, nor is it even necessary any more.
 =item *
 
 Regexp::Common
+
+=item *
+
+Try::Tiny
 
 =back
 
