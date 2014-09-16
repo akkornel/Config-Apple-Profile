@@ -39,7 +39,7 @@ a DER-format certificate.
     my $profile = new XML::AppleConfigProfile::Profile;
     push @{$profile->content}, $cert;
     
-    print $profile->string;
+    print $profile->export;
     
 =head1 DESCRIPTION
 
