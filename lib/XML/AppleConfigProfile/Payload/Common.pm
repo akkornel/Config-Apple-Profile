@@ -340,7 +340,7 @@ sub populate_id {
         
         # We can call this method on other classes
         if (   ($type !~ m/^\d+$/)
-            || ($type eq $ProfileClass)
+            || ($type == $ProfileClass)
         ) {
             # Only populate IDs on objects that exist
             if (defined $payload->{$key}) {
@@ -350,7 +350,7 @@ sub populate_id {
         }
 
         # We can fill in UUIDs
-        elsif ($type eq $ProfileUUID) {
+        elsif ($type == $ProfileUUID) {
             if (!defined $payload->{$key}) {
                 # Make a new (random) GUID
                 $payload->{$key} = new Data::GUID;
@@ -358,7 +358,7 @@ sub populate_id {
         }
         
         # We can fill in identifiers
-        elsif ($type eq $ProfileIdentifier) {
+        elsif ($type == $ProfileIdentifier) {
             if (!defined $payload->{$key}) {
                 # Just make some simple random identifier
                 $payload->{$key} = 'payload' . int(rand(2**30));
@@ -366,7 +366,7 @@ sub populate_id {
         }
         
         # If we have an array of objects, we can do them, too!
-        elsif (   ($type eq $ProfileArray)
+        elsif (   ($type == $ProfileArray)
                && (   $keys->{$key}->{subtype} !~ m/^\d+$/
                    || $keys->{$key}->{subtype} == $ProfileClass
                   )
@@ -377,7 +377,7 @@ sub populate_id {
         }
         
         # If we have an dictionary of objects, we can do them, also!
-        elsif (   ($type eq $ProfileDict)
+        elsif (   ($type == $ProfileDict)
                && (   $keys->{$key}->{subtype} !~ m/^\d+$/
                    || $keys->{$key}->{subtype} == $ProfileClass
                   )
