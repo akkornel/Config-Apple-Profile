@@ -71,7 +71,7 @@ profile.
 
 =head2 C<PayloadType>
 
-This is fixed to the string C<com.apple.security.pem>.
+This is fixed to the string C<com.apple.security.pkcs12>.
 
 =head2 C<PayloadVersion>
 
