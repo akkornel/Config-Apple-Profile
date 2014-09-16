@@ -57,14 +57,15 @@ my $builder = Module::Build->new(
     # Project-related resources on the web
     meta_merge => {
         resources => {
-            bugtracker => [
-                'https://github.com/akkornel/Config-Apple-Profile/issues'
-            ],
-            repository => {
-                url  => 'git://github.com/akkornel/Config-Apple-Profile.git',
-                web  => 'https://github.com/akkornel/Config-Apple-Profile',
-                type => 'git',
-            },
+#            bugtracker => [
+#                'https://github.com/akkornel/Config-Apple-Profile/issues'
+#            ],
+            bugtracker => 'https://github.com/akkornel/Config-Apple-Profile/issues',
+#            repository => {
+#                url  => 'git://github.com/akkornel/Config-Apple-Profile.git',
+#                web  => 'https://github.com/akkornel/Config-Apple-Profile',
+#                type => 'git',
+#            },
             repository => 'https://github.com/akkornel/Config-Apple-Profile',
         },
     },
