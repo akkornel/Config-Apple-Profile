@@ -57,7 +57,7 @@ will be thrown.
 =cut
 
 sub TIEARRAY {
-    my ($class, $value_type, $validator_ref) = @_;
+    my ($class, $value_type) = @_;
     
     # This is what we'll eventually return
     my %object;
