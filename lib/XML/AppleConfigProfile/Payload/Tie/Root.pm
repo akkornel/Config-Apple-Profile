@@ -101,6 +101,13 @@ documentation, as well as L<XML::AppleConfigProfile::Payload::Types>.
 sub FETCH {
     my ($self, $key) = @_;
     
+    my $key_info = $self->{object}->keys()->{$key};
+    
+    # If the payload key has a fixed value, return that
+    if (exists $key_info->{value}) {
+        return $key_info->{value};
+    }
+    
     # Our EXISTS check returns true if the key is a valid payload key name.
     # Therefore, we need to do our own exists check, and possible return undef.
     if (exists $self->{payload}->{$key}) {
@@ -109,7 +116,6 @@ sub FETCH {
     
     # At this point, our key doesn't exist right now, but we need to check for
     # some complex types.
-    my $key_info = $self->{object}->keys()->{$key};
     my $type = $key_info->{type};
     
     # If the key is an array, set up a new Array tie
