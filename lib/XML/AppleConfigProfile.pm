@@ -413,6 +413,7 @@ Readonly our %payloadKeys => (
     },
     'ConsentText' => {
         type => $ProfileDict,
+        subtype => $ProfileString,
         description => 'A dictionary where the keys are canonicalized IETF BCP '
             . '47 locale strings.  The key "default" may be used as the '
             . 'default entry.  The values are localized messages that the user '
