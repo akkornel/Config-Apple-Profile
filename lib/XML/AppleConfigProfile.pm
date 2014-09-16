@@ -176,8 +176,10 @@ and are not reimplemented here.  See L<XML::AppleConfigProfile::Payload::Common>
     export([C<option1_name> => C<option1_value>, ...])
 
 Return a string containing the profile, serialized as XML.  The entire string
-will already be encoded as UTF-8.  This method is used when it is time to
-output a profile.
+will already be encoded as UTF-8.  If any UUID or Identifier keys have not been
+filled in, they are filled in with random values.
+
+This method is used when it is time to output a profile.
 
 Several parameters can be provided, which will influence how this method runs.
 
@@ -230,6 +232,8 @@ or C<version>.
 sub export {
     my $self = shift @_;
     
+    # Fill in identifiers/UUIDs, then convert to plist, and export
+    $self->populate_id;
     my $plist = $self->plist(@_);
     return Mac::PropertyList::plist_as_string($plist);
 }
