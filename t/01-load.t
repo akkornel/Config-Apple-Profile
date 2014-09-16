@@ -21,6 +21,7 @@ BEGIN {
         XML::AppleConfigProfile::Payload::Certificate::PKCS1
         XML::AppleConfigProfile::Payload::Certificate::PKCS12
         XML::AppleConfigProfile::Payload::Certificate::Root
+        XML::AppleConfigProfile::Payload::Email
     );
 
     plan tests => scalar(@modules);
