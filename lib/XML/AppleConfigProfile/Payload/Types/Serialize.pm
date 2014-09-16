@@ -144,9 +144,9 @@ sub serialize {
         $value = Mac::PropertyList::dict->new(\%hash);
     }
     
-    # For class, let it serialize itself
+    # For classes, let the object plist itself
     elsif ($type == $ProfileClass) {
-        return $value->plist;
+        $value = $value->plist;
     }
     
     # We've checked all the types we know about
