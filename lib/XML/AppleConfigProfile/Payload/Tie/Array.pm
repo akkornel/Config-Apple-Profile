@@ -393,11 +393,10 @@ sub _validate {
             die "Adding undef items is not allowed";
         }
         
-        # If we are an array of objects, check the class name
+        # If we are an array of objects, check for matching class/subclass
         if ($self->{is_class}) {
-            my $item_class = blessed $item;
-            if ($item_class ne $self->{validator}) {
-                die "Attempting to add item of a different class";
+            if (!$item->isa($self->{validator})) {
+                die "Attempting to add item that is not a " . $self->{validator};
             }
             $validated_array[$i] = $item;
         }
@@ -411,7 +410,7 @@ sub _validate {
             if (!defined $validated_item) {
                 die "Attempting to insert invalid item";
             }
-            
+             
             $validated_array[$i] = $validated_item;
         } # Done checking class or not-class
     } # Done checking each item
