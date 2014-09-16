@@ -113,18 +113,18 @@ sub FETCH {
     my $type = $key_info->{type};
     
     # If the key is an array, set up a new Array tie
-    # Exception:  If the subtype is a class, then use construct()
+#    # Exception:  If the subtype is a class, then use construct()
     if ($type == $ProfileArray) {
         my $subtype = $key_info->{subtype};
-        
-        if ($subtype == $ProfileClass) {
-            my $object = $self->{object}->construct($key);
-            $self->{payload}->{$key} = $object;
-        }
-        else {
+#        
+#        if ($subtype == $ProfileClass) {
+#            my $object = $self->{object}->construct($key);
+#            $self->{payload}->{$key} = $object;
+#        }
+#        else {
             tie my @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $subtype;
             $self->{payload}->{$key} = \@array;
-        }
+#        }
         
         return $self->{payload}->{$key};
     }
