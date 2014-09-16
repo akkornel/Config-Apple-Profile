@@ -24,6 +24,14 @@
 ^cover_db/
 ^.last_cover_stats$
 
+# Eclipse files
+^\.includepath
+^\.project
+^\.settings
+
+# Mac OS X files
+\B\.DS_Store
+
 # Other stuff
 ^nytprof.out$
 ^pm_to_blib/
@@ -31,4 +39,3 @@
 ^MYMETA\.json$
 .*\.swp$
 ^karl
-\B\.DS_Store\B
