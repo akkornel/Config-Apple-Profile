@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <includepath>
-  <includepathentry path="${resource_loc:/XML-AppleConfigProfile/lib}" />
+  <includepathentry path="${resource_loc:/Config-Apple-Profile/lib}" />
 </includepath>
 
