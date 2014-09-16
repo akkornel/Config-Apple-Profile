@@ -340,7 +340,7 @@ sub populate_id {
         
         # We can fill in UUIDs
         if ($type eq $ProfileUUID) {
-            if (defined $payload->{$key}) {
+            if (!defined $payload->{$key}) {
                 # Make a new (random) GUID
                 $payload->{$key} = new Data::GUID;
             }
@@ -348,7 +348,7 @@ sub populate_id {
         
         # We can fill in identifiers
         elsif ($type eq $ProfileIdentifier) {
-            if (defined $payload->{$key}) {
+            if (!defined $payload->{$key}) {
                 # Just make some simple random identifier
                 $payload->{$key} = 'payload' . int(rand(2**30));
             }
