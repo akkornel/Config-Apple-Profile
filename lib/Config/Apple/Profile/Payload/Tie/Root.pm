@@ -1,7 +1,7 @@
-# This is the code for XML::AppleConfigProfile::Payload::Tie::Root.
+# This is the code for Config::Apple::Profile::Payload::Tie::Root.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Tie::Root;
+package Config::Apple::Profile::Payload::Tie::Root;
 
 use 5.14.4;
 use strict;
@@ -10,36 +10,36 @@ use warnings FATAL => 'all';
 our $VERSION = '0.00_002';
 
 use Tie::Hash; # Also gives us Tie::StdHash
-use XML::AppleConfigProfile::Payload::Tie::Array;
-use XML::AppleConfigProfile::Payload::Types qw($ProfileArray $ProfileDict $ProfileClass);
+use Config::Apple::Profile::Payload::Tie::Array;
+use Config::Apple::Profile::Payload::Types qw($ProfileArray $ProfileDict $ProfileClass);
 
 
 =encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Tie::Root - Tying class for payload storage.
+Config::Apple::Profile::Payload::Tie::Root - Tying class for payload storage.
 
 =head1 DESCRIPTION
 
 This class is used to store the payload keys, and their values, for each of the
-payload classes under C<XML::AppleConfigProfile::Payload::>.
+payload classes under C<Config::Apple::Profile::Payload::>.
 
 In the configuration profile XML, each payload is represented by a series of
 keys and their values.  This matches up fairly well with a Perl hash, so that
 is the mechanism that was chosen for actually getting (and messing with) the
 data in a payload class!
 
-This class is used directly only by L<XML::AppleConfigProfile::Payload::Common>,
+This class is used directly only by L<Config::Apple::Profile::Payload::Common>,
 and acts as storage for the payload keys.  Subclasses are involved indirectly,
 by providing their own list of payload keys, either replacing or supplementing
-the list from C<XML::AppleConfigProfile::Payload::Common>.
+the list from C<Config::Apple::Profile::Payload::Common>.
 
 =cut
 
 =head2 "CLASS" METHODS
 
-=head3 tie %hash, 'XML::AppleConfigProfile::Payload::Tie::Root', $self
+=head3 tie %hash, 'Config::Apple::Profile::Payload::Tie::Root', $self
 
 This method is not useful in client code, but it is documented for future
 developers of this software.
@@ -59,7 +59,7 @@ the value is not valid, then C<undef> must be returned.
 =item keys()
 
 C<keys> needs to return a reference to the hash of payload keys, as defined in
-L<XML::AppleConfigProfile::Payload::Common>.  No attempts will be made to modify
+L<Config::Apple::Profile::Payload::Common>.  No attempts will be made to modify
 the hash, so it can (and should) be read-only.
 
 =back
@@ -94,7 +94,7 @@ sub TIEHASH {
 Works as one would expect with a Perl hash.  Either the value is returned, or
 C<undef> is returned.  Exactly I<what> you get depends on the payload class and
 the key you are accessing.  For more details, check the payload class
-documentation, as well as L<XML::AppleConfigProfile::Payload::Types>.
+documentation, as well as L<Config::Apple::Profile::Payload::Types>.
 
 =cut
 
@@ -128,7 +128,7 @@ sub FETCH {
 #            $self->{payload}->{$key} = $object;
 #        }
 #        else {
-            tie my @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $subtype;
+            tie my @array, 'Config::Apple::Profile::Payload::Tie::Array', $subtype;
             $self->{payload}->{$key} = \@array;
 #        }
         
@@ -144,7 +144,7 @@ sub FETCH {
 #            $self->{payload}->{$key} = $object;
 #        }
 #        else {
-#            tie my @array, 'XML::AppleConfigProfile::Payload::Tie::Hash', $subtype;
+#            tie my @array, 'Config::Apple::Profile::Payload::Tie::Hash', $subtype;
 #            $self->{payload}->{$key} = \@array;
 #        }
 #        
@@ -187,7 +187,7 @@ The value must be a valid value for the given payload key.
 Exactly what validation is performed depends first on the type of value (be it
 a string, a boolean, data, etc.), and next on any special validation performed
 by the payload class itself.  For more details, check the payload class
-documentation, as well as L<XML::AppleConfigProfile::Payload::Types>.
+documentation, as well as L<Config::Apple::Profile::Payload::Types>.
 
 If the validation fails, the program dies.
 
@@ -301,7 +301,7 @@ sub SCALAR {
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to the L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

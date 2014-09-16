@@ -18,10 +18,10 @@ use warnings FATAL => 'all';
 package Local::Real;
 
 use Readonly;
-use XML::AppleConfigProfile::Payload::Common;
-use XML::AppleConfigProfile::Payload::Types qw($ProfileReal $ProfileArray);
+use Config::Apple::Profile::Payload::Common;
+use Config::Apple::Profile::Payload::Types qw($ProfileReal $ProfileArray);
 
-use base qw(XML::AppleConfigProfile::Payload::Common);
+use base qw(Config::Apple::Profile::Payload::Common);
 
 Readonly our %payloadKeys => (
     'realField' => {

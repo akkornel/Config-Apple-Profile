@@ -1,7 +1,7 @@
-# This is the code for XML::AppleConfigProfile::Payload::Common.
+# This is the code for Config::Apple::Profile::Payload::Common.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Common;
+package Config::Apple::Profile::Payload::Common;
 
 use 5.14.4;
 use strict;
@@ -17,18 +17,18 @@ use Scalar::Util;
 use Tie::Hash; # Also gives us Tie::StdHash
 use Try::Tiny;
 use version 0.77; 
-use XML::AppleConfigProfile::Payload::Tie::Root;
-use XML::AppleConfigProfile::Payload::Types qw(:all);
-use XML::AppleConfigProfile::Payload::Types::Serialize qw(serialize);
-use XML::AppleConfigProfile::Payload::Types::Validation;
-use XML::AppleConfigProfile::Targets qw(:all);
+use Config::Apple::Profile::Payload::Tie::Root;
+use Config::Apple::Profile::Payload::Types qw(:all);
+use Config::Apple::Profile::Payload::Types::Serialize qw(serialize);
+use Config::Apple::Profile::Payload::Types::Validation;
+use Config::Apple::Profile::Targets qw(:all);
 
 
 =encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Common - Base class for almost all payload
+Config::Apple::Profile::Payload::Common - Base class for almost all payload
 types, with common payload keys.
 
 =head1 DESCRIPTION
@@ -78,7 +78,7 @@ sub new {
     
     # Now that have the object, we can tie up the hash.  YES, this will create
     # a circular reference, which TIEHASH will deal with.
-    tie %payload, 'XML::AppleConfigProfile::Payload::Tie::Root', $object;
+    tie %payload, 'Config::Apple::Profile::Payload::Tie::Root', $object;
     
     # Return the prepared object!
     return $object;    
@@ -114,7 +114,7 @@ The following exception may be thrown when accessing a hash key:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::KeyInvalid
+=item Config::Apple::Profile::Payload::Common::KeyInvalid
 
 Thrown when attempting to access a payload key that is not valid for this
 payload.
@@ -127,12 +127,12 @@ The following exceptions may be thrown when setting a hash key:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::KeyInvalid
+=item Config::Apple::Profile::Payload::Common::KeyInvalid
 
 Thrown when attempting to access a payload key that is not valid for this
 payload.
 
-=item XML::AppleConfigProfile::Payload::Common::ValueInvalid
+=item Config::Apple::Profile::Payload::Common::ValueInvalid
 
 Thrown when attempting to set an invalid value for this payload key.
 
@@ -177,7 +177,7 @@ Several parameters can be provided, which will influence how this method runs.
 
 =item target
 
-If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
+If C<target> (a value from L<Config::Apple::Profile::Targets>) is provided,
 then this will be taken into account when exporting.  Only payload keys that
 are used on the specified target will be included in the output.
 
@@ -206,11 +206,11 @@ The following exceptions may be thrown:
 
 =over 4
 
-=item XML::AppleConfigProfile::Exception::KeyRequired
+=item Config::Apple::Profile::Exception::KeyRequired
 
 Thrown if a required key has not been set.
 
-=item XML::AppleConfigProfile::Exception::Incomplete
+=item Config::Apple::Profile::Exception::Incomplete
 
 Thrown if payload keys are being excluded from the output because of C<target>
 or C<version>.
@@ -398,7 +398,7 @@ sub populate_id {
 Returns true if the payload is complete enough to be exported.  In other words,
 all required keys must have values provided.
 
-If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
+If C<target> (a value from L<Config::Apple::Profile::Targets>) is provided,
 then this will be taken into account.  For example, a I<FileVault> payload
 will never be exportable to iOS.
 
@@ -424,7 +424,7 @@ The following exceptions may be thrown:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::KeyUnknown
+=item Config::Apple::Profile::Payload::Common::KeyUnknown
 
 Thrown if the payload key referenced is unknown.
 
@@ -465,7 +465,7 @@ sub validate_key {
         || ($type == $ProfileIdentifier)
         || ($type == $ProfileUUID)
     ) {
-        return XML::AppleConfigProfile::Payload::Types::Validation::validate($type, $value);
+        return Config::Apple::Profile::Payload::Types::Validation::validate($type, $value);
     }
     
     # If we're still here, then something's wrong, so fail.
@@ -481,7 +481,7 @@ Every payload type has a certain number of common keys.  Those common keys are
 defined (not stored) in C<%payloadKeys>.
 
 For general information on payload types, see
-L<XML::AppleConfigProfile::Payload::Types>.
+L<Config::Apple::Profile::Payload::Types>.
 
 =head2 C<PayloadIdentifier>
 
@@ -516,7 +516,7 @@ profile that is about to be installed.
 
 A C<Identifier> that identifies which type of payload this is.  This value may
 not be set by the client.  Instead, the value is automatically determined based
-on which C<XML::AppleConfigProfile::Payload::Types::> class is being used.
+on which C<Config::Apple::Profile::Payload::Types::> class is being used.
 
 =head2 C<PayloadVersion>
 
@@ -593,7 +593,7 @@ keys:
 
 =item C<type>
 
-This key's value is a value from L<XML::AppleConfigProfile::Payload::Types>.
+This key's value is a value from L<Config::Apple::Profile::Payload::Types>.
 It is used to specify the type of data the profile key contains.
 
 The type is used when creating L<Mac::PropertyList> objects, and when doing
@@ -634,7 +634,7 @@ This key must be present.
 =item C<targets>
 
 This key's value is a hashref.  Within the hashref, the keys are platform
-identifiers, scalars taken from C<XML::AppleConfigProfile::Targets>.  The value
+identifiers, scalars taken from C<Config::Apple::Profile::Targets>.  The value
 for each key is a version object representing the earliest version of the
 named platform's OS which supports this payload key.
 
@@ -684,7 +684,7 @@ This is used for things like PayloadVersion and PayloadType, which are fixed.
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to the L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

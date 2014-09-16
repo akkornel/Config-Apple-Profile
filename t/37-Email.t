@@ -20,8 +20,8 @@ use Data::GUID;
 use Readonly;
 use Test::Exception;
 use Test::More;
-use XML::AppleConfigProfile::Payload::Email;
-use XML::AppleConfigProfile::Payload::Types qw(:all);
+use Config::Apple::Profile::Payload::Email;
+use Config::Apple::Profile::Payload::Types qw(:all);
 
 
 
@@ -73,7 +73,7 @@ plan tests =>   2*scalar(@keys_expected) + 2
 
 
 # Create our object
-my $object = new XML::AppleConfigProfile::Payload::Email;
+my $object = new Config::Apple::Profile::Payload::Email;
 my $keys = $object->keys;
 my $payload = $object->payload;
 

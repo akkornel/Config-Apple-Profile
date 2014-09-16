@@ -1,7 +1,7 @@
-# This is the code for XML::AppleConfigProfile::Payload::Tie::Array.
+# This is the code for Config::Apple::Profile::Payload::Tie::Array.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Tie::Array;
+package Config::Apple::Profile::Payload::Tie::Array;
 
 use 5.14.4;
 use strict;
@@ -11,15 +11,15 @@ our $VERSION = '0.00_002';
 
 use Scalar::Util qw(blessed);
 use Tie::Array; # Also gives us Tie::StdArray
-use XML::AppleConfigProfile::Payload::Types qw(:all);
-use XML::AppleConfigProfile::Payload::Types::Validation qw(:types);
+use Config::Apple::Profile::Payload::Types qw(:all);
+use Config::Apple::Profile::Payload::Types::Validation qw(:types);
 
 
 =encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Tie::Array - Tying class for arrays of things.
+Config::Apple::Profile::Payload::Tie::Array - Tying class for arrays of things.
 
 =head1 DESCRIPTION
 
@@ -36,14 +36,14 @@ This class is used by payload classes to represent an array.
 
 =head2 "CLASS" METHODS
 
-=head3 tie @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $value_type
+=head3 tie @array, 'Config::Apple::Profile::Payload::Tie::Array', $value_type
 
 When this class is tied to an array, C<TIEARRAY> will be called, with the class
 name as the first argument.
 
 C<$value_type> is one of the types from
-L<XML::AppleConfigProfile::Payload::Types>.  The standard type validation
-functions from L<XML::AppleConfigProfile::Payload::Types::Validation> will be
+L<Config::Apple::Profile::Payload::Types>.  The standard type validation
+functions from L<Config::Apple::Profile::Payload::Types::Validation> will be
 used to check values when they are added to the array.
 
 If C<$value_type> is not a valid scalar then an exception will be thrown.
@@ -397,7 +397,7 @@ sub _validate {
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

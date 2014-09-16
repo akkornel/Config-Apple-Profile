@@ -1,4 +1,4 @@
-package XML::AppleConfigProfile::Payload::Types;
+package Config::Apple::Profile::Payload::Types;
 
 use 5.14.4;
 use strict;
@@ -27,7 +27,7 @@ use Readonly;
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Types - Data types for payload keys.
+Config::Apple::Profile::Payload::Types - Data types for payload keys.
 
 =head1 DESCRIPTION
 
@@ -216,7 +216,7 @@ Readonly our $ProfileIdentifier => 22;
 =head2 Class (C<$ProfileClass>)
 
 This profile type is used to indicate that the value is an instance of a class.
-The class is a sub-class of C<XML::AppleConfigProfile::Payload::Common>, so the
+The class is a sub-class of C<Config::Apple::Profile::Payload::Common>, so the
 methods implemented in that class are all available.  More information about
 what specific sub-class is used can be found in the documentation for the
 specific payload key.
@@ -234,7 +234,7 @@ L<http://www.apple.com/DTDs/PropertyList-1.0.dtd>
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

@@ -1,7 +1,7 @@
-# This is the code for XML::AppleConfigProfile::Payload::Types::Serialize.
+# This is the code for Config::Apple::Profile::Payload::Types::Serialize.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Types::Serialize;
+package Config::Apple::Profile::Payload::Types::Serialize;
 
 use 5.14.4;
 use strict;
@@ -22,14 +22,14 @@ use Exporter::Easy (
     ],
 );
 use Mac::PropertyList;
-use XML::AppleConfigProfile::Payload::Types qw(:all);
+use Config::Apple::Profile::Payload::Types qw(:all);
 
 
 =encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Types::Serialize - Convert common payload
+Config::Apple::Profile::Payload::Types::Serialize - Convert common payload
 types to plist form.
 
 
@@ -47,7 +47,7 @@ plist form.
 
 Given C<$value>, returns a C<Mac::PropertyList> object containing the contents
 of C<$value>.  C<$type> must be one of the types listed in
-L<XML::AppleConfigProfile::Payload::Types>, and is used to identify which type
+L<Config::Apple::Profile::Payload::Types>, and is used to identify which type
 of plist item to create (string, number, array, etc.).
 
 If C<$type> is C<$ProfileArray> or C<$ProfileDict>, then C<$subtype> must be
@@ -162,7 +162,7 @@ sub serialize {
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to the L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

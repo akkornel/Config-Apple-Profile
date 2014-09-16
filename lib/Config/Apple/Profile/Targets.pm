@@ -1,4 +1,4 @@
-package XML::AppleConfigProfile::Targets;
+package Config::Apple::Profile::Targets;
 
 use 5.14.4;
 use strict;
@@ -23,7 +23,7 @@ use Readonly;
 
 =head1 NAME
 
-XML::AppleConfigProfile::Targets - Constants for payload targets
+Config::Apple::Profile::Targets - Constants for payload targets
 
 =head1 DESCRIPTION
 
@@ -59,7 +59,7 @@ Readonly our $TargetMACOSX => 2;
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to the L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

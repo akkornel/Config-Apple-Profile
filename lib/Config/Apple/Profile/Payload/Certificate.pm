@@ -1,24 +1,24 @@
-# This is the code for XML::AppleConfigProfile::Payload::Certificate.
+# This is the code for Config::Apple::Profile::Payload::Certificate.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Certificate;
+package Config::Apple::Profile::Payload::Certificate;
 
 use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
-use base qw(XML::AppleConfigProfile::Payload::Common);
+use base qw(Config::Apple::Profile::Payload::Common);
 
 our $VERSION = '0.00_002';
 
 use Readonly;
-use XML::AppleConfigProfile::Payload::Common;
-use XML::AppleConfigProfile::Payload::Types qw(:all);
+use Config::Apple::Profile::Payload::Common;
+use Config::Apple::Profile::Payload::Types qw(:all);
 
 =encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Certificate - Base class for the four
+Config::Apple::Profile::Payload::Certificate - Base class for the four
 different Certificate payload types.
 
 =head1 DESCRIPTION
@@ -48,13 +48,13 @@ certificates with SHA signatures, and preferably SHA-256 or better.
 
 B<NOTE:> Typically, you will B<not> use this module directly!  Apple defines
 four different types of certificate payloads, each with a different identifier.
-Please use one of the L<XML::AppleConfigProfile::Payload::Certificate::>
+Please use one of the L<Config::Apple::Profile::Payload::Certificate::>
 subclasses.
 
 
 =head1 PAYLOAD KEYS
 
-All of the payload keys defined in L<XML::AppleConfigProfile::Payload::Common>
+All of the payload keys defined in L<Config::Apple::Profile::Payload::Common>
 are used by this payload.
 
 This payload has the following additional keys:
@@ -90,7 +90,7 @@ SHA-256 signatures!
 
 Readonly our %payloadKeys => (
     # Bring in the common keys...
-    %XML::AppleConfigProfile::Payload::Common::payloadKeys,
+    %Config::Apple::Profile::Payload::Common::payloadKeys,
     
     # ... and define our own!
     'PayloadCertificateFileName' => {
@@ -108,7 +108,7 @@ Readonly our %payloadKeys => (
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

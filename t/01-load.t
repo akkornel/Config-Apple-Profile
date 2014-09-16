@@ -18,20 +18,20 @@ use Test::More;
 # List all modules, and make sure they `use` OK.
 BEGIN {
     my @modules = qw(
-        XML::AppleConfigProfile
-        XML::AppleConfigProfile::Targets
-        XML::AppleConfigProfile::Payload::Common
-        XML::AppleConfigProfile::Payload::Tie::Array
-        XML::AppleConfigProfile::Payload::Tie::Root
-        XML::AppleConfigProfile::Payload::Types
-        XML::AppleConfigProfile::Payload::Types::Serialize
-        XML::AppleConfigProfile::Payload::Types::Validation
-        XML::AppleConfigProfile::Payload::Certificate
-        XML::AppleConfigProfile::Payload::Certificate::PEM
-        XML::AppleConfigProfile::Payload::Certificate::PKCS1
-        XML::AppleConfigProfile::Payload::Certificate::PKCS12
-        XML::AppleConfigProfile::Payload::Certificate::Root
-        XML::AppleConfigProfile::Payload::Email
+        Config::Apple::Profile
+        Config::Apple::Profile::Targets
+        Config::Apple::Profile::Payload::Common
+        Config::Apple::Profile::Payload::Tie::Array
+        Config::Apple::Profile::Payload::Tie::Root
+        Config::Apple::Profile::Payload::Types
+        Config::Apple::Profile::Payload::Types::Serialize
+        Config::Apple::Profile::Payload::Types::Validation
+        Config::Apple::Profile::Payload::Certificate
+        Config::Apple::Profile::Payload::Certificate::PEM
+        Config::Apple::Profile::Payload::Certificate::PKCS1
+        Config::Apple::Profile::Payload::Certificate::PKCS12
+        Config::Apple::Profile::Payload::Certificate::Root
+        Config::Apple::Profile::Payload::Email
     );
 
     plan tests => scalar(@modules);

@@ -1,34 +1,34 @@
-# This is the code for XML::AppleConfigProfile::Payload::Certificate::PKCS1.
+# This is the code for Config::Apple::Profile::Payload::Certificate::PKCS1.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Certificate::PKCS1;
+package Config::Apple::Profile::Payload::Certificate::PKCS1;
 
 use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
-use base qw(XML::AppleConfigProfile::Payload::Certificate);
+use base qw(Config::Apple::Profile::Payload::Certificate);
 
 our $VERSION = '0.00_002';
 
 use Readonly;
-use XML::AppleConfigProfile::Targets qw(:all);
-use XML::AppleConfigProfile::Payload::Certificate;
-use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber $ProfileString);
+use Config::Apple::Profile::Targets qw(:all);
+use Config::Apple::Profile::Payload::Certificate;
+use Config::Apple::Profile::Payload::Types qw($ProfileNumber $ProfileString);
 
 
 =encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Certificate::PKCS1 - Certificate payload with
+Config::Apple::Profile::Payload::Certificate::PKCS1 - Certificate payload with
 a DER-format certificate.
 
 =head1 SYNOPSIS
 
-    use XML::AppleConfigProfile;
-    use XML::AppleConfigProfile::Payload::Certificate::PKCS1;
+    use Config::Apple::Profile;
+    use Config::Apple::Profile::Payload::Certificate::PKCS1;
     
-    my $cert = new XML::AppleConfigProfile::Payload::Certificate::PKCS1;
+    my $cert = new Config::Apple::Profile::Payload::Certificate::PKCS1;
     $cert->payload->{PayloadIdentifier} = 'local.acme.CAcert';
     $cert->payload->{PayloadDisplayName} = 'AcmeCorp internal CA';
     $cert->payload->{PayloadDescription} = 'The certificate authority used for internal web sites.';
@@ -36,7 +36,7 @@ a DER-format certificate.
     $cert->payload->{PayloadCertificateFileName} = 'acme.crt'; 
     $cert->payload->{PayloadContent} = '.............'; # Long binary data here
     
-    my $profile = new XML::AppleConfigProfile;
+    my $profile = new Config::Apple::Profile;
     push @{$profile->content}, $cert;
     
     print $profile->export;
@@ -60,7 +60,7 @@ payload.
 =head1 PAYLOAD KEYS
 
 All of the payload keys defined in 
-L<XML::AppleConfigProfile::Payload::Common::Certificate> are used by this
+L<Config::Apple::Profile::Payload::Common::Certificate> are used by this
 payload.
 
 This payload has the following additional keys:
@@ -77,7 +77,7 @@ This is fixed to the value C<1>.
 
 Readonly our %payloadKeys => (
     # Bring in the certificate keys...
-    %XML::AppleConfigProfile::Payload::Certificate::payloadKeys,
+    %Config::Apple::Profile::Payload::Certificate::payloadKeys,
     
     # Since we can't go any deeper, define the type and version!
     'PayloadType' => {
@@ -98,7 +98,7 @@ Readonly our %payloadKeys => (
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

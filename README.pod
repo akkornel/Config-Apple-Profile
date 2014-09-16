@@ -84,9 +84,9 @@ Regexp::Common
 All of the Perl modules have POD embedded throughout.  To get the documentation
 on a particular module, you can use C<perldoc> after installation, for example:
 
-    perldoc XML::AppleConfigProfile
+    perldoc Config::Apple::Profile
 
-The documentation in C<XML::AppleConfigProfile> is a good place for new clients
+The documentation in C<Config::Apple::Profile> is a good place for new clients
 to start reading.
 
 Documentation can also be found on CPAN at

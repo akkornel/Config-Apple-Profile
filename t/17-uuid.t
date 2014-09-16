@@ -19,10 +19,10 @@ package Local::UUID;
 
 use File::Temp;
 use Readonly;
-use XML::AppleConfigProfile::Payload::Common;
-use XML::AppleConfigProfile::Payload::Types qw($ProfileArray $ProfileUUID);
+use Config::Apple::Profile::Payload::Common;
+use Config::Apple::Profile::Payload::Types qw($ProfileArray $ProfileUUID);
 
-use base qw(XML::AppleConfigProfile::Payload::Common);
+use base qw(Config::Apple::Profile::Payload::Common);
 
 Readonly our %payloadKeys => (
     'uniqueField' => {

@@ -1,35 +1,35 @@
-# This is the code for XML::AppleConfigProfile::Payload::Email.
+# This is the code for Config::Apple::Profile::Payload::Email.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Email;
+package Config::Apple::Profile::Payload::Email;
 
 use 5.14.4;
 use strict;
 use warnings FATAL => 'all';
-use base qw(XML::AppleConfigProfile::Payload::Common);
+use base qw(Config::Apple::Profile::Payload::Common);
 
 our $VERSION = '0.00_002';
 
 use Email::Valid;
 use Readonly;
 use Regexp::Common;
-use XML::AppleConfigProfile::Targets qw(:all);
-use XML::AppleConfigProfile::Payload::Common;
-use XML::AppleConfigProfile::Payload::Types qw(:all);
+use Config::Apple::Profile::Targets qw(:all);
+use Config::Apple::Profile::Payload::Common;
+use Config::Apple::Profile::Payload::Types qw(:all);
 
 
 =encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Email - The Email payload type.
+Config::Apple::Profile::Payload::Email - The Email payload type.
 
 =head1 SYNOPSIS
 
-    use XML::AppleConfigProfile;
-    use XML::AppleConfigProfile::Payload::Email;
+    use Config::Apple::Profile;
+    use Config::Apple::Profile::Payload::Email;
     
-    my $email = new XML::AppleConfigProfile::Payload::Email;
+    my $email = new Config::Apple::Profile::Payload::Email;
     my $payload = $email->payload;
     
     $payload->{EmailAccountDescription} = 'Example Email';
@@ -49,7 +49,7 @@ XML::AppleConfigProfile::Payload::Email - The Email payload type.
     $payload->{OutgoingPasswordSameAsIncomingPassword} = 1;
     $payload->{SMIMEEnabled} = 1;
 
-    my $profile = new XML::AppleConfigProfile::Profile;
+    my $profile = new Config::Apple::Profile::Profile;
     push @{$profile->content}, $email;
     
     print $profile->export;
@@ -58,8 +58,8 @@ XML::AppleConfigProfile::Payload::Email - The Email payload type.
 
 This class implements the Email payload, which is used to configure POP
 and IMAP accounts.  For Exchange accounts, refer to
-L<XML::AppleConfigProfile::Payload::Exchange::iOS> or
-L<XML::AppleConfigProfile::Payload::Exchange::OSX>.
+L<Config::Apple::Profile::Payload::Exchange::iOS> or
+L<Config::Apple::Profile::Payload::Exchange::OSX>.
 
 Each email account has basic information, information about how to fetch mail,
 information about how to send mail, S/MIME configuration, and interaction.
@@ -80,7 +80,7 @@ the user will be prompted to enter the password when the profile is installed.
 S/MIME can be configured for email signing and decryption.  For S/MIME to work,
 a .p12 file (a private key and certificate in a PKCS#12 container, also known
 as an "identity certificate") must be on the device.  The identity certificate
-can be loaded using L<XML::AppleConfigProfile::Payload::Certificate::PKCS12>,
+can be loaded using L<Config::Apple::Profile::Payload::Certificate::PKCS12>,
 and may be part of the same profile, or a different profile.  If S/MIME is
 enabled but no signing or decrypting certificates are specified in the payload,
 the user will be able to choose which identity certificate to use.
@@ -120,7 +120,7 @@ All other payload keys will be checked as usual by the parent class.
 
 =back
 
-See also the documentation in L<XML::AppleConfigProfile::Payload::Common>.
+See also the documentation in L<Config::Apple::Profile::Payload::Common>.
 
 =cut
 
@@ -196,7 +196,7 @@ sub validate_key {
 
 =head1 PAYLOAD KEYS
 
-All of the payload keys defined in L<XML::AppleConfigProfile::Payload::Common>
+All of the payload keys defined in L<Config::Apple::Profile::Payload::Common>
 are used by this payload.
 
 This payload has the following additional keys:
@@ -379,7 +379,7 @@ This is fixed to the value C<1>.
 
 Readonly our %payloadKeys => (
     # Bring in the common keys...
-    %XML::AppleConfigProfile::Payload::Common::payloadKeys,
+    %Config::Apple::Profile::Payload::Common::payloadKeys,
     
     # ... and define our own!
     # Start with information about the user
@@ -628,7 +628,7 @@ Readonly our %payloadKeys => (
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

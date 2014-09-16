@@ -1,4 +1,4 @@
-package XML::AppleConfigProfile::Payload::Types::Validation;
+package Config::Apple::Profile::Payload::Types::Validation;
 
 use 5.14.4;
 use strict;
@@ -33,14 +33,14 @@ use Exporter::Easy (
 use Regexp::Common;
 use Scalar::Util qw(openhandle blessed);
 use Try::Tiny;
-use XML::AppleConfigProfile::Payload::Types qw(:all);
+use Config::Apple::Profile::Payload::Types qw(:all);
 
 
 =encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Types::Validation - Validation of common
+Config::Apple::Profile::Payload::Types::Validation - Validation of common
 payload types.
 
 =head1 DESCRIPTION
@@ -66,7 +66,7 @@ import C<:all> to get all of them at once.
 Validates C<$value> as a valid C<$type>.  If valid, returns the de-tainted
 C<$value>.  If invalid, returns C<undef>.
 
-C<$type> is one of the values from L<XML::AppleConfigProfile::Payload::Types>.
+C<$type> is one of the values from L<Config::Apple::Profile::Payload::Types>.
 C<$value> is the value to be validated.
 
 IF C<$type> is not valid, or C<$value> is C<undef>, then C<undef> is returned.
@@ -430,7 +430,7 @@ sub validate_uuid {
     my $object = validate_class($value)
 
 If C<$value> is an object, and is also an instance of
-C<XML::AppleConfigProfile::Payload::Common> (or something that is a subclass),
+C<Config::Apple::Profile::Payload::Common> (or something that is a subclass),
 then C<$value> is returned.  Otherwise, C<undef> is returned.
 
 =cut
@@ -445,7 +445,7 @@ sub validate_class {
         ## use critic
     }
     
-    if ($object->isa('XML::AppleConfigProfile::Payload::Common')) {
+    if ($object->isa('Config::Apple::Profile::Payload::Common')) {
         return $object;
     }
     
@@ -457,7 +457,7 @@ sub validate_class {
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

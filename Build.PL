@@ -18,10 +18,10 @@ use Module::Build;
 
 my $builder = Module::Build->new(
     # Basic release information
-    module_name         => 'XML::AppleConfigProfile',
+    module_name         => 'Config::Apple::Profile',
     dist_author         => q{A. Karl Kornel <karl@kornel.us>},
     keywords            => [qw(iOS mobileconfig plist)],
-    dist_version_from   => 'lib/XML/AppleConfigProfile.pm',
+    dist_version_from   => 'lib/Config/Apple/Profile.pm',
     release_status      => 'unstable',
     
     # Software license
@@ -55,19 +55,19 @@ my $builder = Module::Build->new(
     meta_merge => {
         resources => {
             bugtracker => [
-                'https://github.com/akkornel/XML-AppleConfigProfile/issues'
+                'https://github.com/akkornel/Config-Apple-Profile/issues'
             ],
             repository => {
-                url  => 'git://github.com/akkornel/XML-AppleConfigProfile.git',
-                web  => 'https://github.com/akkornel/XML-AppleConfigProfile',
+                url  => 'git://github.com/akkornel/Config-Apple-Profile.git',
+                web  => 'https://github.com/akkornel/Config-Apple-Profile',
                 type => 'git',
             },
-            repository => 'https://github.com/akkornel/XML-AppleConfigProfile',
+            repository => 'https://github.com/akkornel/Config-Apple-Profile',
         },
     },
     
     # Misc. stuff
-    add_to_cleanup     => [ 'XML-AppleConfigProfile-*' ],
+    add_to_cleanup     => [ 'Config-Apple-Profile-*' ],
     create_makefile_pl => 'traditional',
     sign                => 1,
 );
