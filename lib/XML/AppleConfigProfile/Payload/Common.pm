@@ -361,6 +361,28 @@ sub populate_id {
             }
         }
         
+        # If we have an array of objects, we can do them, too!
+        elsif (   ($keys->{$key}->{type} eq $ProfileArray)
+               && (   $keys->{$key}->{subtype} !~ m/^\d+$/
+                   || $keys->{$key}->{subtype} == $ProfileClass
+                  )
+        ) {
+            foreach my $item (@{$payload->{$key}}) {
+                $item->populate_id();
+            }
+        }
+        
+        # If we have an dictionary of objects, we can do them, also!
+        elsif (   ($keys->{$key}->{type} eq $ProfileDict)
+               && (   $keys->{$key}->{subtype} !~ m/^\d+$/
+                   || $keys->{$key}->{subtype} == $ProfileClass
+                  )
+        ) {
+            foreach my $item (CORE::keys %{$payload->{$key}}) {
+                $payload->{$key}->{$item}->populate_id();
+            }
+        }
+        
         # That's it!  Move on to the next key
     }
 }
