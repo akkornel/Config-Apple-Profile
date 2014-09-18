@@ -98,6 +98,8 @@ a I<non-empty>, I<binary> string.  In other words, C<utf8::is_utf8> needs to
 return C<false>.  If the flag is C<true>, then you probably need to use
 C<Encode::encode> (or maybe C<Encode::encode_utf8>) to get a binary string.
 
+When reading a Data key, the client will always get a plain filehandle back.
+
 =cut
 
 Readonly our $ProfileData => 3;
