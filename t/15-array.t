@@ -32,6 +32,8 @@ Readonly our %payloadKeys => (
 );
 
 
+package main;
+
 use Config;
 use Data::GUID;
 use Readonly;
