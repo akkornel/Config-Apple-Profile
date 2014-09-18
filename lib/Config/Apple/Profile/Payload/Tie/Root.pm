@@ -12,6 +12,7 @@ our $VERSION = '0.55';
 use Tie::Hash; # Also gives us Tie::StdHash
 use Config::Apple::Profile::Payload::Tie::Array;
 use Config::Apple::Profile::Payload::Types qw($ProfileArray $ProfileDict $ProfileClass);
+use Scalar::Util qw(blessed);
 
 
 =encoding utf8
@@ -101,6 +102,11 @@ documentation, as well as L<Config::Apple::Profile::Payload::Types>.
 sub FETCH {
     my ($self, $key) = @_;
     
+    # Grab the information on our requested key
+    if (!exists $self->{object}->keys()->{$key}) {
+        die "Payload key $key not defined in class "
+            . blessed($self->{object}) . "\n";
+    }
     my $key_info = $self->{object}->keys()->{$key};
     
     # If the payload key has a fixed value, return that
