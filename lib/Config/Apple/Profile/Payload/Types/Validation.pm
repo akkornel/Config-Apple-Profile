@@ -106,7 +106,7 @@ sub validate {
     
     # We recognize Date types
     elsif ($type == $ProfileDate) {
-        return validate_date ($value);
+        return validate_date($value);
     }
     
     # We recognize Identifier types
@@ -273,9 +273,9 @@ sub validate_date {
     # a finite time, then we're good!
     if (ref $value) {
         ## no critic (ProhibitExplicitReturnUndef)
-        return undef unless blessed($value);
-        return undef unless $value->isa('DateTime');
-        return undef unless $value->is_finite;
+#        return undef unless blessed($value);
+#        return undef unless $value->isa('DateTime');
+#        return undef unless $value->is_finite;
         ##use critic
         
         return $value;
