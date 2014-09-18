@@ -333,7 +333,10 @@ sub validate_data {
         #    die "Filehandle is not open for reading.";
         #}
         my $ignore;
-        my $count = read $value, $ignore, 1;
+        my $count ;
+        try {
+            $count = read $value, $ignore, 1;
+        };
         unless (defined $count) {
             die "Unable to read from filehandle.  Is it open for reading?";
         }
