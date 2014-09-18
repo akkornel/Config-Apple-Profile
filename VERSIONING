@@ -26,6 +26,7 @@ Development releases will have the standard "_AAA" version added to the end.
         Import/Export
 √ 5 points  Create root Profile object
  20 points  Importing existing profiles
+  5 points  Tested Compatibility with Storable 
 
         Crypto
  10 points  OpenSSL executable detection & qualification
