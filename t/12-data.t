@@ -59,7 +59,7 @@ use Test::More;
 plan tests =>   (1 + 2 + 2 + 3 + 3)
               + 4
               + 7
-              + 0
+              + 2
 ;
 
 
@@ -274,7 +274,20 @@ umask $orig_umask if defined $orig_umask;
 
 
 # Finally, try out a filehandle that can not seek
-diag "Seekable filehandle testing TBD";
+my ($pipe_read, $pipe_write);
+pipe $pipe_read, $pipe_write;
+ok(!seek($pipe_write, 2, SEEK_CUR), "Make sure we can't seek");
+
+my $seek_object = new Local::Data;
+my $seek_payload = $seek_object->payload;
+dies_ok { $seek_payload->{dataField} = $pipe_write; }
+         'Set the pipe as the payload';
+         
+# Clean up from this phase
+undef $seek_payload;
+undef $seek_object;
+close $pipe_write;
+close $pipe_read;
 
 
 # Done!
