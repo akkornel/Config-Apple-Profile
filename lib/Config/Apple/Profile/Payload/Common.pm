@@ -392,21 +392,70 @@ sub populate_id {
 }
 
 
-
 =head2 exportable([C<target>])
 
 Returns true if the payload is complete enough to be exported.  In other words,
 all required keys must have values provided.
 
-If C<target> (a value from L<Config::Apple::Profile::Targets>) is provided,
-then this will be taken into account.  For example, a I<FileVault> payload
-will never be exportable to iOS.
+C<exportable()> will return false if all UUID and Identifier fields are not
+filled in, so it is suggested that you call C<populate_id()> before calling
+C<exportable()>.
 
 =cut
 
 sub exportable {
-    ...
+    my ($self, $target) = @_;
+    
+    my $keys = $self->keys;
+    my $payload = $self->payload;
+    
+    # Let's look for all keys that are required
+    foreach my $key (CORE::keys %$keys) {
+        next if exists $keys->{$key}->{optional};
+        
+        my $type = $keys->{$key}->{type};
+        
+        # If the key is a class and has been set, call ->exportable() on it.
+        # If the call returns 0, then we are not exportable.
+        return 0 if (   ($type == $ProfileClass)
+                     && (defined $payload->{$key})
+                     && ($payload->{$key}->exportable() == 0)
+        );
+        
+        # Special handling is needed for a required array
+        if ($type == $ProfileArray) {
+            return 0 if scalar(@{$payload->{$key}}) == 0;
+            
+            # If we have an array of classes, make sure each entry is exportable
+            if ($keys->{$key}->{subtype} == $ProfileClass) {
+                foreach my $entry (@{$payload->{$key}}) {
+                    return 0 if ($entry->exportable == 0);
+                }
+            }
+        }
+        
+        # Special handling is needed for a required dictionary
+        if ($type == $ProfileDict) {
+            return 0 if scalar(CORE::keys %{$payload->{$key}}) == 0;
+            
+            # If we have a dict of classes, make sure each entry is exportable
+            if ($keys->{$key}->{subtype} == $ProfileClass) {
+                foreach my $entry (CORE::keys %{$payload->{$key}}) {
+                    return 0 if ($entry->exportable == 0);
+                }
+            }
+        }
+        
+        # For every other key, return 0 if we are required but not set
+        return 0 unless defined $payload->{$key};
+        
+        # At this point, the key is required, and is defined, so we're good!
+    } # Done checking this key
+    
+    # If we've checked all the keys, and they're OK, then we're good!
+    return 1;
 }
+
 
 =head2 validate_key($key, $value)
 
