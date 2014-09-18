@@ -1,5 +1,9 @@
 Revision history for Config-Apple-Profile
 
+NEXT    DATE
+        Added support for Perl 5.10.1 and above
+        Added test suite for the Data type (closes #5, #8, and #9)
+
 0.55    2014-09-16 12:55 US/Pacific
         Created root classes for payloads (20 points)
         Enabled serialization to plist (5 points)
