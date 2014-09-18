@@ -363,7 +363,7 @@ sub validate_data {
     
     # If we're here, then we are dealing with something unknown to us.
     ## no critic (ProhibitExplicitReturnUndef)
-    return undef if ref($value);
+    return undef;
     ##use critic
 }
 
