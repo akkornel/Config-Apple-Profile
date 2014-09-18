@@ -37,7 +37,7 @@ use Cwd qw(abs_path);
 use Encode qw(decode encode);
 use Fcntl qw(:seek);
 use File::Spec;
-use File::Temp;
+use File::Temp qw(tempdir);
 use IO::File;
 use Readonly;
 use Scalar::Util qw(openhandle);
@@ -58,7 +58,7 @@ use Test::More;
 
 plan tests =>   (1 + 2 + 2 + 3 + 3)
               + 4
-              + 0
+              + 4
               + 0
 ;
 
@@ -193,7 +193,57 @@ undef $string_object;
 
 
 # Next, try out a write-only filehandle
-diag "Write-only filehandle testing TBD";
+# If our platform supports umask, lock things down to just us
+my $orig_umask = umask;
+if (defined $orig_umask) {
+    umask 0077;
+}
+
+# Make a temporary directory for us to write stuff in
+Readonly my $tempdir => tempdir('data_testXXXX', TMPDIR => 1);
+Readonly my $filename => File::Spec->catfile(($tempdir), 'write_only.t');
+diag "Write-only file is at $filename\n";
+
+# Open our file for writing
+my $write_handle;
+if (open $write_handle, '>', $filename) {
+    pass('Open temporary file')
+}
+else {
+    diag "OS error: $!";
+    fail('Open temporary file');
+}
+
+# Write somethign into it
+print $write_handle "Karl is awesome!\n";
+
+# See if we can give it to an object
+my $write_only_object = new Local::Data;
+my $write_only_payload = $write_only_object->payload;
+dies_ok { $write_only_payload->{dataField} = $write_handle; }
+        'Put a write-only object into payload';
+
+# Clean up objects from this phase
+undef $write_only_payload;
+undef $write_only_object;
+
+# Clean up our directory, file, and umask
+close $write_handle;
+if (unlink $filename) {
+    pass('Delete temporary file');
+}
+else {
+    diag "OS error: $!";
+    fail('Delete temporary file');
+}
+if (rmdir $tempdir) {
+    pass('Delete temporary directory');
+}
+else {
+    diag "OS error: $!";
+    fail('Delete temporary directory');
+}
+umask $orig_umask if defined $orig_umask;
 
 
 # Finally, try out a filehandle that can not seek
