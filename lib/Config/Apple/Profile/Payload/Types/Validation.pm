@@ -278,7 +278,7 @@ sub validate_date {
         return undef unless $value->is_finite;
         ##use critic
         
-        return $value
+        return $value;
     }
     
     # At this point, we have a scalar, so let's see if it can be parsed
