@@ -132,7 +132,7 @@ object!
 
 =cut
 
-Readonly our $ProfileDate => 5;
+Readonly our $ProfileDate => 6;
 
 
 =head2 Dictionary (C<$ProfileDict>)
