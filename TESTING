@@ -19,7 +19,7 @@ particular number has been reserved for them.
 
     * 10-string: Tests against the String and Identifier types.
     * 11-number: Tests against the Number type.
-    *?12-data: Tests against the Data type.
+    * 12-data: Tests against the Data type.
     * 13-real: Tests against the Real type.
     *?14-dict: Tests against the Dict type.
     * 15-array: Tests against the Array type.
