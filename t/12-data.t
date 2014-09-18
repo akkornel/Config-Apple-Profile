@@ -51,14 +51,14 @@ use Test::More;
 #   * Get plain handles back from each payload
 #   * Make sure data reads and compares OK
 # Next, make sure that strings can be properly converted to filehandles
-# Make sure that we fail on write-only filehandles.
+# Make sure that we fail on write-only and closed filehandles.
 # Also, make sure that we fail on un-seekable filehandles.
 
 # NOTE: We'll be `undef`-ing alot of things, in order to minimize memory use.
 
 plan tests =>   (1 + 2 + 2 + 3 + 3)
               + 4
-              + 4
+              + 7
               + 0
 ;
 
@@ -192,7 +192,7 @@ undef $string_payload;
 undef $string_object;
 
 
-# Next, try out a write-only filehandle
+# Next, try out a write-only filehandle, and a closed filehandle
 # If our platform supports umask, lock things down to just us
 my $orig_umask = umask;
 if (defined $orig_umask) {
@@ -202,7 +202,29 @@ if (defined $orig_umask) {
 # Make a temporary directory for us to write stuff in
 Readonly my $tempdir => tempdir('data_testXXXX', TMPDIR => 1);
 Readonly my $filename => File::Spec->catfile(($tempdir), 'write_only.t');
+Readonly my $closed_file => File::Spec->catfile(($tempdir), 'closed.t');
 diag "Write-only file is at $filename\n";
+diag "Closed file is at $closed_file\n";
+
+# Open and close our "closed" file
+my $closed_handle;
+if (open $closed_handle, '>', $closed_file) {
+    pass('Open temporary file')
+}
+else {
+    diag "OS error: $!";
+    fail('Open temporary file');
+}
+
+# Write something into it, and close
+print $closed_handle "Karl is awesome?\n";
+close $closed_handle;
+
+# Give the closed handle to the object
+my $closed_object = new Local::Data;
+my $closed_payload = $closed_object->payload;
+dies_ok { $closed_payload->{dataField} = $closed_handle; }
+        'Put a closed filehandle into payload';
 
 # Open our file for writing
 my $write_handle;
@@ -222,13 +244,18 @@ my $write_only_object = new Local::Data;
 my $write_only_payload = $write_only_object->payload;
 dies_ok { $write_only_payload->{dataField} = $write_handle; }
         'Put a write-only object into payload';
-
-# Clean up objects from this phase
 undef $write_only_payload;
 undef $write_only_object;
 
-# Clean up our directory, file, and umask
+# Clean up our directory, files, and umask
 close $write_handle;
+if (unlink $closed_file) {
+    pass('Delete temporary file');
+}
+else {
+    diag "OS error: $!";
+    fail('Delete temporary file');
+}
 if (unlink $filename) {
     pass('Delete temporary file');
 }
