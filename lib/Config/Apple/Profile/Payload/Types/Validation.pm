@@ -106,7 +106,7 @@ sub validate {
     
     # We recognize Date types
     elsif ($type == $ProfileDate) {
-        return validate_date ($value);
+        return validate_date($value);
     }
     
     # We recognize Identifier types
