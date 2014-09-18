@@ -3,7 +3,7 @@
 
 package Config::Apple::Profile::Payload::Certificate::PKCS1;
 
-use 5.14.4;
+use 5.10.1;
 use strict;
 use warnings FATAL => 'all';
 use base qw(Config::Apple::Profile::Payload::Certificate);

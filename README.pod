@@ -91,6 +91,9 @@ Try::Tiny
 
 =back
 
+The lowest version of Perl supported is 5.10.1, due to the version requirements
+of our dependencies.
+
 =head2 Documentation
 
 All of the Perl modules have POD embedded throughout.  To get the documentation

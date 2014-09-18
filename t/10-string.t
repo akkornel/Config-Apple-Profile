@@ -10,7 +10,7 @@
 # 
 # See http://dev.perl.org/licenses/ for more information.
 
-use 5.14.4;
+use 5.10.1;
 use strict;
 use warnings FATAL => 'all';
 
@@ -67,6 +67,10 @@ Readonly my @IDs => (
 );
 
 # @baddies is a list of things that are not strings, and should fail
+# NOTE: UTF-8 warnings need to be disabled for perl 5.12 and lower 
+# (See "Any unsigned value can be encoded as a character" at       )
+# (http://perldoc.perl.org/5.14.0/perldelta.html#Core-Enhancements )
+no warnings 'utf8';
 Readonly my @baddies => (
     # Yes, undef is an entry here:
     undef,
@@ -82,6 +86,7 @@ Readonly my @baddies => (
     # Bad UTF-8 code points should fail
     "This string is \N{U+DC85} NOT valid UTF-8",
 );
+use warnings 'utf8';
 
 # @bad_IDs is a list of bad identifiers
 Readonly my @bad_IDs => (
