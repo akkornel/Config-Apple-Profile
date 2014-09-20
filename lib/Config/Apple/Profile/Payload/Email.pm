@@ -338,6 +338,18 @@ I<Optional>
 
 The UUID of the PKCS12 Certificate payload used to decrypt emails.
 
+=head3 C<SMIMEEnablePerMessageSwitch>
+
+I<Optional>
+
+A Boolean.  If true, users will be able to disable S/MIME on emails they send.
+If false, S/MIME signing will be used for all emails, and S/MIME encryption will
+be used whenever possible.
+
+Default is false.
+
+I<Available in iOS 8.0 and later only.>
+
 =head2 Application Interaction
 
 =head3 C<PreventMove>
@@ -573,6 +585,14 @@ Readonly our %payloadKeys => (
         optional => 1,
         targets => {
             $TargetIOS => '5.0',
+        },
+    },
+    'SMIMEEnablePerMessageSwitch' => {
+        type => $ProfileBool,
+        description => 'Allow users to disable use of S/MIME when they want.',
+        optional => 1,
+        targets => {
+            $TargetIOS => '8.0',
         },
     },
     

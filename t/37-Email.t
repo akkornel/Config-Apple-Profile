@@ -47,6 +47,7 @@ my @keys_expected = (
     [SMIMEEnabled => $ProfileBool],
     [SMIMESigningCertificateUUID => $ProfileUUID],
     [SMIMEEncryptionCertificateUUID => $ProfileUUID],
+    [SMIMEEnablePerMessageSwitch => $ProfileBool],
     [PreventMove => $ProfileBool],
     [PreventAppSheet => $ProfileBool],
     [disableMailRecentsSyncing => $ProfileBool],
