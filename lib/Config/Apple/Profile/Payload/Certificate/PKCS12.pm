@@ -69,7 +69,7 @@ This is the password needed to decrypt the PKCS#12 file.  If no password is
 provided, the user will be prompted to enter the password when installing the
 profile.
 
-B<WARNING:> iOS 7 seems to have problems with identity certificates that do
+B<WARNING:> iOS 7 and 8 seem to have problems with identity certificates that do
 not have the C<Password> key in the payload.  More information, and status,
 are in L<https://github.com/akkornel/Config-Apple-Profile/issues/7>.
 
