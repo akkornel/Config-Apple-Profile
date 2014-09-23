@@ -34,6 +34,7 @@ my $builder = Module::Build->new(
         'Module::Build'          => '0.4210',
     },
     build_requires => {
+        'DateTime::Infinite'     => 0,
         'Test::Exception'        => 0,
         'Test::More'             => 0,
         'Module::Signature'      => 0,
