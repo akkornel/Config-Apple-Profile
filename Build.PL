@@ -75,6 +75,22 @@ my $builder = Module::Build->new(
     add_to_cleanup     => [ 'Config-Apple-Profile-*' ],
     create_makefile_pl => 'traditional',
     sign                => 1,
+    
+    # Additional executables and modules
+    get_options => {
+        'skip-openssl' => {
+            default => 0,
+        },
+        'openssl-path' => {
+            type => '=s',
+        },
+    },
+    
+    # 
+    PL_files => {
+        'lib/Config/Apple/Profile/Config.pl'
+        => 'lib/Config/Apple/Profile/Config.pm',
+    }
 );
 
 # Let Mobule::Build take things from here!
