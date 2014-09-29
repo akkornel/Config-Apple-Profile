@@ -25,6 +25,13 @@ use Readonly;
 use Test::Exception;
 use Test::More;
 
+# Since we want taint mode, we must get rid of PATH for our test suite to run
+my $old_PATH;
+if (exists $ENV{PATH}) {
+    $old_PATH = $ENV{PATH};
+    delete $ENV{PATH};
+}
+
 
 # This is the list of keys we expect to have in this payload
 Readonly my %keys_expected => (
@@ -169,7 +176,8 @@ SKIP: {
     my $payload_pem = $object_pem->payload;
     lives_ok { $payload_pem->{PayloadContent} = $pem_handle; }
              'Load PEM content into PEM object';
-    skip 'Certificate checking not supported' => 1;
+    skip 'OpenSSL not found during configuration'
+        unless defined($Config::Apple::Profile::Config::OPENSSL_PATH);
     dies_ok { $payload_pem->{PayloadContent} = $der_handle; }
            'Load non-PEM content into PEM object';
 };
@@ -181,7 +189,8 @@ SKIP: {
     my $payload_root = $object_root->payload;
     lives_ok { $payload_root->{PayloadContent} = $der_handle; }
              'Load PEM content into PEM object';
-    skip 'Certificate checking not supported' => 1;
+    skip 'OpenSSL not found during configuration'
+        unless defined($Config::Apple::Profile::Config::OPENSSL_PATH);
     dies_ok { $payload_root->{PayloadContent} = $pem_handle; }
            'Load non-PEM content into PEM object';
 };
@@ -193,7 +202,8 @@ SKIP: {
     my $payload_pkcs1 = $object_pkcs1->payload;
     lives_ok { $payload_pkcs1->{PayloadContent} = $der_handle; }
              'Load PEM content into PEM object';
-    skip 'Certificate checking not supported' => 1;
+    skip 'OpenSSL not found during configuration'
+        unless defined($Config::Apple::Profile::Config::OPENSSL_PATH);
     dies_ok { $payload_pkcs1->{PayloadContent} = $pem_handle; }
            'Load non-PEM content into PEM object';
 };
@@ -213,9 +223,12 @@ SKIP: {
 };
 
 
-# Done!
+# Clean up, restore PATH, and we're done!
 close $der_handle;
 close $pem_handle;
 close $pkcs12_handle1;
 close $pkcs12_handle2;
+
+$ENV{PATH} = $old_PATH if defined($old_PATH);
+
 done_testing();

@@ -10,10 +10,10 @@ use base qw(Config::Apple::Profile::Payload::Certificate);
 
 our $VERSION = '0.55';
 
-use Readonly;
 use Config::Apple::Profile::Targets qw(:all);
 use Config::Apple::Profile::Payload::Certificate;
 use Config::Apple::Profile::Payload::Types qw($ProfileNumber $ProfileString);
+use Readonly;
 
 
 =encoding utf8
@@ -51,6 +51,47 @@ in it, you've probably got this type of certificate.
 
 This payload is used to hold B<only one> certificate.  If you have multiple
 certificates, use multiple payloads.
+
+
+=head1 INSTANCE METHODS
+
+The following instance methods are provided, or overridden, by this class.
+
+=head2 validate_key($key, $value)
+
+Performs additional validation for a certain payload key in this class:
+
+=over 4
+
+=item * C<PayloadContent>
+
+This must be a PEM-format certificate that OpenSSL can recognize.
+
+All other payload keys will be checked as usual by the parent class.
+
+=back
+
+See also the documentation in L<Config::Apple::Profile::Payload::Common>.
+
+=cut
+
+sub validate_key {
+    my ($self, $key, $value) = @_;
+
+    # First, let the parent do validation
+    my $parent_validation = $self->SUPER::validate_key($key, $value);
+    return $parent_validation if !defined($parent_validation);
+    
+    # Next, if we are setting payload content, and we can check it, do so!
+    if ($key eq 'PayloadContent') {
+        return $self->SUPER::validate_cert($value, 'PEM');
+    }
+    
+    # For all other keys, return what the parent validated
+    else {
+        return $parent_validation;
+    }
+}
 
 
 =head1 PAYLOAD KEYS

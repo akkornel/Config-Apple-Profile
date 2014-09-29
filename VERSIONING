@@ -29,8 +29,8 @@ Development releases will have the standard "_AAA" version added to the end.
   5 points  Tested Compatibility with Storable 
 
         Crypto
- 10 points  OpenSSL executable detection & qualification
-  5 points  Cert validation
+√10 points  OpenSSL executable detection & qualification
+√ 5 points  Cert validation
  10 points  Profile encryption
  10 points  Profile signing
 

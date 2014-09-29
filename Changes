@@ -3,8 +3,10 @@ Revision history for Config-Apple-Profile
 NEXT    DATE
         Added support for Perl 5.10.1 and 5.12.x.
         Added support for the Font payload (2 points).
+        Detect OpenSSL on startup, for validation use (10 points).
         Added test suite for the Data type (closes #5, #8, and #9).
         Added test suite for the Certificate payload (closes #4).
+        Certificate payload now validates PEM/DER certs (5 points).
         Updated Email payload for iOS 8.
         No changes to Certificate payloads for iOS 8.
 

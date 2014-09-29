@@ -10,9 +10,15 @@ use base qw(Config::Apple::Profile::Payload::Common);
 
 our $VERSION = '0.55';
 
-use Readonly;
+use Config::Apple::Profile::Config;
 use Config::Apple::Profile::Payload::Common;
 use Config::Apple::Profile::Payload::Types qw(:all);
+use Fcntl qw(:seek);
+use IPC::Open3;
+use Readonly;
+use Symbol qw(gensym);
+use Try::Tiny;
+
 
 =encoding utf8
 
@@ -50,6 +56,78 @@ B<NOTE:> Typically, you will B<not> use this module directly!  Apple defines
 four different types of certificate payloads, each with a different identifier.
 Please use one of the L<Config::Apple::Profile::Payload::Certificate::>
 subclasses.
+
+
+=head1 INSTANCE METHODS
+
+The following instance methods are provided by this class.
+
+=head2 validate_cert($handle, $type)
+
+C<$handle> is an open, readable file handle.  C<$type> is 'DER' or 'PEM'.
+
+If OpenSSL was found and validated during installation, then see if OpenSSL
+can read the C<$type>-type certificate contained in C<$handle>. 
+
+We rely on C<$OPENSSL_PATH> from L<Config::Apple::Profile::Config> to tell us
+if OpenSSL is installed.
+
+An exception will be thrown if a problem occurs trying to run OpenSSL.  If
+OpenSSL happens to exit with a non-zero exit code, that will be taken as a sign
+that the certificate provided is invalid.
+
+=cut
+
+sub validate_cert {
+    my ($self, $handle, $type) = @_;
+    
+    # If OpenSSL is not installed, skip validation
+    return $handle
+        unless defined($Config::Apple::Profile::Config::OPENSSL_PATH);
+    
+    unless ($type =~ m/^(DER|PEM)$/m) {
+        die "Certificate type $type is invalid";
+    }
+    $type = $1;
+    
+    # Our OpenSSL command is:
+    # $OPENSSL_PATH x509 -inform $type -noout
+    my ($ssl_write, $ssl_read, $ssl_err, $ssl_pid);
+    $ssl_write = gensym;
+    $ssl_read = $ssl_err = gensym;
+    try {
+        $ssl_pid = open3($ssl_write, $ssl_read, $ssl_err,
+                         $Config::Apple::Profile::Config::OPENSSL_PATH,
+                         'x509', '-inform', $type, '-noout'
+        );
+    }
+    catch {
+        die "Error running $Config::Apple::Profile::Config::OPENSSL_PATH: $_";
+    };
+    binmode($ssl_write);
+    
+    # Write our certificate to OpenSSL
+    my $cert_data;
+    seek $handle, 0, SEEK_SET;
+    while (read $handle, $cert_data, 1024) {
+        print $ssl_write $cert_data;
+    }
+    close $ssl_write;
+    
+    # We should not expect any output.  A return code of zero is good!
+    waitpid($ssl_pid, 0);
+    close $ssl_read;
+    my $ssl_exit = $? >> 8;
+    if ($ssl_exit == 0) {
+        seek $handle, 0, SEEK_SET;
+        return $handle;
+    }
+    else {
+        ## no critic (ProhibitExplicitReturnUndef)
+        return undef;
+        ## use critic
+    }
+}
 
 
 =head1 PAYLOAD KEYS

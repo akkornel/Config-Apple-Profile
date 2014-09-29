@@ -57,6 +57,47 @@ B<NOTE:>  This type is exactly the same as the C<pkcs1> type of Certificate
 payload.
 
 
+=head1 INSTANCE METHODS
+
+The following instance methods are provided, or overridden, by this class.
+
+=head2 validate_key($key, $value)
+
+Performs additional validation for a certain payload key in this class:
+
+=over 4
+
+=item * C<PayloadContent>
+
+This must be a DER-format certificate that OpenSSL can recognize.
+
+All other payload keys will be checked as usual by the parent class.
+
+=back
+
+See also the documentation in L<Config::Apple::Profile::Payload::Common>.
+
+=cut
+
+sub validate_key {
+    my ($self, $key, $value) = @_;
+
+    # First, let the parent do validation
+    my $parent_validation = $self->SUPER::validate_key($key, $value);
+    return $parent_validation if !defined($parent_validation);
+    
+    # Next, if we are setting payload content, and we can check it, do so!
+    if ($key eq 'PayloadContent') {
+        return $self->SUPER::validate_cert($value, 'DER');
+    }
+    
+    # For all other keys, return what the parent validated
+    else {
+        return $parent_validation;
+    }
+}
+
+
 =head1 PAYLOAD KEYS
 
 All of the payload keys defined in 
