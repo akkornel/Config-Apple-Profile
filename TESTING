@@ -51,7 +51,7 @@ particular number has been reserved for them.
     *?40-Exchange-OSX: Exchange payload keys used on OS X.
     *?41-FileVault2: FileVault 2 payload keys.
     *?42-FileVault-RKR: FileVault Recovery Key Redirection payload keys.
-    *?43-Font: Font payload keys.
+    * 43-Font: Font payload keys.
     *?44-Global-Proxy: Global HTTP Proxy payload keys.
     *?45-Identification: Identification payload keys.
     *?46-LDAP: LDAP payload keys.

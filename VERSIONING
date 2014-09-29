@@ -48,7 +48,7 @@ Development releases will have the standard "_AAA" version added to the end.
 √ 5 points  Email implementation & test suite
   5 points  Exchange implementation & test suite
   2 points  FileVault 2 implementation & test suite
-  2 points  Font implementation & test suite
+√ 2 points  Font implementation & test suite
   2 points  Global HTTP Proxy implementation & test suite
   2 points  Identification implementation & test suite
   5 points  LDAP implementation & test suite

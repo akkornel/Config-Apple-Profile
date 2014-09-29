@@ -132,3 +132,8 @@ under the terms of either: the GNU General Public License as published
 by the Free Software Foundation; or the Artistic License.
 
 See L<http://dev.perl.org/licenses/> for more information.
+
+The files C<Acknowledgement.otf> and C<Acknowledgement.ttf>
+in the C<t/files> directory is licensed under the SIL Open Font License, version
+1.1, a copy of which is included in this release and may also be downloaded at
+L<http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL>.
