@@ -34,7 +34,7 @@ open my $output_handle, '>:encoding(UTF-8)', $output_file
 
 # Print the start of the module
 print $output_handle <<ENDPRINTA;
-package Config::Apple::Profile::Payload::Common;
+package Config::Apple::Profile::Config;
 
 use 5.10.1;
 use strict;
