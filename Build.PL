@@ -26,7 +26,7 @@ my $builder = Module::Build->new(
     
     # Software license
     license             => 'perl',
-    create_license      => 1,
+    create_license      => 0,
         
     # Our prerequisites
     dynamic_config     => 0,
