@@ -43,7 +43,7 @@ particular number has been reserved for them.
     *?32-Cellular: Cellular payload keys.
     *?33-Cellular-AttachAPN: Cellular AttachAPN dictionaries.
     *?34-Cellular-APNs: Cellular APNs array.
-    *?35-Certificate: Certificate common payload keys.
+    * 35-Certificate: Certificate common payload keys.
     *?36-Certificate-Sub: Payload keys specific to Certificate sub-types.
     * 37-Email: Email payload keys.
     *?38-Exchange: Exchange payload keys common to both OSes.
