@@ -106,8 +106,8 @@ my @openssl_paths = (
     '/usr/local/bin/openssl',
     '/usr/local/sbin/openssl',
 );
-if (defined $builder->args('openssl-path')) {
-    unshift @openssl_paths, $builder->args('openssl-path');
+if (defined $builder->args('with-openssl')) {
+    unshift @openssl_paths, $builder->args('with-openssl');
 }
 
 # Keep a list of candidates

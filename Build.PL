@@ -81,7 +81,7 @@ my $builder = Module::Build->new(
         'skip-openssl' => {
             default => 0,
         },
-        'openssl-path' => {
+        'with-openssl' => {
             type => '=s',
         },
     },
