@@ -188,11 +188,11 @@ undef $object_pem;
 SKIP: {
     my $payload_root = $object_root->payload;
     lives_ok { $payload_root->{PayloadContent} = $der_handle; }
-             'Load PEM content into PEM object';
+             'Load DER content into DER object (Root subtype)';
     skip 'OpenSSL not found during configuration'
         unless defined($Config::Apple::Profile::Config::OPENSSL_PATH);
     dies_ok { $payload_root->{PayloadContent} = $pem_handle; }
-           'Load non-PEM content into PEM object';
+           'Load non-DER content into DER object (Root subtype)';
 };
 undef $object_root;
 
@@ -201,11 +201,11 @@ undef $object_root;
 SKIP: {
     my $payload_pkcs1 = $object_pkcs1->payload;
     lives_ok { $payload_pkcs1->{PayloadContent} = $der_handle; }
-             'Load PEM content into PEM object';
+             'Load DER content into DER object (PKCS1 subtype)';
     skip 'OpenSSL not found during configuration'
         unless defined($Config::Apple::Profile::Config::OPENSSL_PATH);
     dies_ok { $payload_pkcs1->{PayloadContent} = $pem_handle; }
-           'Load non-PEM content into PEM object';
+           'Load non-DER content into DER object (PKCS1 subtype)';
 };
 undef $object_pkcs1;
 
