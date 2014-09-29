@@ -3,6 +3,7 @@
 ^Build.bat$
 ^\.build/
 ^_build/
+^lib/Config/Apple/Profile/Config\.pm
 
 # Skip Git stuff
 \B\.git\b

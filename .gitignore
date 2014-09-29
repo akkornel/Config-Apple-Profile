@@ -4,6 +4,7 @@ Build.bat
 /.build/
 _build/
 !Build/
+/lib/Config/Apple/Profile/Config.pm
 
 # ExtUtils:MakeMaker files and directories
 /Makefile
