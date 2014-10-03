@@ -33,6 +33,7 @@ BEGIN {
         Config::Apple::Profile::Payload::Certificate::PKCS12
         Config::Apple::Profile::Payload::Certificate::Root
         Config::Apple::Profile::Payload::Email
+        Config::Apple::Profile::Payload::Font
     );
 
     plan tests => scalar(@modules);
