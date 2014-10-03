@@ -23,6 +23,7 @@ BEGIN {
         Config::Apple::Profile::Targets
         Config::Apple::Profile::Payload::Common
         Config::Apple::Profile::Payload::Tie::Array
+        Config::Apple::Profile::Payload::Tie::Dict
         Config::Apple::Profile::Payload::Tie::Root
         Config::Apple::Profile::Payload::Types
         Config::Apple::Profile::Payload::Types::Serialize

@@ -19,7 +19,8 @@ package Local::Number;
 
 use Readonly;
 use Config::Apple::Profile::Payload::Common;
-use Config::Apple::Profile::Payload::Types qw($ProfileNumber $ProfileArray);
+use Config::Apple::Profile::Payload::Types qw($ProfileNumber $ProfileArray
+                                              $ProfileDict);
 
 use base qw(Config::Apple::Profile::Payload::Common);
 
@@ -33,6 +34,11 @@ Readonly our %payloadKeys => (
         subtype => $ProfileNumber,
         description => 'An array of numbers.',
     },
+    'numberDictField' => {
+        type => $ProfileDict,
+        subtype => $ProfileNumber,
+        description => 'A dictionary of numbers.',
+    }
 );
 
 
@@ -96,20 +102,23 @@ Readonly my @baddies => (
 #  * Write the number into the field without errors.
 #  * Read the number from the field without errors.
 #  * Have the read number equal what was written.
-plan tests => 7*scalar(@numbers) + 2*scalar(@baddies);
+plan tests => 10*scalar(@numbers) + 3*scalar(@baddies);
 
 # Test all of the numbers that should be good.
+my $i = 0;
 foreach my $number (@numbers) {
     
     # Make sure the object works properly
     my $object = new Local::Number;
     my $payload = $object->payload;
-    lives_ok {$payload->{numberField} = $number} "Write number $number";
+    lives_ok {$payload->{numberField} = $number} "Write number $number (#$i)";
     my $read_number = $payload->{numberField};
     ok(defined($read_number), 'Read number back');
     cmp_ok($read_number, '==', $number, 'Compare numbers');
     lives_ok { push @{$payload->{numberArrayField}}, $number; }
              'Push number onto array';
+    lives_ok { $payload->{numberDictField}->{"test$i"} = $number; }
+             'Insert number into dictionary';
     
     # Make sure we get a correct plist out
     my $plist;
@@ -118,15 +127,27 @@ foreach my $number (@numbers) {
     cmp_ok($plist->value->{numberArrayField}->value->[-1]->value,
            'eq', $payload->{numberField}, 'test number at the end of array'
     );
+    ok(exists $plist->value->{numberDictField}->value->{"test$i"},
+       'Test number is in dictionary'
+    );
+    cmp_ok($plist->value->{numberDictField}->value->{"test$i"}->value,
+           '==', $payload->{numberField}, 'Number in dictionary matches'
+    );
+    
+    $i++;
 }
 
 # Make sure all of the not-numbers fail
+$i = 0;
 foreach my $not_number (@baddies) {
     my $object = new Local::Number;
     my $payload = $object->payload;
-    dies_ok { $payload->{numberField} = $not_number; } 'A non-number';
+    dies_ok { $payload->{numberField} = $not_number; } "A non-number (#$i)";
     dies_ok { push @{$payload->{numberArrayField}}, $not_number; }
             '... pushing also fails';
+    dies_ok { $payload->{numberDictField}->{"test$i"} = $not_number; }
+            '... dict also fails';
+    $i++;
 }
 
 # Done!

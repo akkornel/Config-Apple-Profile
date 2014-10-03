@@ -15,7 +15,7 @@ Development releases will have the standard "_AAA" version added to the end.
         Basic Types
 √ 5 points  Create common profile types and targets
 √ 5 points  Create Array type
-  5 points  Create Dictionary type
+√ 5 points  Create Dictionary type
   
         Basic Functionality
 √20 points  Create root class for payloads

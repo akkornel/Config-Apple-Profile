@@ -11,6 +11,7 @@ our $VERSION = '0.55';
 
 use Tie::Hash; # Also gives us Tie::StdHash
 use Config::Apple::Profile::Payload::Tie::Array;
+use Config::Apple::Profile::Payload::Tie::Dict;
 use Config::Apple::Profile::Payload::Types qw(:all);
 use Config::Apple::Profile::Payload::Types::Validation qw(:types);
 use Scalar::Util qw(blessed);
