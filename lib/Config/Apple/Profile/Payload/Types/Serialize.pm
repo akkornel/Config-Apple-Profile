@@ -132,7 +132,7 @@ sub serialize {
         $value = Mac::PropertyList::array->new(\@array);
     }
     
-    # For hashed, make a Perl hash of fragments, then plist that
+    # For dictionaries, make a Perl hash of fragments, then plist that
     elsif ($type == $ProfileDict) {
         my %hash;
         
