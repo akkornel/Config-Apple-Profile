@@ -11,7 +11,6 @@ our $VERSION = '0.55';
 
 use Scalar::Util qw(blessed);
 use Tie::Array; # Also gives us Tie::StdArray
-use Config::Apple::Profile::Payload::Types qw(:all);
 
 
 =encoding utf8
