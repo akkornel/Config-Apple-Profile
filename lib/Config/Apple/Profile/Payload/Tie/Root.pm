@@ -176,7 +176,7 @@ sub FETCH {
     
         # If the key is a dictionary, set up a new Hash tie
         elsif ($type == $ProfileDict) {
-            tie my %hash, 'Config::Apple::Profile::Payload::Tie::Hash',
+            tie my %hash, 'Config::Apple::Profile::Payload::Tie::Dict',
                            $validator_ref;
             $self->{payload}->{$key} = \%hash;
             return $self->{payload}->{$key};
