@@ -11,7 +11,8 @@ our $VERSION = '0.55';
 
 use Tie::Hash; # Also gives us Tie::StdHash
 use Config::Apple::Profile::Payload::Tie::Array;
-use Config::Apple::Profile::Payload::Types qw($ProfileArray $ProfileDict $ProfileClass);
+use Config::Apple::Profile::Payload::Types qw(:all);
+use Config::Apple::Profile::Payload::Types::Validation qw(:types);
 use Scalar::Util qw(blessed);
 
 
@@ -124,22 +125,63 @@ sub FETCH {
     # some complex types.
     my $type = $key_info->{type};
     
-    # If the key is an array, set up a new Array tie
-    if ($type == $ProfileArray) {
+    # If the key is an array or a dict, get the validator and make the tie
+    if (   ($type == $ProfileArray)
+        || ($type == $ProfileDict)
+    ) {
+        # Set up the appropriate validator, based on array/dict content type
         my $subtype = $key_info->{subtype};
-        tie my @array, 'Config::Apple::Profile::Payload::Tie::Array', $subtype;
-        $self->{payload}->{$key} = \@array;        
-        return $self->{payload}->{$key};
-    }
+        my $validator_ref;
+        
+        if ($subtype == $ProfileString) {
+            $validator_ref = \&validate_string;
+        }
+        elsif ($subtype == $ProfileNumber) {
+            $validator_ref = \&validate_number;
+        }
+        elsif ($subtype == $ProfileReal) {
+            $validator_ref = \&validate_real;
+        }
+        elsif (   ($subtype == $ProfileData)
+               || ($subtype == $ProfileNSDataBlob)
+        ) {
+            $validator_ref = \&validate_data;
+        }
+        elsif ($subtype == $ProfileBool) {
+            $validator_ref = \&validate_bool;
+        }
+        elsif ($subtype == $ProfileDate) {
+            $validator_ref = \&validate_date;
+        }
+        elsif ($subtype == $ProfileUUID) {
+            $validator_ref = \&validate_uuid;
+        }
+        elsif ($subtype == $ProfileIdentifier) {
+            $validator_ref = \&validate_identifier;
+        }
+        elsif ($subtype == $ProfileClass) {
+            $validator_ref = \&validate_class;
+        }
+        else {
+           die "Value type is unknown";
+        }
+        
+        # If the key is an array, set up a new Array tie
+        if ($type == $ProfileArray) {
+            tie my @array, 'Config::Apple::Profile::Payload::Tie::Array',
+                           $validator_ref;
+            $self->{payload}->{$key} = \@array;        
+            return $self->{payload}->{$key};
+        }
     
-    # If the key is a dictionary, set up a new Hash tie
-    # Exception:  If the subtype is a class, then use construct()
-#    elsif ($type == $ProfileDict) {
-#        my $subtype = $key_info->{subtype};
-#        tie my @array, 'Config::Apple::Profile::Payload::Tie::Hash', $subtype;
-#        $self->{payload}->{$key} = \@array;
-#        return $self->{payload}->{$key};
-#    }
+        # If the key is a dictionary, set up a new Hash tie
+        elsif ($type == $ProfileDict) {
+            tie my %hash, 'Config::Apple::Profile::Payload::Tie::Hash',
+                           $validator_ref;
+            $self->{payload}->{$key} = \%hash;
+            return $self->{payload}->{$key};
+        }
+    }
     
     # If the key is a class, instantiate it, add it to the payload, and return
     elsif ($type == $ProfileClass) {

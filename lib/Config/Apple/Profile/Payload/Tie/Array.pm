@@ -12,7 +12,6 @@ our $VERSION = '0.55';
 use Scalar::Util qw(blessed);
 use Tie::Array; # Also gives us Tie::StdArray
 use Config::Apple::Profile::Payload::Types qw(:all);
-use Config::Apple::Profile::Payload::Types::Validation qw(:types);
 
 
 =encoding utf8
@@ -36,22 +35,26 @@ This class is used by payload classes to represent an array.
 
 =head2 "CLASS" METHODS
 
-=head3 tie @array, 'Config::Apple::Profile::Payload::Tie::Array', $value_type
+=head3 tie @array, 'Config::Apple::Profile::Payload::Tie::Array', $validator
 
 When this class is tied to an array, C<TIEARRAY> will be called, with the class
 name as the first argument.
 
-C<$value_type> is one of the types from
-L<Config::Apple::Profile::Payload::Types>.  The standard type validation
-functions from L<Config::Apple::Profile::Payload::Types::Validation> will be
-used to check values when they are added to the array.
+C<$validator> is a reference to a function that will be able to validate
+values that are stored to the array.  The validator will be passed the value as
+the only parameter, and an untained value is expected as the return value.
+If C<undef> is returned by the validator, then the value was invalid, and the
+store attempt will fail.
 
-If C<$value_type> is not a valid scalar then an exception will be thrown.
+It is suggested that the functions from
+L<Config::Apple::Profile::Payload::Types::Validation> be used.
+
+If C<$validator> is not a valid coderef then an exception will be thrown.
 
 =cut
 
 sub TIEARRAY {
-    my ($class, $value_type) = @_;
+    my ($class, $validator) = @_;
     
     # This is what we'll eventually return
     my %object;
@@ -60,43 +63,10 @@ sub TIEARRAY {
     $object{array} = [];
     
     # We don't accept refs, only scalars
-    if (ref $value_type) {
-        die "Only scalars are accepted";
+    if (ref $validator ne 'CODE') {
+        die "Validator must be a function reference";
     }
-    
-    # Set up the appropriate validator, based on the type
-    if ($value_type == $ProfileString) {
-        $object{validator} = \&validate_string;
-    }
-    elsif ($value_type == $ProfileNumber) {
-        $object{validator} = \&validate_number;
-    }
-    elsif ($value_type == $ProfileReal) {
-        $object{validator} = \&validate_real;
-    }
-    elsif (   ($value_type == $ProfileData)
-           || ($value_type == $ProfileNSDataBlob)
-    ) {
-        $object{validator} = \&validate_data;
-    }
-    elsif ($value_type == $ProfileBool) {
-        $object{validator} = \&validate_bool;
-    }
-    elsif ($value_type == $ProfileDate) {
-        $object{validator} = \&validate_date;
-    }
-    elsif ($value_type == $ProfileUUID) {
-        $object{validator} = \&validate_uuid;
-    }
-    elsif ($value_type == $ProfileIdentifier) {
-        $object{validator} = \&validate_identifier;
-    }
-    elsif ($value_type == $ProfileClass) {
-        $object{validator} = \&validate_class;
-    }
-    else {
-        die "Value type is unknown";
-    }
+    $object{validator} = $validator;
 
     return bless \%object, $class;
 }
