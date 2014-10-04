@@ -74,6 +74,6 @@ particular number has been reserved for them.
     *?63-Web-Clip: Web Clip payload keys.
     *?64-Web-Content-Filter: Web Content Filter payload keys.
     *?65-WiFi: Wi-Fi payload keys.
-    *?66-WiFi-EAP: Wi-Fi payload EAPClientConfiguration keys.
+    * 66-WiFi-EAP: Wi-Fi payload EAPClientConfiguration keys.
     
 * 70-series tests: Other tests that haven't been devised yet!

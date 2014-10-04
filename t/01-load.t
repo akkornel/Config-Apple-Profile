@@ -35,6 +35,7 @@ BEGIN {
         Config::Apple::Profile::Payload::Certificate::Root
         Config::Apple::Profile::Payload::Email
         Config::Apple::Profile::Payload::Font
+        Config::Apple::Profile::Payload::WiFi::EAPClientConfiguration
     );
 
     plan tests => scalar(@modules);
