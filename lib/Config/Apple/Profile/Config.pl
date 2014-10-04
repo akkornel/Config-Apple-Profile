@@ -45,6 +45,19 @@ ENDPRINTA
 print $output_handle "our \$VERSION = '$VERSION';\n\n";
 
 print $output_handle <<'ENDPRINTB';
+use Exporter::Easy (
+    OK => [qw(
+        $OPENSSL_PATH $OPENSSL_CAN_CMS
+    )],
+    TAGS => [
+        'all' => [qw(
+          $OPENSSL_PATH $OPENSSL_CAN_CMS
+        )],
+        'openssl' => [qw($OPENSSL_PATH $OPENSSL_CAN_CMS)],
+    ],
+);
+
+
 =encoding utf8
 
 =head1 NAME
@@ -57,6 +70,14 @@ occasionally (or even less).
 use Config::Apple::Profile::Config;
 
 if (defined $Config::Apple::Profile::Config::OPENSSL_PATH) {
+    # Do something with OpenSSL...
+}
+
+# ... or ...
+
+use Config::Apple::Profile::Config qw($OPENSSL_PATH);
+
+if (defined $OPENSSL_PATH) {
     # Do something with OpenSSL...
 }
 
@@ -73,13 +94,19 @@ than one way to examine a PNG file).  This package is created when the software
 is installed, and the variables in this package are not read-only.  If you like,
 your code can change the variables at runtime.
 
+All of the package variables can be exported to the local namespace
+individually, or in groups.  The C<:all> group can be used to import all
+package variables, and additional packages are defined below.
+
 =head1 PACKAGE VARIABLES
 
-=head2 C<$OPENSSL_PATH>
+=head2 OpenSSL (group C<:openssl>)
+
+=head3 C<$OPENSSL_PATH>
 
 The path to the OpenSSL binary.  This may be undefined.
 
-=head2 C<$OPENSSL_CAN_CMS>
+=head3 C<$OPENSSL_CAN_CMS>
 
 If true, the OpenSSL executable at C<$OPENSSL_PATH> supports the `cms` command.
 

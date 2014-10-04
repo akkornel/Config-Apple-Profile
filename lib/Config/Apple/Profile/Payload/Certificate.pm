@@ -10,7 +10,7 @@ use base qw(Config::Apple::Profile::Payload::Common);
 
 our $VERSION = '0.55';
 
-use Config::Apple::Profile::Config;
+use Config::Apple::Profile::Config qw($OPENSSL_PATH);
 use Config::Apple::Profile::Payload::Common;
 use Config::Apple::Profile::Payload::Types qw(:all);
 use Fcntl qw(:seek);
@@ -83,7 +83,7 @@ sub validate_cert {
     
     # If OpenSSL is not installed, skip validation
     return $handle
-        unless defined($Config::Apple::Profile::Config::OPENSSL_PATH);
+        unless defined($OPENSSL_PATH);
     
     unless ($type =~ m/^(DER|PEM)$/m) {
         die "Certificate type $type is invalid";
@@ -97,12 +97,12 @@ sub validate_cert {
     $ssl_read = $ssl_err = gensym;
     try {
         $ssl_pid = open3($ssl_write, $ssl_read, $ssl_err,
-                         $Config::Apple::Profile::Config::OPENSSL_PATH,
+                         $OPENSSL_PATH,
                          'x509', '-inform', $type, '-noout'
         );
     }
     catch {
-        die "Error running $Config::Apple::Profile::Config::OPENSSL_PATH: $_";
+        die "Error running $OPENSSL_PATH: $_";
     };
     binmode($ssl_write);
     
