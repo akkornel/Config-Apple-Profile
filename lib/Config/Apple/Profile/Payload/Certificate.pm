@@ -10,7 +10,7 @@ use base qw(Config::Apple::Profile::Payload::Common);
 
 our $VERSION = '0.55';
 
-use Config::Apple::Profile::Config qw($OPENSSL_PATH);
+use Config::Apple::Profile::Config qw($ACP_OPENSSL_PATH);
 use Config::Apple::Profile::Payload::Common;
 use Config::Apple::Profile::Payload::Types qw(:all);
 use Fcntl qw(:seek);
@@ -69,8 +69,8 @@ C<$handle> is an open, readable file handle.  C<$type> is 'DER' or 'PEM'.
 If OpenSSL was found and validated during installation, then see if OpenSSL
 can read the C<$type>-type certificate contained in C<$handle>. 
 
-We rely on C<$OPENSSL_PATH> from L<Config::Apple::Profile::Config> to tell us
-if OpenSSL is installed.
+We rely on C<$ACP_OPENSSL_PATH> from L<Config::Apple::Profile::Config> to tell
+us if OpenSSL is installed.
 
 An exception will be thrown if a problem occurs trying to run OpenSSL.  If
 OpenSSL happens to exit with a non-zero exit code, that will be taken as a sign
@@ -83,7 +83,7 @@ sub validate_cert {
     
     # If OpenSSL is not installed, skip validation
     return $handle
-        unless defined($OPENSSL_PATH);
+        unless defined($ACP_OPENSSL_PATH);
     
     unless ($type =~ m/^(DER|PEM)$/m) {
         die "Certificate type $type is invalid";
@@ -91,18 +91,18 @@ sub validate_cert {
     $type = $1;
     
     # Our OpenSSL command is:
-    # $OPENSSL_PATH x509 -inform $type -noout
+    # $ACP_OPENSSL_PATH x509 -inform $type -noout
     my ($ssl_write, $ssl_read, $ssl_err, $ssl_pid);
     $ssl_write = gensym;
     $ssl_read = $ssl_err = gensym;
     try {
         $ssl_pid = open3($ssl_write, $ssl_read, $ssl_err,
-                         $OPENSSL_PATH,
+                         $ACP_OPENSSL_PATH,
                          'x509', '-inform', $type, '-noout'
         );
     }
     catch {
-        die "Error running $OPENSSL_PATH: $_";
+        die "Error running $ACP_OPENSSL_PATH: $_";
     };
     binmode($ssl_write);
     

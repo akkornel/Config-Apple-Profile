@@ -14,7 +14,7 @@ use strict;
 use warnings FATAL => 'all';
 
 
-use Config::Apple::Profile::Config qw($OPENSSL_PATH);
+use Config::Apple::Profile::Config qw($ACP_OPENSSL_PATH);
 use Config::Apple::Profile::Payload::Certificate::PEM;
 use Config::Apple::Profile::Payload::Certificate::PKCS1;
 use Config::Apple::Profile::Payload::Certificate::PKCS12;
@@ -178,7 +178,7 @@ SKIP: {
     lives_ok { $payload_pem->{PayloadContent} = $pem_handle; }
              'Load PEM content into PEM object';
     skip 'OpenSSL not found during configuration'
-        unless defined($OPENSSL_PATH);
+        unless defined($ACP_OPENSSL_PATH);
     dies_ok { $payload_pem->{PayloadContent} = $der_handle; }
            'Load non-PEM content into PEM object';
 };
@@ -191,7 +191,7 @@ SKIP: {
     lives_ok { $payload_root->{PayloadContent} = $der_handle; }
              'Load DER content into DER object (Root subtype)';
     skip 'OpenSSL not found during configuration'
-        unless defined($OPENSSL_PATH);
+        unless defined($ACP_OPENSSL_PATH);
     dies_ok { $payload_root->{PayloadContent} = $pem_handle; }
            'Load non-DER content into DER object (Root subtype)';
 };
@@ -204,7 +204,7 @@ SKIP: {
     lives_ok { $payload_pkcs1->{PayloadContent} = $der_handle; }
              'Load DER content into DER object (PKCS1 subtype)';
     skip 'OpenSSL not found during configuration'
-        unless defined($OPENSSL_PATH);
+        unless defined($ACP_OPENSSL_PATH);
     dies_ok { $payload_pkcs1->{PayloadContent} = $pem_handle; }
            'Load non-DER content into DER object (PKCS1 subtype)';
 };

@@ -47,13 +47,13 @@ print $output_handle "our \$VERSION = '$VERSION';\n\n";
 print $output_handle <<'ENDPRINTB';
 use Exporter::Easy (
     OK => [qw(
-        $OPENSSL_PATH $OPENSSL_CAN_CMS
+        $ACP_OPENSSL_PATH $ACP_OPENSSL_CAN_CMS
     )],
     TAGS => [
         'all' => [qw(
-          $OPENSSL_PATH $OPENSSL_CAN_CMS
+          $ACP_OPENSSL_PATH $ACP_OPENSSL_CAN_CMS
         )],
-        'openssl' => [qw($OPENSSL_PATH $OPENSSL_CAN_CMS)],
+        'openssl' => [qw($ACP_OPENSSL_PATH $ACP_OPENSSL_CAN_CMS)],
     ],
 );
 
@@ -69,15 +69,15 @@ occasionally (or even less).
 
 use Config::Apple::Profile::Config;
 
-if (defined $Config::Apple::Profile::Config::OPENSSL_PATH) {
+if (defined $Config::Apple::Profile::Config::ACP_OPENSSL_PATH) {
     # Do something with OpenSSL...
 }
 
 # ... or ...
 
-use Config::Apple::Profile::Config qw($OPENSSL_PATH);
+use Config::Apple::Profile::Config qw($ACP_OPENSSL_PATH);
 
-if (defined $OPENSSL_PATH) {
+if (defined $ACP_OPENSSL_PATH) {
     # Do something with OpenSSL...
 }
 
@@ -102,13 +102,14 @@ package variables, and additional packages are defined below.
 
 =head2 OpenSSL (group C<:openssl>)
 
-=head3 C<$OPENSSL_PATH>
+=head3 C<$ACP_OPENSSL_PATH>
 
 The path to the OpenSSL binary.  This may be undefined.
 
-=head3 C<$OPENSSL_CAN_CMS>
+=head3 C<$ACP_OPENSSL_CAN_CMS>
 
-If true, the OpenSSL executable at C<$OPENSSL_PATH> supports the `cms` command.
+If true, the OpenSSL executable at C<$ACP_OPENSSL_PATH> supports the `cms`
+command.
 
 =cut
 
@@ -119,8 +120,8 @@ ENDPRINTB
 
 if ($builder->args('skip-openssl') == 1) {
     print "Skipping OpenSSL\n";
-    print $output_handle "our \$OPENSSL_PATH = undef;\n";
-    print $output_handle "our \$OPENSSL_CAN_CMS = 0;\n";
+    print $output_handle "our \$ACP_OPENSSL_PATH = undef;\n";
+    print $output_handle "our \$ACP_OPENSSL_CAN_CMS = 0;\n";
     goto SKIPSSL;
 }
 
@@ -182,8 +183,8 @@ my @openssl_sorted = sort {
 # Grab the first entry as the one we'll use!
 my $openssl_selected = shift @openssl_sorted;
 print 'Using OpenSSL at ' . $openssl_selected->[0] . "\n";
-print $output_handle "our \$OPENSSL_PATH = '" . $openssl_selected->[0] . "';\n";
-print $output_handle   "our \$OPENSSL_CAN_CMS = "
+print $output_handle "our \$ACP_OPENSSL_PATH = '" . $openssl_selected->[0] . "';\n";
+print $output_handle   "our \$ACP_OPENSSL_CAN_CMS = "
                      . ($openssl_selected->[1] > 1 ? '1' : '0')
                      . ";\n";
 
