@@ -501,6 +501,14 @@ sub validate_key {
     # Get our payload key's value type
     my $type = $self->keys()->{$key}->{type};
     
+    # If the payload key is an Array or a Dict, then we're actually checking
+    # the subtype of the key, not the type.
+    if (   ($type == $ProfileArray)
+        || ($type == $ProfileDict)
+    ) {
+        $type = $self->keys()->{$key}->{subtype};
+    }
+    
     # If we are working with a basic type, then call the basic validator!
     if (   ($type == $ProfileString)
         || ($type == $ProfileNumber)
