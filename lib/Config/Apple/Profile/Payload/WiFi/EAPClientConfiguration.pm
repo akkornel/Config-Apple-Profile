@@ -46,6 +46,15 @@ Performs additional validation for certain payload keys in this class:
 
 =over 4
 
+=item * C<AcceptEAPTypes>
+
+This must be C<13>, C<17>, C<18>, C<21>, C<23>, C<25>, or C<43>.
+
+=item * C<TLSTrustedServerNames>
+
+Only valid host and domain names are allowed, although the asterisk (C<*>) is
+acceptable as a wildcard.
+
 =item * C<EAPSIMNumberOfRANDs>
 
 This must be either C<2> or C<3>.
@@ -57,12 +66,31 @@ This must be C<PAP>, C<CHAP>, C<MSCHAP>, or C<MSCHAPv2>.
 =back
 
 All other payload keys will be checked as usual by the parent class.
-There is additional validation that could be done for array contents, but that
-validation is not done by this method.
 
 See also the documentation in L<Config::Apple::Profile::Payload::Common>.
 
 =cut
+
+# $TLSTrustedServerNames_regex matches hostnames, but allows * as a wildcard
+# character.  It is based on $RE{net}{domain}{-keep}{-nospace} from
+# Regexp::Common by Damien Conway and Abigail, but rewritten because that
+# module's code is not available under the GPL2, which we are.
+Readonly my $TLSTrustedServerNames_hostname => qr/
+[A-Z0-9*]             # First character can be a letter or a digit
+(?:                   # We don't have to have more than 1 character, but...
+   [-A-Z0-9*]{0,253}  # Middle characters allow hyphens
+   [A-Z0-9*]          # End character is a letter or a digit
+)?
+/ix;
+Readonly my $TLSTrustedServerNames_regex => qr/
+^(                                 # Match the whole string; capture the match
+$TLSTrustedServerNames_hostname    # We need at least 1 hostname
+(?:
+ \.                                # Domains require a dot before subsequent
+ $TLSTrustedServerNames_hostname   # hostnames, but…
+)*                                 # We don't have to have a domain name.
+)$
+/isx;
 
 sub validate_key {
     my ($self, $key, $value) = @_;
@@ -72,8 +100,37 @@ sub validate_key {
     return $parent_value if !defined $parent_value;
     
     # Let's check over some of our keys
+    # Only allow EAP-type values for AcceptEAPTypes
+    if ($key eq 'AcceptEAPTypes') {
+        unless (   ($value == 13)
+                || ($value == 17)
+                || ($value == 18)
+                || ($value == 21)
+                || ($value == 23)
+                || ($value == 25)
+                || ($value == 43)
+        ) {
+            ## no critic (ProhibitExplicitReturnUndef)
+            return undef;
+            ## use critic
+        }
+    }
+    
+    # TLSTrustedServerNames allows hostnames and domains, but also allows * as
+    # a wildcard character.
+    elsif ($key eq 'TLSTrustedServerNames') {
+        if ($value =~ $TLSTrustedServerNames_regex) {
+            return $1;
+        }
+        else {
+            ## no critic (ProhibitExplicitReturnUndef)
+            return undef;
+            ## use critic
+        }
+    }
+    
     # Only allow certain values for TTLSInnerAuthentication
-    if ($key eq 'TTLSInnerAuthentication') {
+    elsif ($key eq 'TTLSInnerAuthentication') {
         unless (   ($value eq 'PAP')
                 || ($value eq 'CHAP')
                 || ($value eq 'MSCHAP')
