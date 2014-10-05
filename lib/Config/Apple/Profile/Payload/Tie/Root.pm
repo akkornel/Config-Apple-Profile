@@ -131,41 +131,10 @@ sub FETCH {
         || ($type == $ProfileDict)
     ) {
         # Set up the appropriate validator, based on array/dict content type
-        my $subtype = $key_info->{subtype};
-        my $validator_ref;
-        
-        if ($subtype == $ProfileString) {
-            $validator_ref = \&validate_string;
-        }
-        elsif ($subtype == $ProfileNumber) {
-            $validator_ref = \&validate_number;
-        }
-        elsif ($subtype == $ProfileReal) {
-            $validator_ref = \&validate_real;
-        }
-        elsif (   ($subtype == $ProfileData)
-               || ($subtype == $ProfileNSDataBlob)
-        ) {
-            $validator_ref = \&validate_data;
-        }
-        elsif ($subtype == $ProfileBool) {
-            $validator_ref = \&validate_bool;
-        }
-        elsif ($subtype == $ProfileDate) {
-            $validator_ref = \&validate_date;
-        }
-        elsif ($subtype == $ProfileUUID) {
-            $validator_ref = \&validate_uuid;
-        }
-        elsif ($subtype == $ProfileIdentifier) {
-            $validator_ref = \&validate_identifier;
-        }
-        elsif ($subtype == $ProfileClass) {
-            $validator_ref = \&validate_class;
-        }
-        else {
-           die "Value type is unknown";
-        }
+        my $validator_ref = sub {
+            my ($value) = @_;
+            return $self->{object}->validate_key($key, $value);
+        };
         
         # If the key is an array, set up a new Array tie
         if ($type == $ProfileArray) {
