@@ -73,40 +73,40 @@ foreach my $key (@keys_expected) {
 
 
 # Test validation of the AcceptEAPTypes key
-lives_ok { push @{$payload->{AcceptEAPTypes}}, 13; }
-         'Push type EAP-TLS';
-lives_ok { push @{$payload->{AcceptEAPTypes}}, 17; }
-         'Push type LEAP';
-lives_ok { push @{$payload->{AcceptEAPTypes}}, 18; }
-         'Push type EAP-SIM';
-lives_ok { push @{$payload->{AcceptEAPTypes}}, 21; }
-         'Push type EAP-TTLS';
-lives_ok { push @{$payload->{AcceptEAPTypes}}, 23; }
-         'Push type EAP-AKA';
-lives_ok { push @{$payload->{AcceptEAPTypes}}, 25; }
-         'Push type PEAP';
-lives_ok { push @{$payload->{AcceptEAPTypes}}, 43; }
-         'Push type EAP-FAST';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 12; }
         'Push invalid type 12';
+lives_ok { push @{$payload->{AcceptEAPTypes}}, 13; }
+         'Push type EAP-TLS';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 14; }
         'Push invalid type 14';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 15; }
         'Push invalid type 15';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 16; }
         'Push invalid type 16';
+lives_ok { push @{$payload->{AcceptEAPTypes}}, 17; }
+         'Push type LEAP';
+lives_ok { push @{$payload->{AcceptEAPTypes}}, 18; }
+         'Push type EAP-SIM';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 19; }
         'Push invalid type 19';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 20; }
         'Push invalid type 20';
+lives_ok { push @{$payload->{AcceptEAPTypes}}, 21; }
+         'Push type EAP-TTLS';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 22; }
         'Push invalid type 22';
+lives_ok { push @{$payload->{AcceptEAPTypes}}, 23; }
+         'Push type EAP-AKA';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 24; }
         'Push invalid type 24';
+lives_ok { push @{$payload->{AcceptEAPTypes}}, 25; }
+         'Push type PEAP';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 26; }
         'Push invalid type 26';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 42; }
         'Push invalid type 42';
+lives_ok { push @{$payload->{AcceptEAPTypes}}, 43; }
+         'Push type EAP-FAST';
 dies_ok { push @{$payload->{AcceptEAPTypes}}, 44; }
         'Push invalid type 44';
 
