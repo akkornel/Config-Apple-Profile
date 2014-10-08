@@ -172,6 +172,7 @@ supported:
 =item C<13> = EAP-TLS
 
 As defined in RFC 5216, available at L<http://tools.ietf.org/html/rfc5216>.
+The client is authenticated using an identity certificate.
 
 =item C<17> = LEAP
 
@@ -180,20 +181,26 @@ The Cisco-developed protocol.  This should not be used for new environments.
 =item C<18> = EAP-SIM
 
 As defined in RFC 4186, available at L<http://tools.ietf.org/html/rfc4186>.
+The client is authenticated using their phone's SIM, using challenge-response.
 
 =item C<21> = EAP-TTLS
 
 As defined in RFC 5281, available at L<http://tools.ietf.org/html/rfc5281>.
+The client is authenticated using a username & password, but that authentication
+takes place inside of a TLS connection.
 
 =item C<23> = EAP-AKA
 
 As defined in RFC 5448, available at L<http://tools.ietf.org/html/rfc5448>.
+The client is authenticated using their phone's USIM, using challenge-response.
 
 =item C<25> = PEAP
 
 =item C<43> = EAP-FAST
 
 As defined in RFC 4581, available at L<http://tools.ietf.org/html/rfc4851>.
+The client is authenticated using a pre-shared credential, or (if none is
+available) some other EAP method, embedded in a TLS connection.
 
 =back
 
