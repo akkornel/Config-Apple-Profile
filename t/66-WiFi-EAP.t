@@ -26,11 +26,11 @@ use Test::More;
 # This is the list of keys we expect to have in this payload
 my @keys_expected = (
     [UserName => $ProfileString],
-    [AcceptEAPTypes => $ProfileArray],
+    [AcceptEAPTypes => $ProfileArray => $ProfileNumber],
     [UserPassword => $ProfileString],
     [OneTimePassword => $ProfileBool],
-    [PayloadCertificateAnchorUUID => $ProfileArray],
-    [TLSTrustedServerNames => $ProfileArray],
+    [PayloadCertificateAnchorUUID => $ProfileArray => $ProfileUUID],
+    [TLSTrustedServerNames => $ProfileArray => $ProfileString],
     [TLSAllowTrustExceptions => $ProfileBool],
     [TLSCertificateIsRequired => $ProfileBool],
     [TTLSInnerAuthentication => $ProfileString],
@@ -46,7 +46,7 @@ my @keys_expected = (
 # Finally, check that AcceptEAPTypes, TTLSInnerAuthentication, and
 # EAPSIMNumberOfRANDs only accept correct values.
 
-plan tests =>    2*scalar(@keys_expected) # Key presence/type checks
+plan tests =>    2*scalar(@keys_expected) + 3 # Key presence/type checks
                + 7 + 11                   # AcceptEAPTypes checks
                + 5 + 6                    # TLSTrustedServerNames checks
                + 4 + 4                    # TTLSInnerAuthentication checks
@@ -62,13 +62,22 @@ my $payload = $object->payload;
 
 # Check for our payload keys
 foreach my $key (@keys_expected) {
-    my ($expected_name, $expected_type) = @$key;
+    my ($expected_name, $expected_type, $expected_subtype) = @$key;
     
     # Make sure the key exists
     ok(exists $keys->{$expected_name}, "Check key $expected_name exists");
     cmp_ok($keys->{$expected_name}->{type}, '==',
            $expected_type, "Check key type matches"
     );
+    
+    # Check subtype, if we have one
+    if (   ($expected_type == $ProfileArray)
+        || ($expected_type == $ProfileDict)
+    ) {
+        cmp_ok($keys->{$expected_name}->{subtype}, '==',
+           $expected_subtype, "Check key subtype matches"
+        );
+    }
 }
 
 
