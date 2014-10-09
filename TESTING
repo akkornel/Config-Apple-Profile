@@ -28,7 +28,7 @@ particular number has been reserved for them.
 
 * 20-series through 60-series tests: Tests for specific payloads
 
-    *?20-common: Tests against the common payload keys.
+    * 20-common: Tests against the common payload keys.
     *?21-ADcert: Active Directory Certificate Profile payload keys.
     *?22-AirPlay: AirPlay payload keys.
     *?23-AirPrint: AirPrint payload keys.
