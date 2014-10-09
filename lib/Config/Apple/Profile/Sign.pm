@@ -17,6 +17,8 @@ use Symbol qw(gensym);
 use Try::Tiny;
 
 
+=encoding utf8
+
 =head1 NAME
 
 Config::Apple::Profile::Sign - Digitally sign configuration profiles
