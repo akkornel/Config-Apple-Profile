@@ -78,6 +78,6 @@ particular number has been reserved for them.
     
 * 70-series tests: Encryption and Signing
 
-    *?71-Sign: Signing
+    * 71-Sign: Signing
     
 * 80-series tests: Other tests that haven't been devised yet!
