@@ -23,7 +23,7 @@ particular number has been reserved for them.
     * 13-real: Tests against the Real type.
     * 14-dict: Tests against the Dict type.
     * 15-array: Tests against the Array type.
-    *?16-date: Tests against the Date type.
+    * 16-date: Tests against the Date type.
     * 17-uuid: Tests against the UUID type. 
 
 * 20-series through 60-series tests: Tests for specific payloads

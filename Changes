@@ -7,6 +7,7 @@ NEXT    DATE
         Detect OpenSSL on startup, for validation use (10 points).
         Certificate payload now validates PEM/DER certs (5 points).
         Added the Dictionary type (5 points).
+        Added test suite for the Date type (closes #3).
         Added test suite for the Data type (closes #5, #8, and #9).
         Added test suite for the Certificate payload (closes #4).
         Updated Email payload for iOS 8.
