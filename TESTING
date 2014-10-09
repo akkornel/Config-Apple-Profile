@@ -76,4 +76,8 @@ particular number has been reserved for them.
     * 65-WiFi: Wi-Fi payload keys.
     * 66-WiFi-EAP: Wi-Fi payload EAPClientConfiguration keys.
     
-* 70-series tests: Other tests that haven't been devised yet!
+* 70-series tests: Encryption and Signing
+
+    *?71-Sign: Signing
+    
+* 80-series tests: Other tests that haven't been devised yet!
