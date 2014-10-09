@@ -1,0 +1,28 @@
+Revision history for Config-Apple-Profile
+
+NEXT    DATE
+
+
+0.87    2014-10-08 23:00 US/Pacific
+        Added support for Perl 5.10.1 and 5.12.x.
+        Added support for the Font payload (2 points).
+        Added support for the Wi-Fi payload (10 points).
+        Detect OpenSSL on startup, for validation use (10 points).
+        Certificate payload now validates PEM/DER certs (5 points).
+        Added the Dictionary type (5 points).
+        Added test suite for the Date type (closes #3).
+        Added test suite for the Data type (closes #5, #8, and #9).
+        Added test suite for the Certificate payload (closes #4).
+        Updated Email payload for iOS 8.
+        No changes to Certificate payloads for iOS 8.
+
+0.55    2014-09-16 12:55 US/Pacific
+        Created root classes for payloads (20 points).
+        Enabled serialization to plist (5 points).
+        Enabled validation of common types (5 points).
+        Created root profile type (5 points).
+        Created common profile types and targets (5 points).
+        Created Array type (5 points).
+        Implemented Certificate payloads (5 points).
+        Implemented Email payloads (5 points).
+        

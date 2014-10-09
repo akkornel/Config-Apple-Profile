@@ -19,16 +19,16 @@ particular number has been reserved for them.
 
     * 10-string: Tests against the String and Identifier types.
     * 11-number: Tests against the Number type.
-    *?12-data: Tests against the Data type.
-    *?14-dict: Tests against the Dict type.
-    *?15-array: Tests against the Array type.
-    *?16-array-dict: Tests against the Array-of-Dictionaries type.
+    * 12-data: Tests against the Data type.
+    * 13-real: Tests against the Real type.
+    * 14-dict: Tests against the Dict type.
+    * 15-array: Tests against the Array type.
+    * 16-date: Tests against the Date type.
     * 17-uuid: Tests against the UUID type. 
-    *?18-array-strings: Test against the Array-of-Strings type.
 
 * 20-series through 60-series tests: Tests for specific payloads
 
-    *?20-common: Tests against the common payload keys.
+    * 20-common: Tests against the common payload keys.
     *?21-ADcert: Active Directory Certificate Profile payload keys.
     *?22-AirPlay: AirPlay payload keys.
     *?23-AirPrint: AirPrint payload keys.
@@ -43,15 +43,15 @@ particular number has been reserved for them.
     *?32-Cellular: Cellular payload keys.
     *?33-Cellular-AttachAPN: Cellular AttachAPN dictionaries.
     *?34-Cellular-APNs: Cellular APNs array.
-    *?35-Certificate: Certificate common payload keys.
+    * 35-Certificate: Certificate common payload keys.
     *?36-Certificate-Sub: Payload keys specific to Certificate sub-types.
-    *?37-Email: Email payload keys.
+    * 37-Email: Email payload keys.
     *?38-Exchange: Exchange payload keys common to both OSes.
     *?39-Exchange-iOS: Exchange payload keys used on iOS.
     *?40-Exchange-OSX: Exchange payload keys used on OS X.
     *?41-FileVault2: FileVault 2 payload keys.
     *?42-FileVault-RKR: FileVault Recovery Key Redirection payload keys.
-    *?43-Font: Font payload keys.
+    * 43-Font: Font payload keys.
     *?44-Global-Proxy: Global HTTP Proxy payload keys.
     *?45-Identification: Identification payload keys.
     *?46-LDAP: LDAP payload keys.
@@ -73,7 +73,7 @@ particular number has been reserved for them.
     *?62-VPN-OnDemandRules: VPN payload OnDemandRules keys.
     *?63-Web-Clip: Web Clip payload keys.
     *?64-Web-Content-Filter: Web Content Filter payload keys.
-    *?65-WiFi: Wi-Fi payload keys.
-    *?66-WiFi-EAP: Wi-Fi payload EAPClientConfiguration keys.
+    * 65-WiFi: Wi-Fi payload keys.
+    * 66-WiFi-EAP: Wi-Fi payload EAPClientConfiguration keys.
     
 * 70-series tests: Other tests that haven't been devised yet!

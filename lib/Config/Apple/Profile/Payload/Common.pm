@@ -1,31 +1,34 @@
-# This is the code for XML::AppleConfigProfile::Payload::Common.
+# This is the code for Config::Apple::Profile::Payload::Common.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Common;
+package Config::Apple::Profile::Payload::Common;
 
-use 5.14.4;
+use 5.10.1;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.00_001';
+our $VERSION = '0.87';
 
 use Data::GUID;
 use Encode;
 use Mac::PropertyList;
 use Readonly;
-use Regexp::Common;
 use Scalar::Util;
 use Tie::Hash; # Also gives us Tie::StdHash
 use Try::Tiny;
 use version 0.77; 
-use XML::AppleConfigProfile::Payload::Tie::Root;
-use XML::AppleConfigProfile::Payload::Types qw(:all);
-use XML::AppleConfigProfile::Targets qw(:all);
+use Config::Apple::Profile::Payload::Tie::Root;
+use Config::Apple::Profile::Payload::Types qw(:all);
+use Config::Apple::Profile::Payload::Types::Serialize qw(serialize);
+use Config::Apple::Profile::Payload::Types::Validation;
+use Config::Apple::Profile::Targets qw(:all);
 
+
+=encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Common - Base class for almost all payload
+Config::Apple::Profile::Payload::Common - Base class for almost all payload
 types, with common payload keys.
 
 =head1 DESCRIPTION
@@ -75,7 +78,7 @@ sub new {
     
     # Now that have the object, we can tie up the hash.  YES, this will create
     # a circular reference, which TIEHASH will deal with.
-    tie %payload, 'XML::AppleConfigProfile::Payload::Tie::Root', $object;
+    tie %payload, 'Config::Apple::Profile::Payload::Tie::Root', $object;
     
     # Return the prepared object!
     return $object;    
@@ -111,7 +114,7 @@ The following exception may be thrown when accessing a hash key:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::KeyInvalid
+=item Config::Apple::Profile::Payload::Common::KeyInvalid
 
 Thrown when attempting to access a payload key that is not valid for this
 payload.
@@ -124,12 +127,12 @@ The following exceptions may be thrown when setting a hash key:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::KeyInvalid
+=item Config::Apple::Profile::Payload::Common::KeyInvalid
 
 Thrown when attempting to access a payload key that is not valid for this
 payload.
 
-=item XML::AppleConfigProfile::Payload::Common::ValueInvalid
+=item Config::Apple::Profile::Payload::Common::ValueInvalid
 
 Thrown when attempting to set an invalid value for this payload key.
 
@@ -140,8 +143,7 @@ you can use C<defined> to test if a particular key actually has a value defined.
 Take note that calling C<defined> with an invalid key name will always return
 false.
 
-You can use C<delete> to delete a key, even if that key is required.  Setting
-the key's value to C<undef> will do the same thing.
+You can use C<delete> to delete a key.
 
 =cut
 
@@ -175,7 +177,7 @@ Several parameters can be provided, which will influence how this method runs.
 
 =item target
 
-If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
+If C<target> (a value from L<Config::Apple::Profile::Targets>) is provided,
 then this will be taken into account when exporting.  Only payload keys that
 are used on the specified target will be included in the output.
 
@@ -204,11 +206,11 @@ The following exceptions may be thrown:
 
 =over 4
 
-=item XML::AppleConfigProfile::Exception::KeyRequired
+=item Config::Apple::Profile::Exception::KeyRequired
 
 Thrown if a required key has not been set.
 
-=item XML::AppleConfigProfile::Exception::Incomplete
+=item Config::Apple::Profile::Exception::Incomplete
 
 Thrown if payload keys are being excluded from the output because of C<target>
 or C<version>.
@@ -264,7 +266,7 @@ sub plist {
     # Go through each key that could exist, and skip the ones that are undef.
     Readonly my $keys => $self->keys();
     Readonly my $payload => $self->payload();
-    foreach my $key (CORE::keys($keys)) {
+    foreach my $key (CORE::keys(%$keys)) {
         # If the key isn't set, then skip it
         next unless defined($payload->{$key});
         
@@ -303,49 +305,11 @@ sub plist {
             # If we're here, then the version isn't set, or we're new enough!
         } # Done checking target & version
         
-        # Look up the key type, and act based on that
-        # Also, grab the raw value, and replace it with its plist element
-        Readonly my $type => $keys->{$key}->{type};
-        my $value = $payload->{$key};
-        
-        # Strings need to be encoded as UTF-8 before export
-        if (   ($type == $ProfileString)
-            || ($type == $ProfileIdentifier)
-        ) {
-            $value = Mac::PropertyList::string->new(
-                Encode::encode('UTF-8', $value)
-            );
-        }
-        
-        # Numbers are easy
-        elsif ($type == $ProfileNumber) {
-            $value = Mac::PropertyList::integer->new($value);
-        }
-        
-        # All data is Base64-encoded for us by Mac::PropertyList
-        elsif ($type == $ProfileData) {
-            $value = Mac::PropertyList::data->new($value);
-        }
-        
-        # There are separate objects for true/false booleans
-        elsif ($type == $ProfileBool) {
-            if ($value) {
-                $value = Mac::PropertyList::true->new;
-            }
-            else {
-                $value = Mac::PropertyList::false->new;
-            }
-        }
-        
-        # UUIDs are converted to strings, then processed as such
-        elsif ($type == $ProfileUUID) {
-            $value = Mac::PropertyList::string->new(
-                Encode::encode('UTF-8', $value->as_string())
-            );
-        }
-        
-        # Now that we have a $value object, add it to the dictionary hash
-        $dict{$key} = $value;
+        # Serialize the payload contents as a plist fragment, and store
+        $dict{$key} = serialize($keys->{$key}->{type}, 
+                                $payload->{$key},
+                                $keys->{$key}->{subtype} || undef
+        );
     } # Done going through each payload key
     
     # Now that we have a populated $dict, make our final plist object!
@@ -353,22 +317,147 @@ sub plist {
     return $plist;
 }
 
+
+=head2 populate_id()
+
+Populates the C<PayloadIdentifier> and C<PayloadUUID> fields, if they are not
+already set.  In addition, if the payload has any keys of type
+C<$PayloadClass>, then C<populate_id> will also be called on them.
+
+Sub-classes may decide to override this, so as to add extra functionality.
+
+=cut
+
+sub populate_id {
+    my ($self) = @_;
+    
+    my $keys = $self->keys;
+    my $payload = $self->payload;
+    
+    # Go through each key, and check the type
+    foreach my $key (CORE::keys %$keys) {
+        my $type = $keys->{$key}->{type};
+        
+        # We can call this method on other classes
+        if (   ($type !~ m/^\d+$/)
+            || ($type == $ProfileClass)
+        ) {
+            # Only populate IDs on objects that exist
+            if (defined $payload->{$key}) {
+                my $object = $payload->{$key};
+                $object->populate_id();
+            }
+        }
+
+        # We can fill in UUIDs
+        elsif ($type == $ProfileUUID) {
+            if (!defined $payload->{$key}) {
+                # Make a new (random) GUID
+                $payload->{$key} = new Data::GUID;
+            }
+        }
+        
+        # We can fill in identifiers
+        elsif ($type == $ProfileIdentifier) {
+            if (!defined $payload->{$key}) {
+                # Just make some simple random identifier
+                $payload->{$key} = 'payload' . int(rand(2**30));
+            }
+        }
+        
+        # If we have an array of objects, we can do them, too!
+        elsif (   ($type == $ProfileArray)
+               && (   $keys->{$key}->{subtype} !~ m/^\d+$/
+                   || $keys->{$key}->{subtype} == $ProfileClass
+                  )
+        ) {
+            foreach my $item (@{$payload->{$key}}) {
+                $item->populate_id();
+            }
+        }
+        
+        # If we have an dictionary of objects, we can do them, also!
+        elsif (   ($type == $ProfileDict)
+               && (   $keys->{$key}->{subtype} !~ m/^\d+$/
+                   || $keys->{$key}->{subtype} == $ProfileClass
+                  )
+        ) {
+            foreach my $item (CORE::keys %{$payload->{$key}}) {
+                $payload->{$key}->{$item}->populate_id();
+            }
+        }
+        
+        # That's it!  Move on to the next key
+    }
+}
+
+
 =head2 exportable([C<target>])
 
 Returns true if the payload is complete enough to be exported.  In other words,
 all required keys must have values provided.
 
-If C<target> (a value from L<XML::AppleConfigProfile::Targets>) is provided,
-then this will be taken into account.  For example, a I<FileVault> payload
-will never be exportable to iOS.
+C<exportable()> will return false if all UUID and Identifier fields are not
+filled in, so it is suggested that you call C<populate_id()> before calling
+C<exportable()>.
 
 =cut
 
 sub exportable {
-    ...
+    my ($self, $target) = @_;
+    
+    my $keys = $self->keys;
+    my $payload = $self->payload;
+    
+    # Let's look for all keys that are required
+    foreach my $key (CORE::keys %$keys) {
+        next if exists $keys->{$key}->{optional};
+        
+        my $type = $keys->{$key}->{type};
+        
+        # If the key is a class and has been set, call ->exportable() on it.
+        # If the call returns 0, then we are not exportable.
+        return 0 if (   ($type == $ProfileClass)
+                     && (defined $payload->{$key})
+                     && ($payload->{$key}->exportable() == 0)
+        );
+        
+        # Special handling is needed for a required array
+        if ($type == $ProfileArray) {
+            return 0 if scalar(@{$payload->{$key}}) == 0;
+            
+            # If we have an array of classes, make sure each entry is exportable
+            if ($keys->{$key}->{subtype} == $ProfileClass) {
+                foreach my $entry (@{$payload->{$key}}) {
+                    return 0 if ($entry->exportable == 0);
+                }
+            }
+        }
+        
+        # Special handling is needed for a required dictionary
+        if ($type == $ProfileDict) {
+            return 0 if scalar(CORE::keys %{$payload->{$key}}) == 0;
+            
+            # If we have a dict of classes, make sure each entry is exportable
+            if ($keys->{$key}->{subtype} == $ProfileClass) {
+                foreach my $entry (CORE::keys %{$payload->{$key}}) {
+                    return 0 if ($entry->exportable == 0);
+                }
+            }
+        }
+        
+        # For every other key, return 0 if we are required but not set
+        return 0 unless defined $payload->{$key};
+        
+        # At this point, the key is required, and is defined, so we're good!
+    } # Done checking this key
+    
+    # If we've checked all the keys, and they're OK, then we're good!
+    return 1;
 }
 
-=head2 _validate($key, $value)
+
+=head2 validate_key($key, $value)
 
 Confirm the value provided is valid for the given payload key, and return a
 de-tained copy of C<$value>, or C<undef> if the provided value is invalid. 
@@ -378,13 +467,13 @@ new value.  This class will perform checking for all payload types except for
 Data payloads.  The checks performed will be very basic.
 
 Subclasses should override this method to check their keys, and then call
-SUPER::_validate($self, $key, $value) to check the remaining keys.
+SUPER::validate_key($self, $key, $value) to check the remaining keys.
 
 The following exceptions may be thrown:
 
 =over 4
 
-=item XML::AppleConfigProfile::Payload::Common::KeyUnknown
+=item Config::Apple::Profile::Payload::Common::KeyUnknown
 
 Thrown if the payload key referenced is unknown.
 
@@ -398,7 +487,7 @@ because it's possible for a valid value to be false (for example, 0)!
 
 =cut
 
-sub _validate {
+sub validate_key {
     my ($self, $key, $value) = @_;
     
     # Does our payload key exist?
@@ -412,168 +501,29 @@ sub _validate {
     # Get our payload key's value type
     my $type = $self->keys()->{$key}->{type};
     
-    # We recognize String types
-    if ($type == $ProfileString) {
-        # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
-        
-        # Empty strings aren't allowed, either.
-        if ($value =~ m/^(.+)$/s) {
-            $value = $1;
-            
-        }
-        else {
-            ## no critic (ProhibitExplicitReturnUndef)
-            return undef;
-            ##use critic
-        }
-        
-        # Try to encode as UTF-8, to make sure it's safe
-        try {
-            encode('UTF-8', $value, Encode::FB_CROAK | Encode::LEAVE_SRC);
-        }
-        catch {
-            $value = undef;
-        };
-        
-        return $value;
-    }
-    
-    # We recognize Number types
-    elsif ($type == $ProfileNumber) {
-        # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
-        
-        # Numbers must be integers, positive or negative (or zero).
-        if ($value =~ /^$RE{num}{int}{-keep}$/) {
-            return $1;
-        }
-    }
-    
-    # We recognize Boolean types
-    elsif ($type == $ProfileBool) {
-        # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
-        
-        # A simple evaluation!
-        if ($value) {
-            return 1;
-        }
-        if (!$value) {
-            return 0;
-        }
-    }
-    
-    # We recognize Data types
-    elsif (   ($type == $ProfileData)
-           || ($type == $ProfileNSDataBlob)
+    # If the payload key is an Array or a Dict, then we're actually checking
+    # the subtype of the key, not the type.
+    if (   ($type == $ProfileArray)
+        || ($type == $ProfileDict)
     ) {
-        # How we act here depends if we have a string or a filehandle
-        # Let's first check if we were given an open filehandle
-        if (Scalar::Util::openhandle($value)) {
-            # We've got an open file, so we're good!
-            return $value;
-        }
-        
-        # If we don't have an open handle, then make sure it's not an object
-        unless (ref($value)) {
-            # We have a string.  Let's make sure it's binary, and non-empty.
-            if (   (!utf8::is_utf8($value))
-                && (length($value) > 0)
-            ) {
-                # Pull the string into an in-memory file, and return that.
-                my ($memory, $file);
-                $file = IO::File::new(\$memory, 'w+');
-                binmode($file);
-                $file->print($value);
-                $file->seek(0, 0);
-                return $file;
-            }
-        }
+        $type = $self->keys()->{$key}->{subtype};
     }
     
-    # We recognize Dictionaries
-    elsif ($type == $ProfileDict) {
-        # As a simple check, look for a hashref
-        return $value if ref($value) eq 'HASH';
+    # If we are working with a basic type, then call the basic validator!
+    if (   ($type == $ProfileString)
+        || ($type == $ProfileNumber)
+        || ($type == $ProfileReal)
+        || ($type == $ProfileBool)
+        || ($type == $ProfileData)
+        || ($type == $ProfileDate)
+        || ($type == $ProfileNSDataBlob)
+        || ($type == $ProfileDict)
+        || ($type == $ProfileArray)
+        || ($type == $ProfileIdentifier)
+        || ($type == $ProfileUUID)
+    ) {
+        return Config::Apple::Profile::Payload::Types::Validation::validate($type, $value);
     }
-    
-    # We recognize Arrays
-    elsif ($type == $ProfileArray) {
-        # As a simple check, look for an arrayref
-        return $value if ref($value) eq 'ARRAY';
-    }
-    
-    # We recognize arrays of dictionaries
-    elsif ($type == $ProfileArrayOfDicts) {
-        # First, make sure the outer container is an arrayref
-        if (ref($value) eq 'ARRAY') {
-            # Make sure each array item is a hashref
-            my $all_are_hashrefs = 1;
-            foreach my $i (@$value) {
-                $all_are_hashrefs = 0 if ref($i) ne 'HASH';
-            }
-            return $value if $all_are_hashrefs;
-        }
-    }
-    
-    # We recognize Identifier types
-    elsif ($type == $ProfileIdentifier) {
-        # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
-        
-        # Empty strings aren't allowed, either.
-        if ($value =~ m/^(.+)$/s) {
-            my $matched_string = $1;
-            # Identifiers are one-line strings
-            if (   ($matched_string !~ m/\n/s)
-                && ($matched_string =~ m/^$RE{net}{domain}{-nospace}$/)
-            ) {
-                return $matched_string;
-            }
-        }
-    }
-    
-    # We recognize UUID types
-    elsif ($type == $ProfileUUID) {
-        my $class = ref($value);
-        my $uuid;
-        
-        # We accept Data::UUID objects
-        if ($class eq 'Data::UUID') {
-            $uuid = Data::GUID::from_data_uuid($value);
-            return $uuid;
-        }
-        
-        # We accept Data::GUID objects
-        if ($class eq 'Data::GUID') {
-            return $value;
-        }
-        
-        # We don't accept other kinds of objects
-        if ($class ne '') {
-            ## no critic (ProhibitExplicitReturnUndef)
-            return undef;
-            ## use critic
-        }
-        
-        # Have Data::GUID try to parse the input
-        # If from_any_string doesn't die, then it wored OK
-        eval {
-            $uuid = Data::GUID->from_any_string($value);
-        };
-        return $uuid;
-        
-        # If we're here, the parsing failed, so just fall through to the end.
-    } # Done checking the UUID type
     
     # If we're still here, then something's wrong, so fail.
     ## no critic (ProhibitExplicitReturnUndef)
@@ -588,7 +538,7 @@ Every payload type has a certain number of common keys.  Those common keys are
 defined (not stored) in C<%payloadKeys>.
 
 For general information on payload types, see
-L<XML::AppleConfigProfile::Payload::Types>.
+L<Config::Apple::Profile::Payload::Types>.
 
 =head2 C<PayloadIdentifier>
 
@@ -623,7 +573,7 @@ profile that is about to be installed.
 
 A C<Identifier> that identifies which type of payload this is.  This value may
 not be set by the client.  Instead, the value is automatically determined based
-on which C<XML::AppleConfigProfile::Payload::Types::> class is being used.
+on which C<Config::Apple::Profile::Payload::Types::> class is being used.
 
 =head2 C<PayloadVersion>
 
@@ -700,17 +650,55 @@ keys:
 
 =item C<type>
 
-This key's value is a value from L<XML::AppleConfigProfile::Payload::Types>.
+This key's value is a value from L<Config::Apple::Profile::Payload::Types>.
 It is used to specify the type of data the profile key contains.
 
 The type is used when creating L<Mac::PropertyList> objects, and when doing
 value-checking.
+
+If a payload class uses <$ProfileClass> as a type, then the payload class is
+responsible for providing an instance method named C<construct>, which takes
+the payload key name as its only parameter, and returns a new object.
+
+This key must be present.
+
+=item C<subtype>
+
+This key is required when C<type> is set to C<$ProfileDict> or C<$ProfileArray>.
+
+If C<type> is set to C<$ProfileDict>, then C<subtype> contains the type of
+data stored as values.  That data type will be used for validation, when
+entries are added to the Perl hash representing the dictionary.
+
+If C<type> is set to C<$ProfileArray>, then C<subtype> contains the type of
+data stored in the array.  That data type will be used for validation, when
+entries are added to the Perl array.
+
+If a payload class uses <$ProfileClass> as a subtype, then the payload class is
+responsible for providing an instance method named C<construct>, which takes
+the payload key name as its only parameter, and returns a new object.
+
+For other values of the C<type> key, this key must I<not> be present.
 
 =item C<description>
 
 This key's value contains a human-readable description of the profile key.  The
 purpose of this is so that client software can easily enumerate profile keys,
 such as when making a web application.
+
+This key must be present.
+
+=item C<targets>
+
+This key's value is a hashref.  Within the hashref, the keys are platform
+identifiers, scalars taken from C<Config::Apple::Profile::Targets>.  The value
+for each key is a version object representing the earliest version of the
+named platform's OS which supports this payload key.
+
+If a platform does not support a particular key at all, that platform should not
+be included in the hashref.
+
+This key must be present, and the hashref must contain at least one entry.
 
 =item C<optional>
 
@@ -753,7 +741,7 @@ This is used for things like PayloadVersion and PayloadType, which are fixed.
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to the L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 
