@@ -1,6 +1,6 @@
 =pod
 
-=head1 XML-AppleConfigProfile: Make Apple Configuration Profiles in Perl
+=head1 Config-Apple-Profile: Make Apple Configuration Profiles in Perl
 
 Apple provides users with a way to configure Apple devices (running iOS or Mac
 OS X) using ready-made configuration files, which Apple calls
@@ -45,7 +45,7 @@ each module.
 Installing the distribution is fairly straightforward.  This release uses
 C<Module::Build>, so installation can be completed by running four commands:
 
-	perl Build.PL
+	perl -w Build.PL
 	./Build
 	./Build test
 	./Build install
@@ -58,6 +58,14 @@ install:
 =item *
 
 Data::GUID
+
+=item *
+
+DateTime and DateTime::Format::Flexible
+
+=item *
+
+Email::Valid
 
 =item *
 
@@ -77,20 +85,27 @@ B<NOTE:> C<Readonly::XS> is not required, nor is it even necessary any more.
 
 Regexp::Common
 
+=item *
+
+Try::Tiny
+
 =back
+
+The lowest version of Perl supported is 5.10.1, due to the version requirements
+of our dependencies.
 
 =head2 Documentation
 
 All of the Perl modules have POD embedded throughout.  To get the documentation
 on a particular module, you can use C<perldoc> after installation, for example:
 
-    perldoc XML::AppleConfigProfile
+    perldoc Config::Apple::Profile
 
-The documentation in C<XML::AppleConfigProfile> is a good place for new clients
+The documentation in C<Config::Apple::Profile> is a good place for new clients
 to start reading.
 
 Documentation can also be found on CPAN at
-L<http://search.cpan.org/search?query=XML&mode=module>.
+L<http://search.cpan.org/search?query=Config::Apple::Profile&mode=module>.
 
 Your code editor probably also has some way of easily accessing module docs.
 
@@ -98,11 +113,11 @@ Your code editor probably also has some way of easily accessing module docs.
 
 The repository for this software is Github.  You can find us here:
 
-L<http://github.com/akkornel/XML-AppleConfigProfile>
+L<https://github.com/akkornel/Config-Apple-Profile>
 
 If you have a bug, it should be reported on the Github issue tracker, here:
 
-L<https://github.com/akkornel/XML-AppleConfigProfile/issues>
+L<https://github.com/akkornel/Config-Apple-Profile/issues>
 
 Contributions are welcome!  At the very least, git-generated patches are needed,
 and Github pull requests are preferred, especially if your contribution is
@@ -117,3 +132,8 @@ under the terms of either: the GNU General Public License as published
 by the Free Software Foundation; or the Artistic License.
 
 See L<http://dev.perl.org/licenses/> for more information.
+
+The files C<Acknowledgement.otf> and C<Acknowledgement.ttf>
+in the C<t/files> directory is licensed under the SIL Open Font License, version
+1.1, a copy of which is included in this release and may also be downloaded at
+L<http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL>.

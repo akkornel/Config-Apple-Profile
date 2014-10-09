@@ -1,22 +1,23 @@
-# This is the code for XML::AppleConfigProfile::Payload::Tie::Array.
+# This is the code for Config::Apple::Profile::Payload::Tie::Array.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Tie::Array;
+package Config::Apple::Profile::Payload::Tie::Array;
 
-use 5.14.4;
+use 5.10.1;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.00_001';
+our $VERSION = '0.87';
 
 use Scalar::Util qw(blessed);
 use Tie::Array; # Also gives us Tie::StdArray
-use XML::AppleConfigProfile::Payload::Types qw(:all);
 
+
+=encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Tie::Array - Tying class for arrays of things.
+Config::Apple::Profile::Payload::Tie::Array - Tying class for arrays of things.
 
 =head1 DESCRIPTION
 
@@ -33,34 +34,26 @@ This class is used by payload classes to represent an array.
 
 =head2 "CLASS" METHODS
 
-=head2 tie @array, 'XML::AppleConfigProfile::Payload::Tie::Array', $value_type,
-$validator_ref
+=head3 tie @array, 'Config::Apple::Profile::Payload::Tie::Array', $validator
 
 When this class is tied to an array, C<TIEARRAY> will be called, with the class
-name as the first argument.  At least one more argument (C<$value_type>) must
-be provided, and C<$validator_ref> is optional.
+name as the first argument.
 
-C<$value_type> can be a scalar or a ref.  If C<$value_type> is a reference, it
-must be blessed.  We keep a record of C<$value_type>'s class, and all values
-placed into the array must be of the same class.  We let the class take
-responsibility for validating its contents, and C<$validator_ref> is ignored.
+C<$validator> is a reference to a function that will be able to validate
+values that are stored to the array.  The validator will be passed the value as
+the only parameter, and an untained value is expected as the return value.
+If C<undef> is returned by the validator, then the value was invalid, and the
+store attempt will fail.
 
-If C<$value_type> is a scalar, then C<$value_type> must
-match one of the types from L<XML::AppleConfigProfile::Payload::Types>.  If
-provided, C<$validator_ref> must be a code reference.  The referenced function
-will be given one argument, which is a value to validate, and should either
-return the validated (and de-tained) value, or C<undef> if the value is invalid.
+It is suggested that the functions from
+L<Config::Apple::Profile::Payload::Types::Validation> be used.
 
-If C<$value_type> is a scalar but C<$validator_ref> is undefined, then only
-basic type validation will be performed.
-
-If C<$value_type> is not a valid scalar or a valid reference, then an exception
-will be thrown.
+If C<$validator> is not a valid coderef then an exception will be thrown.
 
 =cut
 
 sub TIEARRAY {
-    my ($class, $value_type, $validator_ref) = @_;
+    my ($class, $validator) = @_;
     
     # This is what we'll eventually return
     my %object;
@@ -68,58 +61,17 @@ sub TIEARRAY {
     # We'll still have an array, for convenience
     $object{array} = [];
     
-    # If we have a ref, it must be a class
-    if (ref $value_type) {
-        my $value_class = blessed $value_type;
-        if (!defined $value_class) {
-            die "Attempting to pass a non-blessed ref";
-        }
-        $object{is_class} = 1;
-        $object{validator} = $value_class;
+    # We don't accept refs, only scalars
+    if (ref $validator ne 'CODE') {
+        die "Validator must be a function reference";
     }
-    
-    # If we don't have a ref, then it needs to be a specific scalar
-    else {
-        # Make sure we have a valid value type
-        if (   ($value_type != $ProfileString)
-            && ($value_type != $ProfileNumber)
-            && ($value_type != $ProfileData)
-            && ($value_type != $ProfileBool)
-            && ($value_type != $ProfileDict)
-            && ($value_type != $ProfileArray)
-            && ($value_type != $ProfileArrayOfDicts)
-            && ($value_type != $ProfileNSDataBlob)
-            && ($value_type != $ProfileUUID)
-            && ($value_type != $ProfileIdentifier)
-        ) {
-            die "Value type is unknown";
-        }
-        
-        # If the validator is defined, it must be a coderef
-        if (defined $validator_ref) {
-            if (ref $validator_ref ne 'CODE') {
-                die "Validator is not a code reference";
-            }
-            $object{validator} = $validator_ref;
-        }
-        
-        # If the validator function isn't defined, make one
-        else {
-            $object{validator} = sub {
-                my ($value) = @_;
-                $value =~ m/^(.*)$/;
-                return $1;
-            };
-        } # Done testing the validator
-        
-        $object{is_class} = 0;
-    } # Done checking for ref vs. scalar
+    $object{validator} = $validator;
 
     return bless \%object, $class;
 }
 
 
-=head2 FETCH
+=head3 FETCH
 
 Works as one would expect with a Perl array.  Returns the entry at the specified
 index.  Since methods are in place to prevent storing C<undef>, as long as the
@@ -134,7 +86,7 @@ sub FETCH {
 }
 
 
-=head2 STORE
+=head3 STORE
 
 Storing items at a specific index is not allowed.  This is to help prevent
 C<undef> from appearing in the array.  Instead, use C<push> or C<unshift>.
@@ -183,12 +135,23 @@ end of the array.  Making the array bigger (that is, presizing) has no effect.
 sub STORESIZE {
     my ($self, $count) = @_;
     
-    return if ($count >= scalar @{$self->{array}});
+    return if ($count >= $self->FETCHSIZE);
     $#{$self->{array}} = $count - 1; 
 }
 
 
-=head2 exists
+=head3 EXTEND
+
+If Perl attempts to pre-extend the array, nothing happens.
+
+=cut
+
+sub EXTEND {
+    my ($self, $count) = @_;
+}
+
+
+=head3 exists
 
 Works as expected for a Perl array: Returns true if the specified index is
 still valid for the array.
@@ -203,7 +166,7 @@ sub EXISTS {
 }
 
 
-=head2 CLEAR
+=head3 CLEAR
 
 Replacing the array with an empty list works to remove all of the entries from
 the array.
@@ -217,7 +180,7 @@ sub CLEAR {
 }
 
 
-=head2 push
+=head3 push
 
 Works as expected for a Perl array, with two exceptions:
 
@@ -238,7 +201,7 @@ An exception will be thrown if either of the two points above fails.
 
 =cut
 
-sub push {
+sub PUSH {
     my $self = CORE::shift @_;
     
     # Run the validation
@@ -249,31 +212,31 @@ sub push {
 }
 
 
-=head2 pop
+=head3 pop
 
 Works as expected for a Perl array.
 
 =cut
 
-sub pop {
+sub POP {
     my ($self) = @_;
     return Tie::StdArray::POP($self->{array});
 }
 
 
-=head2 shift
+=head3 shift
 
 Works as expected for a Perl array.
 
 =cut
 
-sub shift {
+sub SHIFT {
     my ($self) = @_;
     return Tie::StdArray::SHIFT($self->{array});
 }
 
 
-=head2 unshift
+=head3 unshift
 
 Works as expected for a Perl array, with two exceptions:
 
@@ -293,7 +256,7 @@ being added to the array.
 An exception will be thrown if either of the two points above fails.
 =cut
 
-sub unshift {
+sub UNSHIFT {
     my $self = CORE::shift @_;
     
     # Run the validation
@@ -304,7 +267,7 @@ sub unshift {
 }
 
 
-=head2 splice
+=head3 splice
 
 Works as expected for a Perl array, but if you are using C<splice> to add
 entries to the array, take note of these two exceptions:
@@ -326,24 +289,35 @@ An exception will be thrown if either of the two points above fails.
 
 =cut
 
-sub splice {
+sub SPLICE {
+    # We can't use Tie::Array or Tie::StdArray for this, because it expects
+    # something we can't easily give.  We'll have to do it ourselves.
     my $self = CORE::shift @_;
     
-    # If splice was called with more than three parameters, then we need to
-    # check each of the list items that are being inserted.
-    if (scalar @_ >= 3) {
-        my $offset = CORE::shift @_;
-        my $length = CORE::shift @_;
+    # We'll need the current array size for reference
+    my $size = $self->FETCHSIZE;
+    
+    # Get the offset from the parameters, or default to 0
+    # If offset is negative, make it relative to the array end
+    my $offset = scalar @_ ? shift @_ : 0;
+    $offset += $size if $offset < 0;
+    
+    # Get the length from the parameters.  If length wasn't provided, then
+    # we're grabbing all of the array starting at $offset
+    my $length = scalar @_ ? shift @_ : $size - $offset;
+    
+    # If there are any parameters left, then they are items to insert.
+    # Validate them before continuing.
+    if (scalar @_ >= 0) {
         @_ = $self->_validate(@_);
-        CORE::unshift @_, ($offset, $length);
     }
     
-    # Once validation is done, let Tie::StdArray take over
-    return Tie::StdArray::SPLICE($self->{array}, @_);
+    # Do the splice and return.
+    return splice(@{$self->{array}}, $offset , $length, @_);
 }
 
 
-=head2 _validate
+=head3 _validate
 
 Given a list of items, each one will be validated, and the validated list will
 be returned.
@@ -361,38 +335,38 @@ sub _validate {
         die "_validate expects to return an array";
     }
     
+    # We can't use a foreach loop, because our items might be Readonly,
+    # and the way Perl does aliasing means assigning to the foreach $item
+    # triggers a "modification of a read-only value" error.
+    my @validated_array;
+    
     # Go through each item, making sure it is valid
-    foreach my $item (@_) {
+    for (my $i = 0; $i < scalar @_; $i++) {
+        my $item = $_[$i];
+        
         # Undef is not a valid value
         if (!defined $item) {
-            die "Adding undef items is not allowed"
+            die "Adding undef items is not allowed";
         }
         
-        # If we are an array of objects, check the class name
-        if ($self->{is_class}) {
-            my $item_class = blessed $item;
-            if ($item_class ne $self->{validator}) {
-                die "Attempting to add item of a different class";
-            }
+        # Call the validation routine
+        my $validated_item = $self->{validator}->($item);
+        
+        # If $item suddenly became undef, it was invalid
+        if (!defined $validated_item) {
+            die "Attempting to insert invalid item";
         }
         
-        # If we are not objects, then use the validation routine
-        else {
-            # Call the validation routine
-            $item = &{$self->{validator}}($item);
-        
-            # If $item suddenly became undef, it was invalid
-            if (!defined $item) {
-                die "Attempting to insert invalid item";
-            }
-        } # Done checking class or not-class
+        $validated_array[$i] = $validated_item;
     } # Done checking each item
+    
+    return @validated_array;
 }
 
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

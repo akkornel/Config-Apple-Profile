@@ -1,5 +1,5 @@
 #!perl -T
-use 5.14.4;
+use 5.10.1;
 use strict;
 use warnings FATAL => 'all';
 use Test::More;

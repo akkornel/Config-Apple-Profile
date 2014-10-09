@@ -1,32 +1,34 @@
-# This is the code for XML::AppleConfigProfile::Payload::Certificate::PKCS12.
+# This is the code for Config::Apple::Profile::Payload::Certificate::PKCS12.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Payload::Certificate::PKCS12;
+package Config::Apple::Profile::Payload::Certificate::PKCS12;
 
-use 5.14.4;
+use 5.10.1;
 use strict;
 use warnings FATAL => 'all';
-use base qw(XML::AppleConfigProfile::Payload::Certificate);
+use base qw(Config::Apple::Profile::Payload::Certificate);
 
-our $VERSION = '0.00_001';
+our $VERSION = '0.87';
 
 use Readonly;
-use XML::AppleConfigProfile::Targets qw(:all);
-use XML::AppleConfigProfile::Payload::Certificate;
-use XML::AppleConfigProfile::Payload::Types qw($ProfileNumber $ProfileString);
+use Config::Apple::Profile::Targets qw(:all);
+use Config::Apple::Profile::Payload::Certificate;
+use Config::Apple::Profile::Payload::Types qw($ProfileNumber $ProfileString);
 
+
+=encoding utf8
 
 =head1 NAME
 
-XML::AppleConfigProfile::Payload::Certificate::PKCS12 - Bundle containing
+Config::Apple::Profile::Payload::Certificate::PKCS12 - Bundle containing
 one certificate and its matching private key.
 
 =head1 SYNOPSIS
 
-    use XML::AppleConfigProfile::Profile;
-    use XML::AppleConfigProfile::Payload::Certificate::PKCS12;
+    use Config::Apple::Profile;
+    use Config::Apple::Profile::Payload::Certificate::PKCS12;
     
-    my $cert = new XML::AppleConfigProfile::Payload::Certificate::PKCS12;
+    my $cert = new Config::Apple::Profile::Payload::Certificate::PKCS12;
     $cert->payload->{PayloadIdentifier} = 'local.acme.key.user10';
     $cert->payload->{PayloadDisplayName} = 'Private key & cert';
     $cert->payload->{PayloadDescription} = 'The private key and certificate for employee #10';
@@ -35,10 +37,10 @@ one certificate and its matching private key.
     $cert->payload->{Password} = 'Monkey123'; # DON'T DO THIS IN REAL LIFE!!!
     $cert->payload->{PayloadContent} = '.................'; # Binary data here
     
-    my $profile = new XML::AppleConfigProfile::Profile;
+    my $profile = new Config::Apple::Profile;
     push @{$profile->content}, $cert;
     
-    print $profile->string;
+    print $profile->export;
     
     
 =head1 DESCRIPTION
@@ -56,7 +58,7 @@ intermediate certificates, you will need to use a second Certificate payload
 =head1 PAYLOAD KEYS
 
 All of the payload keys defined in 
-L<XML::AppleConfigProfile::Payload::Common::Certificate> are used by this
+L<Config::Apple::Profile::Payload::Common::Certificate> are used by this
 payload.
 
 This payload has the following additional keys:
@@ -67,9 +69,13 @@ This is the password needed to decrypt the PKCS#12 file.  If no password is
 provided, the user will be prompted to enter the password when installing the
 profile.
 
+B<WARNING:> iOS 7 and 8 seem to have problems with identity certificates that do
+not have the C<Password> key in the payload.  More information, and status,
+are in L<https://github.com/akkornel/Config-Apple-Profile/issues/7>.
+
 =head2 C<PayloadType>
 
-This is fixed to the string C<com.apple.security.pem>.
+This is fixed to the string C<com.apple.security.pkcs12>.
 
 =head2 C<PayloadVersion>
 
@@ -79,7 +85,7 @@ This is fixed to the value C<1>.
 
 Readonly our %payloadKeys => (
     # Bring in the certificate keys...
-    %XML::AppleConfigProfile::Payload::Certificate::payloadKeys,
+    %Config::Apple::Profile::Payload::Certificate::payloadKeys,
     
     # ... and define our own!
     'Password' => {
@@ -116,7 +122,7 @@ Readonly our %payloadKeys => (
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 
