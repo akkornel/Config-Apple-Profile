@@ -1,7 +1,7 @@
-# This is the code for XML::AppleConfigProfile::Encrypt.
+# This is the code for Config::Apple::Profile::Encrypt.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Encrypt;
+package Config::Apple::Profile::Encrypt;
 
 use 5.14.4;
 use strict;
@@ -9,7 +9,7 @@ use warnings FATAL => 'all';
 
 =head1 NAME
 
-XML::AppleConfigProfile::Encrypt - Digitally encrypt configuration profiles
+Config::Apple::Profile::Encrypt - Digitally encrypt configuration profiles
 
 =head1 SYNOPSIS
 
@@ -53,7 +53,7 @@ exported and, if you want, signed.
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to the L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 

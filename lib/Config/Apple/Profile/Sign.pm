@@ -1,7 +1,7 @@
-# This is the code for XML::AppleConfigProfile::Sign.
+# This is the code for Config::Apple::Profile::Sign.
 # For Copyright, please see the bottom of the file.
 
-package XML::AppleConfigProfile::Sign;
+package Config::Apple::Profile::Sign;
 
 use 5.14.4;
 use strict;
@@ -9,7 +9,7 @@ use warnings FATAL => 'all';
 
 =head1 NAME
 
-XML::AppleConfigProfile::Sign - Digitally sign configuration profiles
+Config::Apple::Profile::Sign - Digitally sign configuration profiles
 
 =head1 SYNOPSIS
 
@@ -47,7 +47,7 @@ the configuration profile, then you needed to do that right before signing.
 
 =head1 ACKNOWLEDGEMENTS
 
-Refer to the L<XML::AppleConfigProfile> for acknowledgements.
+Refer to the L<Config::Apple::Profile> for acknowledgements.
 
 =head1 AUTHOR
 
