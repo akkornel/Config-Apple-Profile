@@ -284,13 +284,14 @@ sub validate_date {
     # At this point, we have a scalar, so let's see if it can be parsed
     try {
         $value = DateTime::Format::Flexible->parse_datetime($value);
-        return $value;
     }
+    # If the parse fails, it dies, so return undef
+    catch {
+        $value = undef;
+    };
     
-    # I give up!
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef;
-    ##use critic
+    # Return either our object, or undef
+    return $value;
 }
 
 
