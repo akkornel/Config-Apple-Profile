@@ -3,6 +3,7 @@ Revision history for Config-Apple-Profile
 NEXT    DATE
         Added support for Perl 5.10.1 and 5.12.x.
         Added support for the Font payload (2 points).
+        Added support for the Wi-Fi payload (10 points).
         Detect OpenSSL on startup, for validation use (10 points).
         Certificate payload now validates PEM/DER certs (5 points).
         Added the Dictionary type (5 points).
