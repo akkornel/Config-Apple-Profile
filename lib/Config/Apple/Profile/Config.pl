@@ -5,7 +5,7 @@ use 5.10.1;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.87';
+our $VERSION = '0.87.1';
 
 use IPC::Open2;
 use Module::Build;

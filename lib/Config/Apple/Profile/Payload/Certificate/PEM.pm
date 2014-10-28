@@ -8,7 +8,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(Config::Apple::Profile::Payload::Certificate);
 
-our $VERSION = '0.87';
+our $VERSION = '0.87.1';
 
 use Config::Apple::Profile::Targets qw(:all);
 use Config::Apple::Profile::Payload::Certificate;
