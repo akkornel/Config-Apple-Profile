@@ -157,7 +157,7 @@ foreach my $candidate (@openssl_paths) {
 
     # Look for an OpenSSL version in the first line
     my $openssl_version = <$openssl_out>;
-    if ($openssl_version =~ m/^OpenSSL (\d+\.\d+\.\d+)([a-z]*) /) {
+    if ($openssl_version =~ m/^OpenSSL (\d+\.\d+\.\d+)([a-z-]*) /) {
         push @openssl_candidates, [
             $candidate,
             version->parse($1),
