@@ -12,7 +12,7 @@ use Config::Apple::Profile::Payload::Common;
 use Config::Apple::Profile::Payload::Types qw(:all);
 use Config::Apple::Profile::Targets qw(:all);
 
-our $VERSION = '0.87';
+our $VERSION = '0.87.1';
 
 
 =encoding utf8

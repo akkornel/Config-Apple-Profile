@@ -7,7 +7,7 @@ use 5.10.1;
 use strict;
 use warnings FATAL => 'all';
 
-our $VERSION = '0.87';
+our $VERSION = '0.87.1';
 
 use Scalar::Util qw(blessed);
 use Tie::Array; # Also gives us Tie::StdArray
