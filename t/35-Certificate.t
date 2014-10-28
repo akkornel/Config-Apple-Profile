@@ -27,10 +27,12 @@ use Test::Exception;
 use Test::More;
 
 # Since we want taint mode, we must get rid of PATH for our test suite to run
-my $old_PATH;
-if (exists $ENV{PATH}) {
-    $old_PATH = $ENV{PATH};
-    delete $ENV{PATH};
+my %old_ENV;
+foreach my $env (qw(BASH_ENV CDPATH ENV IFS PATH)) {
+    if (exists $ENV{$env}) {
+        $old_ENV{$env} = $ENV{$env};
+        delete $ENV{$env};
+    }
 }
 
 
@@ -230,6 +232,8 @@ close $pem_handle;
 close $pkcs12_handle1;
 close $pkcs12_handle2;
 
-$ENV{PATH} = $old_PATH if defined($old_PATH);
+foreach my $env (keys %old_ENV) {
+    $ENV{$env} = $old_ENV{$env};
+}
 
 done_testing();
