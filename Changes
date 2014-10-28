@@ -1,5 +1,8 @@
 Revision history for Config-Apple-Profile
 
+0.87.1  2014-10-27 23:00 US/Pacific
+        Handle hyphens in OpenSSL version suffix (closes #15).
+
 0.87    2014-10-08 23:00 US/Pacific
         Added support for Perl 5.10.1 and 5.12.x.
         Added support for the Font payload (2 points).
