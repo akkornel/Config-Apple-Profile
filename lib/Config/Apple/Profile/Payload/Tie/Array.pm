@@ -9,6 +9,7 @@ use warnings FATAL => 'all';
 
 our $VERSION = '0.87.1';
 
+use Config::Apple::Profile::Exception;
 use Scalar::Util qw(blessed);
 use Tie::Array; # Also gives us Tie::StdArray
 
@@ -48,7 +49,8 @@ store attempt will fail.
 It is suggested that the functions from
 L<Config::Apple::Profile::Payload::Types::Validation> be used.
 
-If C<$validator> is not a valid coderef then an exception will be thrown.
+If C<$validator> is not a valid coderef then an 
+C<Config::Apple::Profile::Exception::Internal> exception will be thrown.
 
 =cut
 
@@ -63,7 +65,9 @@ sub TIEARRAY {
     
     # We don't accept refs, only scalars
     if (ref $validator ne 'CODE') {
-        die "Validator must be a function reference";
+        Config::Apple::Profile::Exception::Internal->throw(
+            error => 'Validator must be a function reference',
+        );
     }
     $object{validator} = $validator;
 
@@ -88,27 +92,37 @@ sub FETCH {
 
 =head3 STORE
 
-Storing items at a specific index is not allowed.  This is to help prevent
-C<undef> from appearing in the array.  Instead, use C<push> or C<unshift>.
+Storing items at a specific index is not allowed, and will throw an
+C<Config::Apple::Profile::Exception::ArrayOp> exception.
+
+Restricting this operation was done to help prevent C<undef> from appearing
+in the array.  Instead, use C<push> or C<unshift>.
 
 =cut
 
 sub STORE {
     my ($self, $index, $value) = @_;
-    die "Storing items at specific indexes is not allowed";
+    Config::Apple::Profile::Exception::ArrayOp->throw(
+        error => 'Storing items at specific indexes is not allowed'
+    );
 }
 
 
 =head3 delete
 
-Deleting items at a specific index is not allowed.  Perl has deprecated this.
-Instead, use C<splice>, C<pop>, or C<shift>.
+Deleting items at a specific index is not allowed, and will throw an
+C<Config::Apple::Profile::Exception::ArrayOp> exception.
+
+Regardless, Perl has deprecated this operation.  Instead, use C<splice>,
+C<pop>, or C<shift>.
 
 =cut
 
 sub DELETE {
     my ($self, $index) = @_;
-    die "Deleting items at specific indexes is not allowed";
+    Config::Apple::Profile::Exception::ArrayOp->throw(
+        error => 'Deleting items at specific indexes is not allowed'
+    );
 }
 
 
@@ -197,7 +211,7 @@ being added to the array.
 
 =back
 
-An exception will be thrown if either of the two points above fails.
+Any exception thrown by C<_validate> may also be thrown by this operation.
 
 =cut
 
@@ -253,7 +267,8 @@ being added to the array.
 
 =back
 
-An exception will be thrown if either of the two points above fails.
+Any exceptions thrown by C<_validate> may also be thrown by this operation.
+
 =cut
 
 sub UNSHIFT {
@@ -285,7 +300,7 @@ being added to the array.
 
 =back
 
-An exception will be thrown if either of the two points above fails.
+Any exceptions thrown by C<_validate> may also be thrown by this operation.
 
 =cut
 
@@ -322,17 +337,34 @@ sub SPLICE {
 Given a list of items, each one will be validated, and the validated list will
 be returned.
 
-An exception will be thrown if any of the list items is undef, or if any of
-the list items fails validation, or if the caller is not expecting an array.
+The following exceptions may be thrown:
+
+=over 4
+
+=item Config::Apple::Profile::Exception::Validation
+
+Thrown if any of the items being validated is invalid.
+
+=item Config::Apple::Profile::Exception::Undef
+
+Thrown if any of the items being validated is C<undef>.
+
+=item Config::Apple::Profile::Exception::Internal
+
+Thrown if the caller is not calling this method in an array context.
+
+=back
 
 =cut
 
 sub _validate {
     my $self = CORE::shift @_;
     
-    # If we are not returning an array, then die now
+    # If we are not returning an array, then throw an internal exception
     if (!wantarray) {
-        die "_validate expects to return an array";
+        Config::Apple::Profile::Exception::Internal->throw(
+            error => '_validate expects to return an array'
+        );
     }
     
     # We can't use a foreach loop, because our items might be Readonly,
@@ -346,7 +378,9 @@ sub _validate {
         
         # Undef is not a valid value
         if (!defined $item) {
-            die "Adding undef items is not allowed";
+            Config::Apple::Profile::Exception::Undef->throw(
+                error => 'Adding undef items is not allowed'
+            );
         }
         
         # Call the validation routine
@@ -354,7 +388,9 @@ sub _validate {
         
         # If $item suddenly became undef, it was invalid
         if (!defined $validated_item) {
-            die "Attempting to insert invalid item";
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Attempting to insert invalid item'
+            );
         }
         
         $validated_array[$i] = $validated_item;

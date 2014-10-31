@@ -35,7 +35,7 @@ The following exception classes are defined:
 my @exception_params = ();
 
 
-=head2 C<Config::Apple::Profile::Exception>
+=head2 Config::Apple::Profile::Exception
 
 This is the base class for exceptions thrown by C<Config::Apple::Profile>.
 
@@ -44,6 +44,65 @@ This is the base class for exceptions thrown by C<Config::Apple::Profile>.
 push @exception_params, (
     'Config::Apple::Profile::Exception' => {
         description => 'Generic Config::Apple::Profile error',
+    },
+);
+
+
+=head2 Config::Apple::Profile::Exception::ArrayOp
+
+An invalid array operation has been attempted.  For example, attempting to
+assign to or delete an array entry is not a valid operation with payload arrays.
+
+=cut
+
+push @exception_params, (
+    'Config::Apple::Profile::Exception::ArrayOp' => {
+        description => 'Invalid array operation',
+    },
+);
+
+
+=head2 Config::Apple::Profile::Exception::Internal
+
+An internal error has occurred.  If this exception is thrown, it is most likely
+due to a bug in the code.
+
+=cut
+
+push @exception_params, (
+    'Config::Apple::Profile::Exception::Internal' => {
+        description => 'Internal Config::Apple::Profile error',
+    },
+);
+
+
+=head2 Config::Apple::Profile::Exception::Undef
+
+Thrown when attempting to set a profile key to C<undef>.  Also thrown when
+trying to add C<undef> into an array or dict.
+
+This is a subclass of C<Config::Apple::Profile::Exception::Validation>.
+
+=cut
+
+push @exception_params, (
+    'Config::Apple::Profile::Exception::Undef' => {
+        description => '',
+        isa => 'Config::Apple::Profile::Exception::Validation',
+    },
+);
+
+
+=head2 Config::Apple::Profile::Exception::Validation
+
+Thrown when attempting to set a profile key to an invalid value.  Also thrown
+when trying to add an invalid value to an array or dict.
+
+=cut
+
+push @exception_params, (
+    'Config::Apple::Profile::Exception::Validation' => {
+        description => 'Invalid value',
     },
 );
 

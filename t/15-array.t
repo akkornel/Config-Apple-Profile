@@ -74,10 +74,14 @@ cmp_ok(exists $array->[20], '==', 0, 'Confirm index 20 does not exist');
 
 # Storing into indexes should fail (weather they exist or not)
 # Deleting should also fail
-dies_ok { $array->[0] = 0; } 'Overwrite existing number';
-dies_ok { $array->[20] = 21; } 'Store new number';
-dies_ok { delete $array->[0]; } 'Delete index';
-dies_ok { delete $array->[20]; } 'Delete invalid index';
+throws_ok { $array->[0] = 0; } 'Config::Apple::Profile::Exception::ArrayOp',
+    'Overwrite existing number';
+throws_ok { $array->[20] = 21; } 'Config::Apple::Profile::Exception::ArrayOp',
+    'Store new number';
+throws_ok { delete $array->[0]; } 'Config::Apple::Profile::Exception::ArrayOp',
+    'Delete index';
+throws_ok { delete $array->[20]; } 'Config::Apple::Profile::Exception::ArrayOp',
+    'Delete invalid index';
 
 
 # See if we got a 20-entry plist
