@@ -123,6 +123,13 @@ sub validate {
     elsif ($type == $ProfileClass) {
         return validate_class($value);
     }
+    
+    # If we're here, something is wrong
+    else {
+        Config::Apple::Profile::Exception::Internal->throw(
+            error => "Attempting to validate unknown type $type"
+        );
+    }
 }
 
 
