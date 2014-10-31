@@ -179,7 +179,7 @@ SKIP: {
     my $payload_pem = $object_pem->payload;
     lives_ok { $payload_pem->{PayloadContent} = $pem_handle; }
              'Load PEM content into PEM object';
-    skip 'OpenSSL not found during configuration'
+    skip 'OpenSSL not found during configuration' => 1
         unless defined($ACP_OPENSSL_PATH);
     dies_ok { $payload_pem->{PayloadContent} = $der_handle; }
            'Load non-PEM content into PEM object';
@@ -192,7 +192,7 @@ SKIP: {
     my $payload_root = $object_root->payload;
     lives_ok { $payload_root->{PayloadContent} = $der_handle; }
              'Load DER content into DER object (Root subtype)';
-    skip 'OpenSSL not found during configuration'
+    skip 'OpenSSL not found during configuration' => 1
         unless defined($ACP_OPENSSL_PATH);
     dies_ok { $payload_root->{PayloadContent} = $pem_handle; }
            'Load non-DER content into DER object (Root subtype)';
@@ -205,7 +205,7 @@ SKIP: {
     my $payload_pkcs1 = $object_pkcs1->payload;
     lives_ok { $payload_pkcs1->{PayloadContent} = $der_handle; }
              'Load DER content into DER object (PKCS1 subtype)';
-    skip 'OpenSSL not found during configuration'
+    skip 'OpenSSL not found during configuration' => 1
         unless defined($ACP_OPENSSL_PATH);
     dies_ok { $payload_pkcs1->{PayloadContent} = $pem_handle; }
            'Load non-DER content into DER object (PKCS1 subtype)';
