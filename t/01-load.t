@@ -20,6 +20,7 @@ BEGIN {
     my @modules = qw(
         Config::Apple::Profile
         Config::Apple::Profile::Config
+        Config::Apple::Profile::Exception
         Config::Apple::Profile::Targets
         Config::Apple::Profile::Payload::Common
         Config::Apple::Profile::Payload::Tie::Array
