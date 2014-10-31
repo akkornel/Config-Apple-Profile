@@ -1,4 +1,4 @@
-# This is the code for Config::Apple::Profile::Payload::Common.
+# This is the code for Config::Apple::Profile::Exception.
 # For Copyright, please see the bottom of the file.
 
 # We're going to let Exception::Class define our package for us.
@@ -25,6 +25,7 @@ C<Config::Apple::Profile>.  These exceptions are created using
 L<Exception::Class>, and clients should refer to that package's documentation
 for more information on how to recognize exceptions being thrown, and what
 can be done with them.
+
 
 =head1 EXCEPTION CLASSES
 
