@@ -402,9 +402,17 @@ sub validate_identifier {
     my ($value) = @_;
     
     # References aren't allowed here
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef if ref($value);
-    ##use critic
+    if (ref($value)) {
+        Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Pass reference to validate_identifier'
+        );
+    }
+    
+    if (!defined($value)) {
+        Config::Apple::Profile::Exception::Undef->throw(
+            error => 'Passing undef to validate_identifier'
+        );
+    }
     
     # Empty strings aren't allowed, either.
     if ($value =~ m/^(.+)$/s) {
@@ -417,10 +425,10 @@ sub validate_identifier {
         }
     }
     
-    # If we're here, the matching failed, so return undef
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef;
-    ##use critic
+    # If we're here, the matching failed, so throw an exception
+    Config::Apple::Profile::Exception::Validation->throw(
+        error => 'Passing empty or invalid value to validate_identifier'
+    );
 }
 
 =head2 validate_uuid

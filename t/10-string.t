@@ -155,12 +155,14 @@ foreach my $not_string (@baddies) {
     throws_ok { $payload->{stringField} = $not_string; }
         'Config::Apple::Profile::Exception::Validation',
         "Testing non-string non-ID $i";
-    dies_ok { $payload->{IDField} = $not_string; }
+    throws_ok { $payload->{IDField} = $not_string; }
+        'Config::Apple::Profile::Exception::Validation',
         '... and as an ID';
     throws_ok { push @{$payload->{stringArrayField}}, $not_string; }
         'Config::Apple::Profile::Exception::Validation',
         "... can't push to string array";
-    dies_ok { push @{$payload->{IDArrayField}}, $not_string; }
+    throws_ok { push @{$payload->{IDArrayField}}, $not_string; }
+        'Config::Apple::Profile::Exception::Validation',
         "... can't push to ID array";
     $i++;
 }
@@ -172,7 +174,9 @@ foreach my $not_ID (@bad_IDs) {
     lives_ok { $payload->{stringField} = $not_ID; } "A string non-ID $not_ID";
     my $read_item = $payload->{stringField};
     cmp_ok($read_item, 'eq', $not_ID, '... works OK as a String');
-    dies_ok { $payload->{IDField} = $not_ID; } '... but not as an ID';
+    throws_ok { $payload->{IDField} = $not_ID; }
+        'Config::Apple::Profile::Exception::Validation',
+        '... but not as an ID';
     
     # Make sure we get a correct plist out
     my $plist;
