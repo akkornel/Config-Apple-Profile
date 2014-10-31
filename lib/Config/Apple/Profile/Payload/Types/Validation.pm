@@ -146,19 +146,27 @@ sub validate_string {
     my ($value) = @_;
     
         # References aren't allowed here
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef if ref($value);
-        ##use critic
+        if (ref($value)) {
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Passing reference to validate_string'
+            );
+        }
+        
+        # Undefined values aren't allowed, either
+        if (!defined($value)) {
+            Config::Apple::Profile::Exception::Undef->throw(
+                error => 'Passing undef to validate_string'
+            );
+        }
         
         # Empty strings aren't allowed, either.
         if ($value =~ m/^(.+)$/s) {
             $value = $1;
-            
         }
         else {
-            ## no critic (ProhibitExplicitReturnUndef)
-            return undef;
-            ##use critic
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Passing empty or invalid string to validate_string'
+            );
         }
         
         # Try to encode as UTF-8, to make sure it's safe
@@ -166,7 +174,9 @@ sub validate_string {
             encode('UTF-8', $value, Encode::FB_CROAK | Encode::LEAVE_SRC);
         }
         catch {
-            $value = undef;
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'validate_string unable to encode string as UTF-8'
+            );
         };
         
         # If we're here, then we are valid!

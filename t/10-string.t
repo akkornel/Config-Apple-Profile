@@ -152,11 +152,13 @@ my $i = 1;
 foreach my $not_string (@baddies) {
     my $object = new Local::StringID;
     my $payload = $object->payload;
-    dies_ok { $payload->{stringField} = $not_string; }
+    throws_ok { $payload->{stringField} = $not_string; }
+        'Config::Apple::Profile::Exception::Validation',
         "Testing non-string non-ID $i";
     dies_ok { $payload->{IDField} = $not_string; }
         '... and as an ID';
-    dies_ok { push @{$payload->{stringArrayField}}, $not_string; }
+    throws_ok { push @{$payload->{stringArrayField}}, $not_string; }
+        'Config::Apple::Profile::Exception::Validation',
         "... can't push to string array";
     dies_ok { push @{$payload->{IDArrayField}}, $not_string; }
         "... can't push to ID array";
