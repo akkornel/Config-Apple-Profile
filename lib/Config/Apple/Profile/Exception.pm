@@ -77,6 +77,19 @@ push @exception_params, (
 );
 
 
+=head2 Config::Apple::Profile::Exception::Key
+
+Thrown when attempting to access a key or index that does not exist.
+
+=cut
+
+push @exception_params, (
+    'Config::Apple::Profile::Exception::Key' => {
+        description => 'Key or indef not found',
+    }
+);
+
+
 =head2 Config::Apple::Profile::Exception::Undef
 
 Thrown when attempting to set a profile key to C<undef>.  Also thrown when
