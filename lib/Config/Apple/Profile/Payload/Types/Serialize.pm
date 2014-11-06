@@ -9,8 +9,6 @@ use warnings FATAL => 'all';
 
 our $VERSION = '0.87.1';
 
-use DateTime;
-use Encode qw(encode);
 use Exporter::Easy (
     OK => [qw(
         serialize
@@ -21,8 +19,12 @@ use Exporter::Easy (
         )],
     ],
 );
-use Mac::PropertyList;
+
+use Config::Apple::Profile::Exception;
 use Config::Apple::Profile::Payload::Types qw(:all);
+use DateTime;
+use Encode qw(encode);
+use Mac::PropertyList;
 
 
 =encoding utf8
@@ -59,7 +61,8 @@ used within the array or dictionary.
 If C<$type> is C<$ProfileClass>, then C<< $value->plist >> will be called,
 and the result will be returned.
 
-An exception will be thrown if C<$type> or C<$subtype> are not recognized.
+An C<Config::Apple::Profile::Exception::Internal> exception will be thrown if
+C<$type> or C<$subtype> are not recognized.
 
 =cut
 
@@ -151,13 +154,13 @@ sub serialize {
     
     # We've checked all the types we know about
     else {
-        die "Unknown type $type";
+        Config::Apple::Profile::Exception::Internal->throw(
+            error => "Unknown type $type"
+        );
     }
     
     return $value;
 }
-
-
 
 
 =head1 ACKNOWLEDGEMENTS
