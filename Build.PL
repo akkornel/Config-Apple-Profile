@@ -22,7 +22,7 @@ my $builder = Module::Build->new(
     dist_author         => q{A. Karl Kornel <karl@kornel.us>},
     keywords            => [qw(iOS mobileconfig plist)],
     dist_version_from   => 'lib/Config/Apple/Profile.pm',
-    release_status      => 'testing',
+    release_status      => 'stable',
     
     # Software license
     license             => 'perl',
