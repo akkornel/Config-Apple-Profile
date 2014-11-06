@@ -60,7 +60,18 @@ use Test::More;
 #    * Remove some from the end
 #    * Splice the entire array
 
-plan tests => 4 + (7 * 2) + 7 + 4 + (1 + 20 + 1) + 4 + 2 + (4 * 2) + (5 + 7) + 13 + 15;
+plan tests =>   4            # Loading the array
+              + (7 * 2)      # Testing good indexes
+              + 7            # Testing bad indexes
+              + 4            # Storing, overwriting, and deleting
+              + (1 + 20 + 1) # Convert to plist and verify
+              + 4            # Grow and shrink array
+              + 2            # Clear array
+              + (4 * 2)      # Splice items into the array
+              + (5 + 7)      # Splice items out of the array
+              + 13           # Check array after splicing
+              + 15           # Splice array into nothing
+;
 
 # Create an array to use for testing
 my $object = new Local::Array;
