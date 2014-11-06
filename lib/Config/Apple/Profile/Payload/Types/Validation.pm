@@ -203,6 +203,7 @@ sub validate_number {
         );
     }
     
+    # Undef isn't allowed here, either
     if (!defined($value)) {
         Config::Apple::Profile::Exception::Undef->throw(
                 error => 'Passing undef to validate_number'
@@ -236,9 +237,9 @@ sub validate_real {
     
     # References aren't allowed here
     if (ref($value)) {
-    Config::Apple::Profile::Exception::Validation->throw(
-        error => 'Passing reference to validate_real'
-    );
+        Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Passing reference to validate_real'
+        );
     }
     
     # Undef values aren't allowed either
