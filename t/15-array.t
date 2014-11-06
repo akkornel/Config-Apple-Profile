@@ -46,6 +46,7 @@ use Test::More;
 # here.
 
 # We will be testing the following
+#  * Fetching values at explicit indexes
 #  * Storing into an array should fail
 #  * Deleting from an array should fail
 #  * Exporting as a plist should work
@@ -59,7 +60,7 @@ use Test::More;
 #    * Remove some from the end
 #    * Splice the entire array
 
-plan tests => 4 + 4 + (1 + 20 + 1) + 4 + 2 + (4 * 2) + (5 + 7) + 13 + 15;
+plan tests => 4 + (7 * 2) + 7 + 4 + (1 + 20 + 1) + 4 + 2 + (4 * 2) + (5 + 7) + 13 + 15;
 
 # Create an array to use for testing
 my $object = new Local::Array;
@@ -70,6 +71,18 @@ lives_ok { push @$array, (11..20); } 'Push numbers onto array';
 lives_ok { unshift @$array, (1..10); } 'Unshift numbers onto array';
 cmp_ok(exists $array->[19], '==', 1, 'Confirm index 19 exists');
 cmp_ok(exists $array->[20], '==', 0, 'Confirm index 20 does not exist');
+
+# Test getting indexes
+foreach my $i (qw(0 1 5 10 14 18 19)) {
+    my $v;
+    lives_ok { $v = $array->[$i]; } "Fetch index $i";
+    cmp_ok($v, '==', $i+1, 'Confirm value matches index');
+}
+foreach my $i (qw(20 21 22 25 30 100 10255)) {
+    throws_ok { my $v = $array->[$i]; }
+              'Config::Apple::Profile::Exception::Key',
+              "Fetch invalid index $i";
+}
 
 
 # Storing into indexes should fail (weather they exist or not)

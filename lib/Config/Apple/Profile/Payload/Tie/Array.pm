@@ -81,12 +81,22 @@ Works as one would expect with a Perl array.  Returns the entry at the specified
 index.  Since methods are in place to prevent storing C<undef>, as long as the
 index is valid at the time of the call, you will get something back.
 
+Throws a C<Config::Apple::Profile::Exception::Key> exception if the C<$index>
+is invalid.
+
 =cut
 
 sub FETCH {
     my ($self, $index) = @_;
     
-    return $self->{array}->[$index];
+    if (exists($self->{array}->[$index])) {
+        return $self->{array}->[$index];
+    }
+    else {
+        Config::Apple::Profile::Exception::Key->throw(
+            error => "Index $index does not exist"
+        );
+    }
 }
 
 
