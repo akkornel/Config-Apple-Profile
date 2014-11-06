@@ -173,7 +173,9 @@ my $string_object = new Local::Data;
 my $string_payload = $string_object->payload;
 
 # Make sure the string goes in OK
-dies_ok { $string_payload->{dataField} = $string; } 'Put utf8 data into payload';
+throws_ok { $string_payload->{dataField} = $string; }
+          'Config::Apple::Profile::Exception::Validation',
+          'Put utf8 data into payload';
 lives_ok { $string_payload->{dataField} = $encoded_string; }
          'Put encoded data into payload';
 
@@ -223,8 +225,9 @@ close $closed_handle;
 # Give the closed handle to the object
 my $closed_object = new Local::Data;
 my $closed_payload = $closed_object->payload;
-dies_ok { $closed_payload->{dataField} = $closed_handle; }
-        'Put a closed filehandle into payload';
+throws_ok { $closed_payload->{dataField} = $closed_handle; }
+          'Config::Apple::Profile::Exception::Validation',
+          'Put a closed filehandle into payload';
 
 # Open our file for writing
 my $write_handle;
@@ -242,8 +245,9 @@ print $write_handle "Karl is awesome!\n";
 # See if we can give it to an object
 my $write_only_object = new Local::Data;
 my $write_only_payload = $write_only_object->payload;
-dies_ok { $write_only_payload->{dataField} = $write_handle; }
-        'Put a write-only object into payload';
+throws_ok { $write_only_payload->{dataField} = $write_handle; }
+          'Config::Apple::Profile::Exception::Validation',
+          'Put a write-only object into payload';
 undef $write_only_payload;
 undef $write_only_object;
 
@@ -280,8 +284,9 @@ ok(!seek($pipe_write, 2, SEEK_CUR), "Make sure we can't seek");
 
 my $seek_object = new Local::Data;
 my $seek_payload = $seek_object->payload;
-dies_ok { $seek_payload->{dataField} = $pipe_write; }
-         'Set the pipe as the payload';
+throws_ok { $seek_payload->{dataField} = $pipe_write; }
+          'Config::Apple::Profile::Exception::Validation',
+          'Set the pipe as the payload';
          
 # Clean up from this phase
 undef $seek_payload;

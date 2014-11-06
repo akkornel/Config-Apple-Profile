@@ -394,7 +394,9 @@ sub validate_data {
         #my $modes = fcntl($value, F_GETFL, 0);
         #my $mask = 2**O_RDONLY + 2**O_RDWR;
         #unless (($modes & $mask) > 0) {
-        #    die "Filehandle is not open for reading.";
+        #    Config::Apple::Profile::Exception::Validation->throw(
+        #        error => 'Filehandle given to validate_data not open for reading'
+        #        );
         #}
         my $ignore;
         my $count ;
@@ -402,12 +404,16 @@ sub validate_data {
             $count = read $value, $ignore, 1;
         };
         unless (defined $count) {
-            die "Unable to read from filehandle.  Is it open for reading?";
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Unable to read from handle passed to validate_data'
+            );
         }
         
         # If we can't seek, we're probably dealing with something bad
         unless (seek $value, -1, SEEK_CUR) {
-            die "Unable to seek with filehandle.  Is it pointing to a file?";
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Unable to seek on handle passed to validate_data'
+            );
         }
         
         return $value;
@@ -429,9 +435,9 @@ sub validate_data {
     }
     
     # If we're here, then we are dealing with something unknown to us.
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef;
-    ##use critic
+    Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Passing unknown item to validate_data'
+    );
 }
 
 
