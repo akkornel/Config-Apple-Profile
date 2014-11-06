@@ -558,21 +558,29 @@ then C<$value> is returned.  Otherwise, C<undef> is returned.
 sub validate_class {
     my ($object) = @_;
     
-    # We don't accept non-references
-    if (!blessed($object)) {
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef;
-        ## use critic
+    # We don't accept undef
+    if (!defined($object)) {
+        Config::Apple::Profile::Exception::Undef->throw(
+            error => 'Passing undef to validate_class'
+        );
     }
     
+    # We don't accept non-references
+    if (!blessed($object)) {
+        Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Passing non-object to validate_uuid'
+        );
+    }
+    
+    # Make sure the class is correct
     if ($object->isa('Config::Apple::Profile::Payload::Common')) {
         return $object;
     }
-    
-    # If we're here, then we have an object of the wrong class
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef;
-    ## use critic
+    else {
+        Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Passing unknown object to validate_uuid'
+        );
+    }
 }
 
 =head1 ACKNOWLEDGEMENTS
