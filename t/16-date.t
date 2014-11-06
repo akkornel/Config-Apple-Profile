@@ -107,7 +107,8 @@ my $good_object = DateTime->new(
 ok(defined $good_object, 'Create good DateTime object');
 lives_ok { $payload->{dateField} = $good_object; }
          'Give DateTime object to payload';
-dies_ok { $payload->{dateField} = new Local::Date; }
+throws_ok { $payload->{dateField} = new Local::Date; }
+        'Config::Apple::Profile::Exception::Validation',
         'Give non-DateTime object to payload';
 
 
@@ -117,15 +118,18 @@ foreach my $string (@strings) {
              "Give good string '$string' to payload";
 }
 foreach my $string (@baddies) {
-    dies_ok { $payload->{dateField} = $string; }
+    throws_ok { $payload->{dateField} = $string; }
+            'Config::Apple::Profile::Exception::Validation',
             "Give bad string '$string' to payload";
 }
 
 
 # Make sure infinite dates fail
-dies_ok { $payload->{dateField} = new DateTime::Infinite::Past; }
+throws_ok { $payload->{dateField} = new DateTime::Infinite::Past; }
+        'Config::Apple::Profile::Exception::Validation',
         'Give ∞ past date to payload';
-dies_ok { $payload->{dateField} = new DateTime::Infinite::Future; }
+throws_ok { $payload->{dateField} = new DateTime::Infinite::Future; }
+        'Config::Apple::Profile::Exception::Validation',
         'Give ∞ future date to payload';
 
 

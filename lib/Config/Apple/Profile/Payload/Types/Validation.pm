@@ -316,25 +316,44 @@ sub validate_date {
     # If we have a blessed ref, which is a DateTime object, and it represents
     # a finite time, then we're good!
     if (ref $value) {
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef unless blessed($value);
-        return undef unless $value->isa('DateTime');
-        return undef unless $value->is_finite;
-        ##use critic
+        if (!blessed($value)) {
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Passing non-blessed reference to validate_date'
+            );
+        }
+        if (!$value->isa('DateTime')) {
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Passing non-DateTime object to validate_date'
+            );
+        }
+        if ($value->is_infinite) {
+            Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Passing infinite DateTime to validate_date'
+            );
+        }
         
         return $value;
+    }
+    
+    # Undef isn't allowed
+    if (!defined($value)) {
+        Config::Apple::Profile::Exception::Undef->throw(
+            error => 'Passing undef to validate_date'
+        );
     }
     
     # At this point, we have a scalar, so let's see if it can be parsed
     try {
         $value = DateTime::Format::Flexible->parse_datetime($value);
     }
-    # If the parse fails, it dies, so return undef
+    # If the parse fails, it dies, so die as well!
     catch {
-        $value = undef;
+        Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Passing unparseable string to validate_date'
+        );
     };
     
-    # Return either our object, or undef
+    # Return our object
     return $value;
 }
 
