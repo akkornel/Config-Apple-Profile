@@ -377,14 +377,14 @@ sub validate_boolean {
     # References aren't allowed here
     if (ref($value)) {
         Config::Apple::Profile::Exception::Validation->throw(
-            error => 'Passing reference to validate_real'
+            error => 'Passing reference to validate_boolean'
         );
     }
     
     # Undef values aren't allowed either
     if (!defined($value)) {
         Config::Apple::Profile::Exception::Undef->throw(
-                error => 'Passing undef to validate_real'
+                error => 'Passing undef to validate_boolean'
         );
     }
     
@@ -625,7 +625,7 @@ sub validate_identifier {
     # References aren't allowed here
     if (ref($value)) {
         Config::Apple::Profile::Exception::Validation->throw(
-            error => 'Pass reference to validate_identifier'
+            error => 'Passing reference to validate_identifier'
         );
     }
     
