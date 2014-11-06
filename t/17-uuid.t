@@ -386,9 +386,15 @@ foreach my $baddie (@baddies) {
     my $payload = $object->payload;
     
     # Make sure every method of reading fails
-    dies_ok {$payload->{uniqueField} = $baddie} "Non-UUID $i";
-    dies_ok {push @{$payload->{arrayField}}, $baddie} 'Pushing onto array';
-    dies_ok {unshift @{$payload->{arrayField}}, $baddie} 'Unshifting onto array';
+    throws_ok {$payload->{uniqueField} = $baddie}
+              'Config::Apple::Profile::Exception::Validation',
+              "Non-UUID $i";
+    throws_ok {push @{$payload->{arrayField}}, $baddie}
+            'Config::Apple::Profile::Exception::Validation',
+            'Pushing onto array';
+    throws_ok {unshift @{$payload->{arrayField}}, $baddie}
+            'Config::Apple::Profile::Exception::Validation',
+            'Unshifting onto array';
     
     $i++;
 }

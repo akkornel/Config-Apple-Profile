@@ -502,6 +502,13 @@ sub validate_uuid {
     my $class = ref($value);
     my $uuid;
     
+    # We don't accept undef
+    if (!defined($value)) {
+        Config::Apple::Profile::Exception::Undef->throw(
+            error => 'Passing undef to validate_uuid'
+        );
+    }
+    
     # We accept Data::UUID objects
     if ($class eq 'Data::UUID') {
         $uuid = Data::GUID::from_data_uuid($value);
@@ -515,9 +522,9 @@ sub validate_uuid {
         
     # We don't accept other kinds of objects
     if ($class ne '') {
-        ## no critic (ProhibitExplicitReturnUndef)
-        return undef;
-        ## use critic
+        Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Passing unknown ref to validate_uuid'
+        );
     }
         
     # Have Data::GUID try to parse the input
@@ -525,9 +532,16 @@ sub validate_uuid {
     eval {
         $uuid = Data::GUID->from_any_string($value);
     };
-
-    # If parsing went OK, then we have our object!  Otherwise, we have undef.
-    return $uuid;
+    
+    # If we got a UUID back, return it!
+    if (defined($uuid)) {
+        return $uuid;
+    }
+    else {
+        Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Passing unknown value to validate_uuid'
+        );
+    }
 }
 
 
