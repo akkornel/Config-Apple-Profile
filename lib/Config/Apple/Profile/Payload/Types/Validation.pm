@@ -60,17 +60,45 @@ import C<:all> to get all of them at once.
 
 =head1 FUNCTIONS
 
+=head2 A note on exceptions
+
+All of the validations throw exceptions (that is, they die) when presented
+with an invalid value.  One of three exceptions may be thrown:
+
+=over 4
+
+=item Config::Apple::Profile::Exception::Validation
+
+This exception is thrown when an invalid value is passed as the value to be
+validated.  The exception class includes one attribute, C<error>, which contains
+more information on what went wrong.
+
+Refer to the below functions for more details on what error strings might be
+thrown.
+
+=item Config::Apple::Profile::Exception::Undef
+
+This exception is thrown when C<undef> is passed as the value to be validated.
+This exception is a subclass of
+C<Config::Apple::Profile::Exception::Validation>.
+
+=back
+
 =head2 validate
 
     my $validated_value = validate($type, $value);
 
 Validates C<$value> as a valid C<$type>.  If valid, returns the de-tainted
-C<$value>.  If invalid, returns C<undef>.
+C<$value>.  If invalid, an exception is thrown.
 
 C<$type> is one of the values from L<Config::Apple::Profile::Payload::Types>.
 C<$value> is the value to be validated.
 
-IF C<$type> is not valid, or C<$value> is C<undef>, then C<undef> is returned.
+If C<$value> is C<undef>, then a 
+C<Config::Apple::Profile::Exception::Undef> exception is thrown.
+
+If C<$type> is not a known value, then an
+C<Config::Apple::Profile::Exception::Internal> exception is thrown.
 
 =cut
 
@@ -140,6 +168,29 @@ sub validate {
 Returns a de-tained C<$value> if it is a defined, non-empty scalar, and can be
 encoded as UTF-8 by L<Encode>.
 
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Passing reference to validate_string
+
+Thrown when passing a ref (blessed or not).
+
+=item Passing undef to validate_string
+
+Thrown when passing C<undef>.
+
+=item Passing empty or invalid string to validate_string
+
+Thrown when passing a string that doesn't match the regex C</^(.+)$/s>.
+
+=item validate_string unable to encode string as UTF-8
+
+Thrown when passing a string that can not be encoded into UTF-8 (that is,
+strict UTF-8) by the C<Encode> module.
+
+=back
+
 =cut
 
 sub validate_string {
@@ -189,7 +240,25 @@ sub validate_string {
     my $number = validate_number($value)
 
 Returns a de-tained C<$value> if it is an integer.  A leading + is OK.
-Any other input returns C<undef>.
+
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Passing reference to validate_number
+
+Thrown when a reference (blessed or not) is passed.
+
+=item Passing undef to validate_number
+
+Thrown when C<undef> is passed.
+
+=item Passing invalid number to validate_number
+
+Thrown when an unparseable integer is passed, as determined by
+C<Regexp::Common>.
+
+=back
 
 =cut
 
@@ -228,7 +297,25 @@ sub validate_number {
 
 Returns a de-tainted C<$value> if it is an integer or a floating-point number.
 A loading C<+> is OK.  An exponent, positive or negative, is also OK.
-Any other input returns C<undef>.
+
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Passing reference to validate_real
+
+Thrown when a reference (blessed or not) is passed.
+
+=item Passing undef to validate_real
+
+Thrown when C<undef> is passed.
+
+=item Passing invalid real to validate_real
+
+Thrown when the value passed could not be parsed as a real number, as defined
+by C<Regexp::Common>.
+
+=back
 
 =cut
 
@@ -266,7 +353,21 @@ sub validate_real {
     my $boolean = validate_boolean($value);
 
 If C<$value> can be evaluated as true or false, returns a C<1> or a C<0>,
-respectively.  Will return C<undef> if a reference is passed.
+respectively.
+
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Passing reference to validate_boolean
+
+Thrown when passing a reference (blessed or not).
+
+=item Passing undef to validate_boolean
+
+Thrown when passing C<undef>.
+
+=back
 
 =cut
 
@@ -306,7 +407,35 @@ If C<$value> is a string, and can be parsed by L<DateTime::Format::Flexible>,
 the resulting C<DateTime> object will be returned.
 
 Unparseable strings, infinite C<DateTime> objects, and any other input will
-return C<undef>.
+throw an exception.
+
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Passing non-blessed reference to validate_date
+
+Thrown when passing a ref that is not blessed (is not an object).
+
+=item Passing non-DateTime object to validate_date
+
+Thrown when passing an object that is not an instance of C<DateTime> (or one
+of its subclasses).
+
+=item Passing infinite DateTime to validate_date
+
+Thrown when passing an infinite C<DateTime> object.
+
+=item Passing undef to validate_date
+
+Thrown when passing C<undef>.
+
+=item Passing unparseable string to validate_date
+
+Thrown when passing a value that could not be parsed by
+C<DateTime::Format::Flexible>.
+
+=back
 
 =cut
 
@@ -373,6 +502,26 @@ returned.
 If passed a scalar, it will be checked to make sure it is not empty, and that
 is not a utf8 string.  The contents of the string will be placed into an
 anonymous in-memory file, and the filehandle will be returned.
+
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Unable to read from handle passed to validate_data
+
+Thrown when passing a filehandle that does not allow reads (such as a file
+opened for writes only, or the write-only end of a pipe).
+
+=item Unable to seek on handle passed to validate_data
+
+Thrown when passing a filehandle that does not allow seeking (such as a pipe).
+
+=item Passing unknown item to validate_data
+
+Thrown when passing something that is not an open handle, and is also not a
+binary string. 
+
+=back
 
 =cut
 
@@ -446,7 +595,27 @@ sub validate_data {
     my $valid_identifier = validate_identifier($value);
 
 Returns a de-tained C<$value> if it is a single-line string that matches the
-format of a domain name (without spaces).  Otherwise, returns C<undef>.
+format of a domain name (without spaces).
+
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Pass reference to validate_identifier
+
+Thrown when passing a reference (blessed or not).
+
+=item Passing undef to validate_identifier
+
+Thrown when passing C<undef>.
+
+=item Passing empty or invalid value to validate_identifier
+
+Thrown when passing an empty or multiline string.  Also thrown when passing a
+string that does not parse as a host or domain name according to
+C<Regexp::Common>.
+
+=back
 
 =cut
 
@@ -489,10 +658,29 @@ sub validate_identifier {
 
 If C<$value> is a C<Data::GUID> object, it is returned immediately.
 If C<$value> is a C<Data::UUID> object, an equivalent C<Data::GUID> object is
-returned.  Objects of other types return C<undef>.
+returned.  Objects of other types throw an exception.
 
 If C<$value> is a string that can be parsed as a GUID, an equivalent
-C<Data::GUID> object is returned.  Otherwise, C<undef> is returned.
+C<Data::GUID> object is returned.
+
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Passing undef to validate_uuid
+
+Thrown when C<undef> is passed.
+
+=item Passing unknown ref to validate_uuid
+
+Thrown when a reference is passed, but the reference is not to a C<Data::UUID>
+or C<Data::GUID> object.
+
+=item Passing unknown value to validate_uuid
+
+Thrown when the value passed could not be parsed by C<Data::GUID>.
+
+=back
 
 =cut
 
@@ -551,7 +739,26 @@ sub validate_uuid {
 
 If C<$value> is an object, and is also an instance of
 C<Config::Apple::Profile::Payload::Common> (or something that is a subclass),
-then C<$value> is returned.  Otherwise, C<undef> is returned.
+then C<$value> is returned.
+
+The following error strings are used in exceptions thrown by this function:
+
+=over 4
+
+=item Passing undef to validate_class
+
+Thrown when C<undef> is passed.
+
+=item Passing non-object to validate_uuid
+
+Thrown when an unblessed ref (that is, a ref that is not an object) is passed.
+
+=item Passing unknown object to validate_uuid
+
+Thrown when an object is passed that is not an instance of
+C<Config::Apple::Profile::Payload::Common> (or a subclass).
+
+=back
 
 =cut
 
