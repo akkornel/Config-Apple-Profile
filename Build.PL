@@ -40,6 +40,7 @@ my $builder = Module::Build->new(
         'Module::Signature'      => 0,
     },
     requires => {
+        'perl'                   => 5.010001,
         'Data::GUID'             => 0,
         'DateTime'               => 0,
         'DateTime::Format::Flexible' => 0,
