@@ -274,9 +274,18 @@ sub validate_boolean {
     my ($value) = @_;
     
     # References aren't allowed here
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef if ref($value);
-    ##use critic
+    if (ref($value)) {
+        Config::Apple::Profile::Exception::Validation->throw(
+            error => 'Passing reference to validate_real'
+        );
+    }
+    
+    # Undef values aren't allowed either
+    if (!defined($value)) {
+        Config::Apple::Profile::Exception::Undef->throw(
+                error => 'Passing undef to validate_real'
+        );
+    }
     
     # A simple evaluation!
     if ($value) {
