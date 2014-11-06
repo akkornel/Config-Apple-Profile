@@ -142,11 +142,15 @@ $i = 0;
 foreach my $not_number (@baddies) {
     my $object = new Local::Number;
     my $payload = $object->payload;
-    dies_ok { $payload->{numberField} = $not_number; } "A non-number (#$i)";
-    dies_ok { push @{$payload->{numberArrayField}}, $not_number; }
-            '... pushing also fails';
-    dies_ok { $payload->{numberDictField}->{"test$i"} = $not_number; }
-            '... dict also fails';
+    throws_ok { $payload->{numberField} = $not_number; } 
+        'Config::Apple::Profile::Exception::Validation',
+        "A non-number (#$i)";
+    throws_ok { push @{$payload->{numberArrayField}}, $not_number; }
+        'Config::Apple::Profile::Exception::Validation',
+        '... pushing also fails';
+    throws_ok { $payload->{numberDictField}->{"test$i"} = $not_number; }
+        'Config::Apple::Profile::Exception::Validation',
+        '... dict also fails';
     $i++;
 }
 

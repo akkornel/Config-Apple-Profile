@@ -197,19 +197,27 @@ sub validate_number {
     my ($value) = @_;
     
     # References aren't allowed here
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef if ref($value);
-    ##use critic
+    if (ref($value)) {
+        Config::Apple::Profile::Exception::Validation->throw(
+                error => 'Passing reference to validate_number'
+        );
+    }
+    
+    if (!defined($value)) {
+        Config::Apple::Profile::Exception::Undef->throw(
+                error => 'Passing undef to validate_number'
+        );
+    }
     
     # Numbers must be integers, positive or negative (or zero).
     if ($value =~ /^$RE{num}{int}{-keep}$/) {
         return $1;
     }
     
-    # If we're here, the matching failed, so return undef
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef;
-    ##use critic
+    # If we're here, the matching failed, so throw an exception
+    Config::Apple::Profile::Exception::Validation->throw(
+        error => 'Passing invalid number to validate_number'
+    );
 }
 
 
