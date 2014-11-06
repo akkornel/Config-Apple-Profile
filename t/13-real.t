@@ -125,9 +125,12 @@ foreach my $number (@numbers) {
 foreach my $not_number (@baddies) {
     my $object = new Local::Real;
     my $payload = $object->payload;
-    dies_ok { $payload->{realField} = $not_number; } 'A non-number';
-    dies_ok { push @{$payload->{realArrayField}}, $not_number; }
-            '... pushing also fails';
+    throws_ok { $payload->{realField} = $not_number; }
+        'Config::Apple::Profile::Exception::Validation',
+        'A non-number';
+    throws_ok { push @{$payload->{realArrayField}}, $not_number; }
+        'Config::Apple::Profile::Exception::Validation',
+        '... pushing also fails';
 }
 
 # Done!

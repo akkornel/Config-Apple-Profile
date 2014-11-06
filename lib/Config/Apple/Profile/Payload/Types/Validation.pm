@@ -235,9 +235,18 @@ sub validate_real {
     my ($value) = @_;
     
     # References aren't allowed here
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef if ref($value);
-    ##use critic
+    if (ref($value)) {
+    Config::Apple::Profile::Exception::Validation->throw(
+        error => 'Passing reference to validate_real'
+    );
+    }
+    
+    # Undef values aren't allowed either
+    if (!defined($value)) {
+        Config::Apple::Profile::Exception::Undef->throw(
+                error => 'Passing undef to validate_real'
+        );
+    }
     
     # Numbers must be floating-point, positive or negative (or zero).
     if ($value =~ /^$RE{num}{real}{-keep}$/i) {
@@ -245,9 +254,9 @@ sub validate_real {
     }
     
     # If we're here, the matching failed, so return undef
-    ## no critic (ProhibitExplicitReturnUndef)
-    return undef;
-    ##use critic
+    Config::Apple::Profile::Exception::Validation->throw(
+        error => 'Passing invalid real to validate_real'
+    );
 }
 
 
